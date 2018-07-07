@@ -1,0 +1,10 @@
+[package]
+name = "triforces-demo"
+version = "0.1.0"
+authors = ["Stallmanifold <stallmanifold@gmail.com>"]
+
+[dependencies]
+glfw = "0.23.0"
+gl = "0.10.0"
+stb_image = "0.2.2"
+chrono = "0.4.4"
