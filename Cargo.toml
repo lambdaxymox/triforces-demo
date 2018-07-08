@@ -8,3 +8,4 @@ glfw = "0.23.0"
 gl = "0.10.0"
 stb_image = "0.2.2"
 chrono = "0.4.4"
+simple_cgmath = { git = "https://github.com/stallmanifold/simple-cgmath" }
