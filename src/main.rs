@@ -11,7 +11,7 @@ mod camera;
 mod gl_helpers;
 
 use glfw::{Action, Context, Key};
-use gl::types::{GLenum, GLfloat, GLint, GLsizeiptr, GLvoid, GLuint};
+use gl::types::{GLfloat, GLint, GLsizeiptr, GLvoid, GLuint};
 
 use gl_helpers as glh;
 use simple_cgmath as math;
@@ -30,7 +30,12 @@ const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 const GL_LOG_FILE: &str = "gl.log";
 
 
-fn create_triangle_geometry(context: &glh::GLContext) -> (GLuint, GLuint) {
+struct GameState {
+    gl_state: glh::GLState,
+    camera: Camera,
+}
+
+fn create_triangle_geometry(gl_state: &mut glh::GLState) {
     let points: [f32; 9] = [
         0.0, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, -0.5, 0.0
     ];
@@ -56,26 +61,28 @@ fn create_triangle_geometry(context: &glh::GLContext) -> (GLuint, GLuint) {
     }
     assert!(points_vao > 0);
 
-    (points_vbo, points_vao)
+    gl_state.vbo = points_vbo;
+    gl_state.vao = points_vao;
 }
 
-fn create_triangle_shaders(context: &glh::GLContext) -> (GLuint, GLint) {
+fn create_triangle_shaders(gl_state: &mut glh::GLState) {
     let sp = glh::create_program_from_files(
-        context, "shaders/triangle.vert.glsl", "shaders/triangle.frag.glsl"
+        &gl_state, "shaders/triangle.vert.glsl", "shaders/triangle.frag.glsl"
     );
     assert!(sp > 0);
-
+    gl_state.shader_program = sp;
+    
     let sp_vp_loc = 0;
     assert!(sp_vp_loc > -1);
 
-    (sp, sp_vp_loc)
+    gl_state.shader_vars.insert(String::from("vp"), sp_vp_loc);
 }
 
-fn create_camera(context: &glh::GLContext) -> Camera {
+fn create_camera(gl_state: &glh::GLState) -> Camera {
     let near = 0.1;
     let far = 100.0;
     let fov = 67.0;
-    let aspect = context.width as f32 / context.height as f32;
+    let aspect = gl_state.width as f32 / gl_state.height as f32;
 
     let cam_speed: GLfloat = 3.0;
     let cam_yaw_speed: GLfloat = 50.0;
@@ -95,21 +102,32 @@ fn create_camera(context: &glh::GLContext) -> Camera {
 /// the GLFW `glfwSetFramebufferSizeCallback` function, but instead we explicitly
 /// handle window resizing in our state updates on the application side. Run this function 
 /// whenever the frame buffer is resized.
-/// 
-fn glfw_framebuffer_size_callback(context: &mut glh::GLContext, camera: &mut Camera, width: u32, height: u32) {
-    context.width = width;
-    context.height = height;
+///
+#[inline]
+fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u32) {
+    context.gl_state.width = width;
+    context.gl_state.height = height;
 
-    let aspect = context.width as f32 / context.height as f32;
-    camera.aspect = aspect;
-    camera.proj_mat = Matrix4::perspective(camera.fov, aspect, camera.near, camera.far);
-    unsafe {
-        gl::Viewport(0, 0, context.width as i32, context.height as i32);
+    let aspect = context.gl_state.width as f32 / context.gl_state.height as f32;
+    context.camera.aspect = aspect;
+    context.camera.proj_mat = Matrix4::perspective(
+        context.camera.fov, aspect, context.camera.near, context.camera.far
+    );
+}
+
+fn init_game_state(mut gl_state: glh::GLState) -> GameState {
+    let camera = create_camera(&gl_state);
+    create_triangle_shaders(&mut gl_state);
+    create_triangle_geometry(&mut gl_state);
+
+    GameState {
+        gl_state: gl_state,
+        camera: camera,
     }
 }
 
 fn main() {
-    let mut context = match glh::start_gl(640, 480, GL_LOG_FILE) {
+    let gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");
@@ -118,12 +136,10 @@ fn main() {
         }
     };
 
-    let (sp, sp_vp_loc) = create_triangle_shaders(&context);
-    let (points_vbo, points_vao) = create_triangle_geometry(&context);
-    let mut camera = create_camera(&context);
+    let mut context = init_game_state(gl_state);
 
     unsafe {
-        gl::UseProgram(sp);
+        gl::UseProgram(context.gl_state.shader_program);
     }
 
     unsafe {
@@ -134,39 +150,39 @@ fn main() {
         gl::CullFace(gl::BACK);
         gl::FrontFace(gl::CCW);
         gl::ClearColor(0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
-        gl::Viewport(0, 0, context.width as i32, context.height as i32);
+        gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
     }
 
-    while !context.window.should_close() {
-        let elapsed_seconds = glh::update_timers(&mut context);
-        glh::update_fps_counter(&mut context);
+    while !context.gl_state.window.should_close() {
+        let elapsed_seconds = glh::update_timers(&mut context.gl_state);
+        glh::update_fps_counter(&mut context.gl_state);
 
-        let (width, height) = context.window.get_framebuffer_size();
-        if (width != context.width as i32) && (height != context.height as i32) {
-            glfw_framebuffer_size_callback(&mut context, &mut camera, width as u32, height as u32);
+        let (width, height) = context.gl_state.window.get_framebuffer_size();
+        if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
+            glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
         }
 
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(0.2, 0.2, 0.2, 1.0);
-            gl::Viewport(0, 0, context.width as i32, context.height as i32);
+            gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
 
-            gl::UseProgram(sp);
-            gl::BindVertexArray(points_vao);
+            gl::UseProgram(context.gl_state.shader_program);
+            gl::BindVertexArray(context.gl_state.vao);
             gl::DrawArrays(gl::TRIANGLES, 0, 3);
         }
 
-        context.glfw.poll_events();
+        context.gl_state.glfw.poll_events();
 
         // Check whether the user signaled GLFW to close the window.
-        match context.window.get_key(Key::Escape) {
+        match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
-                context.window.set_should_close(true);
+                context.gl_state.window.set_should_close(true);
             }
             _ => {}
         }
         /* ----------------------- END UPDATE GAME STATE ----------------------- */
 
-        context.window.swap_buffers();
+        context.gl_state.window.swap_buffers();
     }
 }

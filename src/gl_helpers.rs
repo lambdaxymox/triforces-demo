@@ -9,6 +9,7 @@ use std::io::{Read, BufReader};
 use std::sync::mpsc::Receiver;
 use std::ptr;
 use std::fmt;
+use std::collections::HashMap;
 
 use logger::Logger;
 
@@ -106,7 +107,7 @@ fn gl_params() -> GLParameters {
 /// A record for storing all the OpenGL state needed on the application side
 /// of the graphics application in order to manage OpenGL and GLFW.
 ///
-pub struct GLContext {
+pub struct GLState {
     pub glfw: glfw::Glfw,
     pub window: glfw::Window,
     pub events: Receiver<(f64, glfw::WindowEvent)>,
@@ -117,13 +118,17 @@ pub struct GLContext {
     pub running_time_seconds: f64,
     pub framerate_time_seconds: f64,
     pub frame_count: u32,
+    pub shader_program: u32,
+    pub shader_vars: HashMap<String, i32>,
+    pub vbo: u32,
+    pub vao: u32,
 }
 
 ///
 /// Initialize a new OpenGL context and start a new GLFW window.
 ///
 #[cfg(target_os = "macos")]
-pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, String> {
+pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, String> {
     // Initiate a logger.
     let logger = Logger::from(log_file);
     logger.restart();
@@ -137,16 +142,16 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
 
     glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
 
-    // * -------------------------------- APPLE --------------------------- */
+    /* -------------------------------- APPLE --------------------------- */
     glfw.window_hint(glfw::WindowHint::ContextVersionMajor(3));
     glfw.window_hint(glfw::WindowHint::ContextVersionMinor(2));
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
-    /* ----------------------------------------- ---------------------------*/
+    /* -------------------------------------------------------------------*/
 
     log!(logger, "Started GLFW successfully");
     let maybe_glfw_window = glfw.create_window(
-        width, height, &format!("Metroid DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
+        width, height, &format!("Triforces DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
     );
     let (mut window, events) = match maybe_glfw_window {
         Some(tuple) => tuple,
@@ -175,7 +180,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
     log!(logger, "OpenGL version supported: {}", version);
     log!(logger, "{}", gl_params());
 
-    Ok(GLContext {
+    Ok(GLState {
         glfw: glfw,
         window: window,
         events: events,
@@ -186,6 +191,10 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
         running_time_seconds: 0.0,
         framerate_time_seconds: 0.0,
         frame_count: 0,
+        shader_program: 0,
+        shader_vars: HashMap::new(),
+        vbo: 0,
+        vao: 0,
     })
 }
 
@@ -193,7 +202,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
 /// Initialize a new OpenGL context and start a new GLFW window. 
 ///
 #[cfg(not(target_os = "macos"))]
-pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, String> {
+pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, String> {
     // Initiate a logger.
     let logger = Logger::from(log_file);
     logger.restart();
@@ -238,7 +247,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
     log!(logger, "OpenGL version supported: {}", version);
     log!(logger, "{}", gl_params());
 
-    Ok(GLContext {
+    Ok(GLState {
         glfw: glfw, 
         window: window, 
         events: events,
@@ -249,6 +258,10 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
         running_time_seconds: 0.0,
         framerate_time_seconds: 0.0,
         frame_count: 0,
+        shader_program: 0,
+        shader_vars: HashMap::new(),
+        vbo: 0,
+        vao: 0,
     })
 }
 
@@ -257,7 +270,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLContext, St
 /// `update_timers`.
 ///
 #[inline]
-pub fn update_timers(context: &mut GLContext) -> f64 {
+pub fn update_timers(context: &mut GLState) -> f64 {
     let current_seconds = context.glfw.get_time();
     let elapsed_seconds = current_seconds - context.running_time_seconds;
     context.running_time_seconds = current_seconds;
@@ -269,7 +282,7 @@ pub fn update_timers(context: &mut GLContext) -> f64 {
 /// Update the framerate and display in the window titlebar.
 ///
 #[inline]
-pub fn update_fps_counter(context: &mut GLContext) {     
+pub fn update_fps_counter(context: &mut GLState) {     
     let current_time_seconds = context.glfw.get_time();
     let elapsed_seconds = current_time_seconds - context.framerate_time_seconds;
     if elapsed_seconds > 0.5 {
@@ -341,7 +354,7 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
     ShaderLog { index: shader_index, log: log }
 }
 
-pub fn create_shader(context: &GLContext, file_name: &str, shader: &mut GLuint, gl_type: GLenum) -> bool {
+pub fn create_shader(context: &GLState, file_name: &str, shader: &mut GLuint, gl_type: GLenum) -> bool {
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
@@ -445,7 +458,7 @@ pub fn is_program_valid(logger: &Logger, sp: GLuint) -> bool {
 ///
 /// Compile and link a shader program.
 ///
-pub fn create_program(context: &GLContext, vertex_shader: GLuint, fragment_shader: GLuint, program: &mut GLuint) -> bool {
+pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint, program: &mut GLuint) -> bool {
     unsafe {
         *program = gl::CreateProgram();
         log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n", 
@@ -477,7 +490,7 @@ pub fn create_program(context: &GLContext, vertex_shader: GLuint, fragment_shade
 ///
 /// Compile and link a shader program directly from the files.
 ///
-pub fn create_program_from_files(context: &GLContext, vert_file_name: &str, frag_file_name: &str) -> GLuint {
+pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> GLuint {
     let mut vertex_shader = 0;
     let mut fragment_shader = 0;
     let mut program = 0;
