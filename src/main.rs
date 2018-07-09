@@ -126,6 +126,21 @@ fn init_game_state(mut gl_state: glh::GLState) -> GameState {
     }
 }
 
+fn render(context: &mut GameState) {
+    let (width, height) = context.gl_state.window.get_framebuffer_size();
+    if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
+        glfw_framebuffer_size_callback(context, width as u32, height as u32);
+    }
+
+    unsafe {
+        gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
+
+        gl::UseProgram(context.gl_state.shader_program);
+        gl::BindVertexArray(context.gl_state.vao);
+        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+    }
+}
+
 fn main() {
     let gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
@@ -153,36 +168,28 @@ fn main() {
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
     }
 
+    /* --------------------------- GAME LOOP ------------------------------- */
     while !context.gl_state.window.should_close() {
-        let elapsed_seconds = glh::update_timers(&mut context.gl_state);
-        glh::update_fps_counter(&mut context.gl_state);
-
-        let (width, height) = context.gl_state.window.get_framebuffer_size();
-        if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
-            glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
-        }
-
-        unsafe {
-            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-            gl::ClearColor(0.2, 0.2, 0.2, 1.0);
-            gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
-
-            gl::UseProgram(context.gl_state.shader_program);
-            gl::BindVertexArray(context.gl_state.vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, 3);
-        }
-
+        // Check input.
         context.gl_state.glfw.poll_events();
-
-        // Check whether the user signaled GLFW to close the window.
         match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
                 context.gl_state.window.set_should_close(true);
             }
             _ => {}
         }
-        /* ----------------------- END UPDATE GAME STATE ----------------------- */
 
+        // Update game world.
+        glh::update_timers(&mut context.gl_state);
+        glh::update_fps_counter(&mut context.gl_state);
+        
+        // Render the results.
+        unsafe {
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+            gl::ClearColor(0.2, 0.2, 0.2, 1.0);
+        }
+
+        render(&mut context);
         context.gl_state.window.swap_buffers();
     }
 }
