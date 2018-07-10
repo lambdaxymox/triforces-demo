@@ -110,7 +110,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
 
     let aspect = context.gl_state.width as f32 / context.gl_state.height as f32;
     context.camera.aspect = aspect;
-    context.camera.proj_mat = Matrix4::perspective(
+    context.camera.proj_mat = math::perspective(
         context.camera.fov, aspect, context.camera.near, context.camera.far
     );
 }
@@ -158,19 +158,22 @@ fn main() {
     }
 
     unsafe {
-        // Enable depth-testing.
+        // Enable depth testing.
         gl::Enable(gl::DEPTH_TEST);
         gl::DepthFunc(gl::LESS);
         gl::Enable(gl::CULL_FACE);
         gl::CullFace(gl::BACK);
         gl::FrontFace(gl::CCW);
-        gl::ClearColor(0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
+        // Gray background.
+        gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
     }
 
     /* --------------------------- GAME LOOP ------------------------------- */
     while !context.gl_state.window.should_close() {
         // Check input.
+        glh::update_timers(&mut context.gl_state);
+
         context.gl_state.glfw.poll_events();
         match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
@@ -179,8 +182,7 @@ fn main() {
             _ => {}
         }
 
-        // Update game world.
-        glh::update_timers(&mut context.gl_state);
+        // Update the game world.
         glh::update_fps_counter(&mut context.gl_state);
         
         // Render the results.
@@ -188,8 +190,9 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         }
-
         render(&mut context);
+        
+        // Send the results to the output.
         context.gl_state.window.swap_buffers();
     }
 }

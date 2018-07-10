@@ -1,3 +1,4 @@
+use math;
 use math::{Vector3, Vector4, Matrix4, Quaternion};
 
 
@@ -27,9 +28,9 @@ impl Camera {
         cam_speed: f32, cam_yaw_speed: f32, cam_pos: Vector3,
         fwd: Vector4, rgt: Vector4, up: Vector4, axis: Quaternion) -> Camera {
 
-        let proj_mat = Matrix4::perspective(fov, aspect, near, far);
-        let trans_mat_inv = Matrix4::identity().translate(&cam_pos);
-        let rot_mat_inv = axis.to_mat4();
+        let proj_mat = math::perspective(fov, aspect, near, far);
+        let trans_mat_inv = Matrix4::one().translate(&cam_pos);
+        let rot_mat_inv: Matrix4 = axis.into();
         let view_mat = rot_mat_inv.inverse() * trans_mat_inv.inverse();
 
         Camera {
