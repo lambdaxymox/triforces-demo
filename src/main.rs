@@ -101,7 +101,7 @@ fn create_camera(gl_state: &glh::GLState) -> Camera {
 /// The GLFW frame buffer size callback function. This is normally set using 
 /// the GLFW `glfwSetFramebufferSizeCallback` function, but instead we explicitly
 /// handle window resizing in our state updates on the application side. Run this function 
-/// whenever the frame buffer is resized.
+/// whenever the size of the viewport changes.
 ///
 #[inline]
 fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u32) {
@@ -110,9 +110,9 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
 
     let aspect = context.gl_state.width as f32 / context.gl_state.height as f32;
     context.camera.aspect = aspect;
-    context.camera.proj_mat = math::perspective(
+    context.camera.proj_mat = math::perspective((
         context.camera.fov, aspect, context.camera.near, context.camera.far
-    );
+    ));
 }
 
 fn init_game_state(mut gl_state: glh::GLState) -> GameState {
