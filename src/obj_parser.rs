@@ -90,9 +90,11 @@ fn count_vertices<T: BufRead + Seek>(reader: &mut T) -> (usize, usize, usize, us
     let mut unsorted_vn_count = 0;
     let mut face_count = 0;
 
-    for line in reader.lines().map(|st| st.unwrap()) {
+    for line in reader.lines().map(|st| st.unwrap()).filter(|st| !st.is_empty()) {
         let bytes = line.as_bytes();
+        println!("LINE: {}", line);
         let i = skip_spaces(bytes);
+        println!("i: {}", i);
         match bytes[i] {
             b'v' => match bytes[i + 1] {
                 b' ' => unsorted_vp_count += 1,
@@ -242,7 +244,7 @@ pub fn load<T: BufRead + Seek>(reader: &mut T) -> Result<ObjMesh, String> {
     let mut current_unsorted_vt = 0;
     let mut current_unsorted_vn = 0;
 
-    for line in reader.lines().map(|st| st.unwrap()) {
+    for line in reader.lines().map(|st| st.unwrap()).filter(|st| !st.is_empty()) {
         let bytes = line.as_bytes();
         let i = skip_spaces(bytes);
         if bytes[i] == b'v' {

@@ -21,7 +21,7 @@ use gl_helpers as glh;
 use obj_parser as obj;
 use simple_cgmath as math;
 use camera::Camera;
-use math::{Matrix4, Quaternion};
+use math::{Matrix4, Quaternion, AsArray};
 
 use std::mem;
 use std::process;
@@ -39,6 +39,7 @@ const GL_LOG_FILE: &str = "gl.log";
 struct GameState {
     gl_state: glh::GLState,
     camera: Camera,
+    model_mat: Matrix4,
 }
 
 fn create_ground_plane_geometry(gl_state: &mut glh::GLState) {
@@ -106,6 +107,15 @@ fn create_ground_plane_shaders(gl_state: &mut glh::GLState) {
     gl_state.shader_vars.insert(String::from("proj_mat"), sp_proj_mat_loc);
 }
 
+fn create_ground_plane_uniforms(context: &GameState) {
+    unsafe {
+        gl::UseProgram(context.gl_state.shader_program);
+        gl::UniformMatrix4fv(context.gl_state.shader_vars["model_mat"], 1, gl::FALSE, context.model_mat.as_ptr());
+        gl::UniformMatrix4fv(context.gl_state.shader_vars["view_mat"], 1, gl::FALSE, context.camera.view_mat.as_ptr());
+        gl::UniformMatrix4fv(context.gl_state.shader_vars["proj_mat"], 1, gl::FALSE, context.camera.proj_mat.as_ptr());
+    }
+}
+
 fn create_camera(gl_state: &glh::GLState) -> Camera {
     let near = 0.1;
     let far = 100.0;
@@ -145,12 +155,14 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
 
 fn init_game_state(mut gl_state: glh::GLState) -> GameState {
     let camera = create_camera(&gl_state);
+    let model_mat = Matrix4::one();
     create_ground_plane_shaders(&mut gl_state);
     create_ground_plane_geometry(&mut gl_state);
 
     GameState {
         gl_state: gl_state,
         camera: camera,
+        model_mat: model_mat,
     }
 }
 
@@ -165,7 +177,7 @@ fn render(context: &mut GameState) {
 
         gl::UseProgram(context.gl_state.shader_program);
         gl::BindVertexArray(context.gl_state.vao);
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+        gl::DrawArrays(gl::TRIANGLES, 0, 12);
     }
 }
 
