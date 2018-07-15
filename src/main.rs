@@ -78,27 +78,21 @@ fn create_ground_plane_shaders(gl_state: &mut glh::GLState) {
     gl_state.shader_program = sp;
     
     let mut sp_vp_loc = 0;
-    unsafe {
-
-    }
     assert!(sp_vp_loc > -1);
 
-    let mut sp_model_mat_loc = 0;
-    unsafe {
-        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8);
-    }
+    let sp_model_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)
+    };
     assert!(sp_model_mat_loc > -1);
 
-    let mut sp_view_mat_loc = 0;
-    unsafe {
-        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8);
-    }
+    let sp_view_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8)
+    };
     assert!(sp_view_mat_loc > -1);
 
-    let mut sp_proj_mat_loc = 0;
-    unsafe {
-        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8);
-    }
+    let sp_proj_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8)
+    };
     assert!(sp_proj_mat_loc > -1);
 
     gl_state.shader_vars.insert(String::from("vp"), sp_vp_loc);
@@ -128,7 +122,7 @@ fn create_camera(gl_state: &glh::GLState) -> Camera {
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
     let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
     let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 2.0));
+    let cam_pos = math::vec3((0.0, 0.0, 20.0));
     
     let axis = Quaternion::new(0.0, 0.0, 1.0, 0.0);
 
@@ -159,11 +153,14 @@ fn init_game_state(mut gl_state: glh::GLState) -> GameState {
     create_ground_plane_shaders(&mut gl_state);
     create_ground_plane_geometry(&mut gl_state);
 
-    GameState {
+    let context = GameState {
         gl_state: gl_state,
         camera: camera,
         model_mat: model_mat,
-    }
+    };
+
+    create_ground_plane_uniforms(&context);
+    context
 }
 
 fn render(context: &mut GameState) {

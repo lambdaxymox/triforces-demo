@@ -1,6 +1,6 @@
 #version 420 core
 
-in vec3 vp;
+in layout (location = 0) vec3 vp;
 uniform mat4 proj_mat, view_mat, model_mat;
 
 

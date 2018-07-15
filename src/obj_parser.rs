@@ -92,9 +92,7 @@ fn count_vertices<T: BufRead + Seek>(reader: &mut T) -> (usize, usize, usize, us
 
     for line in reader.lines().map(|st| st.unwrap()).filter(|st| !st.is_empty()) {
         let bytes = line.as_bytes();
-        println!("LINE: {}", line);
         let i = skip_spaces(bytes);
-        println!("i: {}", i);
         match bytes[i] {
             b'v' => match bytes[i + 1] {
                 b' ' => unsorted_vp_count += 1,
