@@ -226,7 +226,7 @@ dependencies = [
 [[package]]
 name = "simple_cgmath"
 version = "0.2.0"
-source = "git+https://github.com/stallmanifold/simple-cgmath#b5b7b292e0a851e4df2ef649b950107650339d0f"
+source = "git+https://github.com/stallmanifold/simple-cgmath#90e180c8fa937ebc44b365741c4dca7c6781e45f"
 
 [[package]]
 name = "stb_image"

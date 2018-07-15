@@ -1,5 +1,5 @@
 use math;
-use math::{Vector3, Vector4, Matrix4, PerspectiveFov, Quaternion};
+use math::{Vector3, Vector4, Matrix4, Quaternion};
 
 
 pub struct Camera {
@@ -8,18 +8,18 @@ pub struct Camera {
     pub far: f32,
     pub fov: f32,
     pub aspect: f32,
-    pub proj_mat: Matrix4,
 
     // Camera kinematics.
-    pub cam_speed: f32,
-    pub cam_yaw_speed: f32,
-    pub cam_pos: Vector3,
+    pub speed: f32,
+    pub yaw_speed: f32,
+    pub pos: Vector3,
     pub fwd: Vector4,
     pub rgt: Vector4,
     pub up: Vector4,
     pub axis: Quaternion,
 
     // Camera matrices.
+    pub proj_mat: Matrix4,
     pub trans_mat: Matrix4,
     pub rot_mat: Matrix4,
     pub view_mat: Matrix4,
@@ -32,8 +32,8 @@ impl Camera {
         fwd: Vector4, rgt: Vector4, up: Vector4, axis: Quaternion) -> Camera {
 
         let proj_mat = math::perspective((fov, aspect, near, far));
-        let trans_mat = Matrix4::one().translate(&-cam_pos);
-        let rot_mat: Matrix4 = axis.into();
+        let trans_mat = Matrix4::from_translation(-cam_pos);
+        let rot_mat = Matrix4::from(axis);
         let view_mat = rot_mat * trans_mat;
 
         Camera {
@@ -41,16 +41,16 @@ impl Camera {
             far: far,
             fov: fov,
             aspect: aspect,
-            proj_mat: proj_mat,
 
-            cam_speed: cam_speed,
-            cam_yaw_speed: cam_yaw_speed,
-            cam_pos: cam_pos,
+            speed: cam_speed,
+            yaw_speed: cam_yaw_speed,
+            pos: cam_pos,
             fwd: fwd,
             rgt: rgt,
             up: up,
             axis: axis,
 
+            proj_mat: proj_mat,
             trans_mat: trans_mat,
             rot_mat: rot_mat,
             view_mat: view_mat,
