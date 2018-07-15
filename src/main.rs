@@ -9,6 +9,7 @@ mod logger;
 
 mod camera;
 mod gl_helpers;
+mod obj_parser;
 
 use glfw::{Action, Context, Key};
 use gl::types::{GLfloat, GLint, GLsizeiptr, GLvoid, GLuint};
