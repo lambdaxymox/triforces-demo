@@ -1,8 +1,11 @@
+extern crate chrono;
 extern crate gl;
 extern crate glfw;
 extern crate stb_image;
-extern crate chrono;
 extern crate simple_cgmath;
+
+#[macro_use]
+extern crate scan_fmt;
 
 #[macro_use]
 mod logger;
@@ -15,6 +18,7 @@ use glfw::{Action, Context, Key};
 use gl::types::{GLfloat, GLint, GLsizeiptr, GLvoid, GLuint};
 
 use gl_helpers as glh;
+use obj_parser as obj;
 use simple_cgmath as math;
 use camera::Camera;
 use math::{Matrix4, Quaternion};
@@ -22,6 +26,7 @@ use math::{Matrix4, Quaternion};
 use std::mem;
 use std::process;
 use std::ptr;
+use std::io::{BufReader, Cursor};
 
 // OpenGL extension constants.
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
@@ -36,18 +41,16 @@ struct GameState {
     camera: Camera,
 }
 
-fn create_triangle_geometry(gl_state: &mut glh::GLState) {
-    let points: [f32; 9] = [
-        0.0, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, -0.5, 0.0
-    ];
+fn create_ground_plane_geometry(gl_state: &mut glh::GLState) {
+    let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
 
     let mut points_vbo = 0;
     unsafe {
         gl::GenBuffers(1, &mut points_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * points.len()) as GLsizeiptr,
-            points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
     assert!(points_vbo > 0);
@@ -66,17 +69,41 @@ fn create_triangle_geometry(gl_state: &mut glh::GLState) {
     gl_state.vao = points_vao;
 }
 
-fn create_triangle_shaders(gl_state: &mut glh::GLState) {
+fn create_ground_plane_shaders(gl_state: &mut glh::GLState) {
     let sp = glh::create_program_from_files(
-        &gl_state, "shaders/triangle.vert.glsl", "shaders/triangle.frag.glsl"
+        &gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
     assert!(sp > 0);
     gl_state.shader_program = sp;
     
-    let sp_vp_loc = 0;
+    let mut sp_vp_loc = 0;
+    unsafe {
+
+    }
     assert!(sp_vp_loc > -1);
 
+    let mut sp_model_mat_loc = 0;
+    unsafe {
+        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8);
+    }
+    assert!(sp_model_mat_loc > -1);
+
+    let mut sp_view_mat_loc = 0;
+    unsafe {
+        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8);
+    }
+    assert!(sp_view_mat_loc > -1);
+
+    let mut sp_proj_mat_loc = 0;
+    unsafe {
+        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8);
+    }
+    assert!(sp_proj_mat_loc > -1);
+
     gl_state.shader_vars.insert(String::from("vp"), sp_vp_loc);
+    gl_state.shader_vars.insert(String::from("model_mat"), sp_model_mat_loc);
+    gl_state.shader_vars.insert(String::from("view_mat"), sp_view_mat_loc);
+    gl_state.shader_vars.insert(String::from("proj_mat"), sp_proj_mat_loc);
 }
 
 fn create_camera(gl_state: &glh::GLState) -> Camera {
@@ -118,8 +145,8 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
 
 fn init_game_state(mut gl_state: glh::GLState) -> GameState {
     let camera = create_camera(&gl_state);
-    create_triangle_shaders(&mut gl_state);
-    create_triangle_geometry(&mut gl_state);
+    create_ground_plane_shaders(&mut gl_state);
+    create_ground_plane_geometry(&mut gl_state);
 
     GameState {
         gl_state: gl_state,

@@ -221,7 +221,7 @@ fn parse_vn(
     Ok(())
 }
 
-pub fn load_obj_mesh<T: BufRead + Seek>(reader: &mut T) -> Result<ObjMesh, String> {
+pub fn load<T: BufRead + Seek>(reader: &mut T) -> Result<ObjMesh, String> {
     // First, we count the number of vertices, texture vertices, normal vectors, and faces
     // in the file so we know how much memory to allocate.
     let (unsorted_vp_count, unsorted_vt_count, unsorted_vn_count, _) = count_vertices(reader);
@@ -311,7 +311,7 @@ pub fn load_obj_file(file_name: &str) -> Result<ObjMesh, String> {
     };
 
     let mut reader = BufReader::new(file);
-    load_obj_mesh(&mut reader)
+    load(&mut reader)
 }
 
 mod parser_tests {
@@ -428,7 +428,7 @@ mod parser_tests {
     fn test_parse_obj_mesh_elementwise() {
         let test = test();
         let mut reader = BufReader::new(Cursor::new(test.obj_file.as_bytes()));
-        let result = super::load_obj_mesh(&mut reader).unwrap();
+        let result = super::load(&mut reader).unwrap();
         let expected = test.obj_mesh;
 
         assert_eq!(result.point_count, expected.point_count);
@@ -441,7 +441,7 @@ mod parser_tests {
     fn test_parse_obj_mesh() {
         let test = test();
         let mut reader = BufReader::new(Cursor::new(test.obj_file.as_bytes()));
-        let result = super::load_obj_mesh(&mut reader).unwrap();
+        let result = super::load(&mut reader).unwrap();
         let expected = test.obj_mesh;
 
         assert_eq!(result, expected);
