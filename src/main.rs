@@ -125,7 +125,6 @@ fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
 
     context.gl_state.shaders.insert(id, shader);
-
 }
 
 fn create_ground_plane_uniforms(context: &GameState, id: EntityID) {

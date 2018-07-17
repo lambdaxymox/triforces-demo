@@ -462,7 +462,7 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
         gl::AttachShader(*program, vertex_shader);
         gl::AttachShader(*program, fragment_shader);
 
-        // Link the shader programme. If binding input attributes do that before linking.
+        // Link the shader program. If binding input attributes do that before linking.
         gl::LinkProgram(*program);
         
         let mut params = -1;
