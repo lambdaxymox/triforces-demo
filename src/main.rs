@@ -190,7 +190,7 @@ fn render(context: &mut GameState, id: EntityID) {
     }
 }
 
-fn init_game_state() -> GameState {
+fn init_game_state(id: EntityID) -> GameState {
     let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
@@ -200,7 +200,6 @@ fn init_game_state() -> GameState {
         }
     };
 
-    let id = EntityID::new(0);
     let camera = create_camera(&gl_state);
     let mut context = GameState {
         gl_state: gl_state,
@@ -217,7 +216,7 @@ fn init_game_state() -> GameState {
 
 fn main() {
     let id = EntityID::new(0);
-    let mut context = init_game_state();
+    let mut context = init_game_state(id);
 
     unsafe {
         gl::UseProgram(context.gl_state.shaders[&id].handle.into());
