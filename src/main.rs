@@ -175,22 +175,6 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
     ));
 }
 
-fn init_game_state(mut gl_state: glh::GLState) -> GameState {
-    let id = EntityID::new(0);
-    let camera = create_camera(&gl_state);
-    let mut context = GameState {
-        gl_state: gl_state,
-        camera: camera,
-        entities: EntityDatabase::new(),
-    };
-
-    create_ground_plane_geometry(&mut context, id);
-    create_ground_plane_shaders(&mut context, id);
-    create_ground_plane_uniforms(&context, id);
-
-    context
-}
-
 fn render(context: &mut GameState, id: EntityID) {
     let (width, height) = context.gl_state.window.get_framebuffer_size();
     if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
@@ -206,8 +190,8 @@ fn render(context: &mut GameState, id: EntityID) {
     }
 }
 
-fn main() {
-    let gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
+fn init_game_state() -> GameState {
+    let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");
@@ -215,8 +199,25 @@ fn main() {
             process::exit(1);
         }
     };
+
     let id = EntityID::new(0);
-    let mut context = init_game_state(gl_state);
+    let camera = create_camera(&gl_state);
+    let mut context = GameState {
+        gl_state: gl_state,
+        camera: camera,
+        entities: EntityDatabase::new(),
+    };
+
+    create_ground_plane_geometry(&mut context, id);
+    create_ground_plane_shaders(&mut context, id);
+    create_ground_plane_uniforms(&context, id);
+
+    context
+}
+
+fn main() {
+    let id = EntityID::new(0);
+    let mut context = init_game_state();
 
     unsafe {
         gl::UseProgram(context.gl_state.shaders[&id].handle.into());
