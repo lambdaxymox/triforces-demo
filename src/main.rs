@@ -12,21 +12,26 @@ mod logger;
 
 mod camera;
 mod gl_helpers;
+mod component;
 mod obj_parser;
 
 use glfw::{Action, Context, Key};
-use gl::types::{GLfloat, GLint, GLsizeiptr, GLvoid, GLuint};
+use gl::types::{GLfloat, GLsizeiptr, GLvoid};
 
 use gl_helpers as glh;
 use obj_parser as obj;
 use simple_cgmath as math;
+
 use camera::Camera;
+use component::{BufferHandle, EntityID, ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource};
 use math::{Matrix4, Quaternion, AsArray};
+use obj::ObjMesh;
 
 use std::mem;
 use std::process;
 use std::ptr;
-use std::io::{BufReader, Cursor};
+use std::collections::HashMap;
+
 
 // OpenGL extension constants.
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
@@ -36,13 +41,29 @@ const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 const GL_LOG_FILE: &str = "gl.log";
 
 
+struct EntityDatabase {
+    meshes: HashMap<EntityID, ObjMesh>,
+    shader_sources: HashMap<EntityID, ShaderSource>,
+    model_matrices: HashMap<EntityID, Matrix4>,
+}
+
+impl EntityDatabase {
+    fn new() -> EntityDatabase {
+        EntityDatabase {
+            meshes: HashMap::new(),
+            shader_sources: HashMap::new(),
+            model_matrices: HashMap::new(),
+        }
+    }
+}
+
 struct GameState {
     gl_state: glh::GLState,
     camera: Camera,
-    model_mat: Matrix4,
+    entities: EntityDatabase,
 }
 
-fn create_ground_plane_geometry(gl_state: &mut glh::GLState) {
+fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
 
     let mut points_vbo = 0;
@@ -66,16 +87,19 @@ fn create_ground_plane_geometry(gl_state: &mut glh::GLState) {
     }
     assert!(points_vao > 0);
 
-    gl_state.vbo = points_vbo;
-    gl_state.vao = points_vao;
+    let handle = BufferHandle::new(points_vbo, points_vao);
+    let model_mat = Matrix4::one();
+
+    context.gl_state.buffers.insert(id, vec![handle]);
+    context.entities.model_matrices.insert(id, model_mat);
+    context.entities.meshes.insert(id, mesh);
 }
 
-fn create_ground_plane_shaders(gl_state: &mut glh::GLState) {
+fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     let sp = glh::create_program_from_files(
-        &gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
+        &context.gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
     assert!(sp > 0);
-    gl_state.shader_program = sp;
     
     let mut sp_vp_loc = 0;
     assert!(sp_vp_loc > -1);
@@ -95,18 +119,22 @@ fn create_ground_plane_shaders(gl_state: &mut glh::GLState) {
     };
     assert!(sp_proj_mat_loc > -1);
 
-    gl_state.shader_vars.insert(String::from("vp"), sp_vp_loc);
-    gl_state.shader_vars.insert(String::from("model_mat"), sp_model_mat_loc);
-    gl_state.shader_vars.insert(String::from("view_mat"), sp_view_mat_loc);
-    gl_state.shader_vars.insert(String::from("proj_mat"), sp_proj_mat_loc);
+    let mut shader = ShaderProgram::new(ShaderProgramHandle::from(sp));
+    shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
+    shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
+    shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
+
+    context.gl_state.shaders.insert(id, shader);
+
 }
 
-fn create_ground_plane_uniforms(context: &GameState) {
+fn create_ground_plane_uniforms(context: &GameState, id: EntityID) {
+    let shader = &context.gl_state.shaders[&id];
     unsafe {
-        gl::UseProgram(context.gl_state.shader_program);
-        gl::UniformMatrix4fv(context.gl_state.shader_vars["model_mat"], 1, gl::FALSE, context.model_mat.as_ptr());
-        gl::UniformMatrix4fv(context.gl_state.shader_vars["view_mat"], 1, gl::FALSE, context.camera.view_mat.as_ptr());
-        gl::UniformMatrix4fv(context.gl_state.shader_vars["proj_mat"], 1, gl::FALSE, context.camera.proj_mat.as_ptr());
+        gl::UseProgram(shader.handle.into());
+        gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
+        gl::UniformMatrix4fv(shader.uniforms["view_mat"].into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+        gl::UniformMatrix4fv(shader.uniforms["proj_mat"].into(), 1, gl::FALSE, context.camera.proj_mat.as_ptr());
     }
 }
 
@@ -148,22 +176,22 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
 }
 
 fn init_game_state(mut gl_state: glh::GLState) -> GameState {
+    let id = EntityID::new(0);
     let camera = create_camera(&gl_state);
-    let model_mat = Matrix4::one();
-    create_ground_plane_shaders(&mut gl_state);
-    create_ground_plane_geometry(&mut gl_state);
-
-    let context = GameState {
+    let mut context = GameState {
         gl_state: gl_state,
         camera: camera,
-        model_mat: model_mat,
+        entities: EntityDatabase::new(),
     };
 
-    create_ground_plane_uniforms(&context);
+    create_ground_plane_geometry(&mut context, id);
+    create_ground_plane_shaders(&mut context, id);
+    create_ground_plane_uniforms(&context, id);
+
     context
 }
 
-fn render(context: &mut GameState) {
+fn render(context: &mut GameState, id: EntityID) {
     let (width, height) = context.gl_state.window.get_framebuffer_size();
     if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
         glfw_framebuffer_size_callback(context, width as u32, height as u32);
@@ -172,8 +200,8 @@ fn render(context: &mut GameState) {
     unsafe {
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
 
-        gl::UseProgram(context.gl_state.shader_program);
-        gl::BindVertexArray(context.gl_state.vao);
+        gl::UseProgram(context.gl_state.shaders[&id].handle.into());
+        gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
         gl::DrawArrays(gl::TRIANGLES, 0, 12);
     }
 }
@@ -187,11 +215,11 @@ fn main() {
             process::exit(1);
         }
     };
-
+    let id = EntityID::new(0);
     let mut context = init_game_state(gl_state);
 
     unsafe {
-        gl::UseProgram(context.gl_state.shader_program);
+        gl::UseProgram(context.gl_state.shaders[&id].handle.into());
     }
 
     unsafe {
@@ -227,7 +255,7 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         }
-        render(&mut context);
+        render(&mut context, id);
         
         // Send the results to the output.
         context.gl_state.window.swap_buffers();

@@ -12,6 +12,7 @@ use std::fmt;
 use std::collections::HashMap;
 
 use logger::Logger;
+use component::{ShaderProgram, ShaderProgramHandle, BufferHandle, EntityID};
 
 
 // 256 Kilobytes.
@@ -118,10 +119,8 @@ pub struct GLState {
     pub running_time_seconds: f64,
     pub framerate_time_seconds: f64,
     pub frame_count: u32,
-    pub shader_program: u32,
-    pub shader_vars: HashMap<String, i32>,
-    pub vbo: u32,
-    pub vao: u32,
+    pub shaders: HashMap<EntityID, ShaderProgram>,
+    pub buffers: HashMap<EntityID, Vec<BufferHandle>>,
 }
 
 ///
@@ -191,10 +190,8 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
         running_time_seconds: 0.0,
         framerate_time_seconds: 0.0,
         frame_count: 0,
-        shader_program: 0,
-        shader_vars: HashMap::new(),
-        vbo: 0,
-        vao: 0,
+        shaders: HashMap::new(),
+        buffers: HashMap::new(),
     })
 }
 
@@ -258,10 +255,8 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
         running_time_seconds: 0.0,
         framerate_time_seconds: 0.0,
         frame_count: 0,
-        shader_program: 0,
-        shader_vars: HashMap::new(),
-        vbo: 0,
-        vao: 0,
+        shaders: HashMap::new(),
+        buffers: HashMap::new(),
     })
 }
 
