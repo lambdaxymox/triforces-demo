@@ -7,6 +7,6 @@ out vec2 tex_coord;
 
 
 void main() {
-    tex_coord = 0.5 * (v_tex + 1.0);
+    tex_coord = v_tex;
     gl_Position = proj_mat * view_mat * model_mat * vec4 (v_pos, 1.0);
 }
