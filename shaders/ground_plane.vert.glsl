@@ -1,9 +1,12 @@
 #version 420 core
 
-in layout (location = 0) vec3 vp;
+in layout (location = 0) vec3 v_pos;
+in layout (location = 1) vec2 v_tex;
 uniform mat4 proj_mat, view_mat, model_mat;
+out vec2 tex_coord;
 
 
 void main() {
-    gl_Position = proj_mat * view_mat * model_mat * vec4 (vp, 1.0);
+    tex_coord = 0.5 * (v_tex + 1.0);
+    gl_Position = proj_mat * view_mat * model_mat * vec4 (v_pos, 1.0);
 }
