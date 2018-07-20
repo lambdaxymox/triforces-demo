@@ -44,6 +44,7 @@ const GL_LOG_FILE: &str = "gl.log";
 struct EntityDatabase {
     meshes: HashMap<EntityID, ObjMesh>,
     shader_sources: HashMap<EntityID, ShaderSource>,
+    textures: HashMap<EntityID, ProceduralTexture>,
     model_matrices: HashMap<EntityID, Matrix4>,
 }
 
@@ -138,12 +139,14 @@ impl ProceduralTexture {
 
 fn generate_checkerboard_texture(
     context: &mut GameState, width: u32, height: u32,
-    c0: Rgb, c1: Rgb, tile_count: usize) {
+    c0: Rgb, c1: Rgb, tile_count: usize) -> ProceduralTexture {
 
     let mut texture = ProceduralTexture::new(width, height);
     for i in 0..((height * width) as usize) {
         texture.buffer[i] = c1;
     }
+
+    texture
 }
 
 /* ------------------ END PROCEDURAL TEXTURE -------------------- */
