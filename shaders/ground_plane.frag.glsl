@@ -1,7 +1,7 @@
 #version 420 core
 
 in vec2 tex_coord;
-in sampler2D tex;
+uniform sampler2D tex;
 out vec4 frag_color;
 
 
