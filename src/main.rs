@@ -65,6 +65,7 @@ struct GameState {
     entities: EntityDatabase,
 }
 
+
 fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
 
@@ -89,10 +90,34 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     }
     assert!(points_vao > 0);
 
-    let handle = BufferHandle::new(points_vbo, points_vao);
+    let mut tex_coords_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut tex_coords_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        )
+    }
+    assert!(tex_coords_vbo > 0);
+
+    let mut tex_coords_vao = 0;
+    unsafe {
+        gl::GenVertexArrays(1, &mut tex_coords_vao);
+        gl::BindVertexArray(tex_coords_vao);
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(1);
+    }
+    assert!(tex_coords_vao > 0);
+
+    // TODO: Place the vertex normals for Blinn-Phong shading.
+
+    let points_handle = BufferHandle::new(points_vbo, points_vao);
+    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, tex_coords_vao);
     let model_mat = Matrix4::one();
 
-    context.gl_state.buffers.insert(id, vec![handle]);
+    context.gl_state.buffers.insert(id, vec![points_handle, tex_coords_handle]);
     context.entities.model_matrices.insert(id, model_mat);
     context.entities.meshes.insert(id, mesh);
 }
@@ -139,7 +164,7 @@ impl ProceduralTexture {
 }
 
 fn generate_checkerboard_texture(
-    context: &mut GameState, width: u32, height: u32,
+    width: u32, height: u32,
     c0: Rgb, c1: Rgb, tile_count: usize) -> ProceduralTexture {
 
     let mut texture = ProceduralTexture::new(width, height);
@@ -168,7 +193,6 @@ fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, 
     }
 
     let mut max_aniso = 0.0;
-    // TODO: Check this against my OpenGL extension dependencies.
     unsafe {
         gl::GetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &mut max_aniso);
         // Set the maximum!
@@ -180,7 +204,15 @@ fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, 
 /* ------------------ END PROCEDURAL TEXTURE -------------------- */
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
+    let tex_data = generate_checkerboard_texture(
+        512, 512, Rgb::zero(), Rgb::new(255, 255, 255), 8
+    );
+    let mut tex = 0;
+    load_procedural_texture(&tex_data, gl::CLAMP_TO_EDGE, &mut tex);
+    assert!(tex > 0);
 
+    context.entities.textures.insert(id, tex_data);
+    context.gl_state.textures.insert(id, tex);
 }
 
 fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
@@ -296,6 +328,7 @@ fn init_game_state(id: EntityID) -> GameState {
     create_ground_plane_geometry(&mut context, id);
     create_ground_plane_shaders(&mut context, id);
     create_ground_plane_uniforms(&context, id);
+    create_ground_plane_texture(&mut context, id);
 
     context
 }

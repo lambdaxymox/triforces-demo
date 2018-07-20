@@ -120,6 +120,7 @@ pub struct GLState {
     pub framerate_time_seconds: f64,
     pub frame_count: u32,
     pub shaders: HashMap<EntityID, ShaderProgram>,
+    pub textures: HashMap<EntityID, GLuint>,
     pub buffers: HashMap<EntityID, Vec<BufferHandle>>,
 }
 
@@ -191,6 +192,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
         framerate_time_seconds: 0.0,
         frame_count: 0,
         shaders: HashMap::new(),
+        textures: HashMap::new(),
         buffers: HashMap::new(),
     })
 }
@@ -256,6 +258,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
         framerate_time_seconds: 0.0,
         frame_count: 0,
         shaders: HashMap::new(),
+        textures: HashMap::new(),
         buffers: HashMap::new(),
     })
 }
