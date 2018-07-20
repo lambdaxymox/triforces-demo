@@ -16,7 +16,7 @@ mod component;
 mod obj_parser;
 
 use glfw::{Action, Context, Key};
-use gl::types::{GLfloat, GLsizeiptr, GLvoid};
+use gl::types::{GLfloat, GLint, GLsizeiptr, GLuint, GLvoid};
 
 use gl_helpers as glh;
 use obj_parser as obj;
@@ -53,6 +53,7 @@ impl EntityDatabase {
         EntityDatabase {
             meshes: HashMap::new(),
             shader_sources: HashMap::new(),
+            textures: HashMap::new(),
             model_matrices: HashMap::new(),
         }
     }
@@ -119,7 +120,7 @@ impl Rgb {
 struct ProceduralTexture {
     pub width: u32,
     pub height: u32,
-    pub buffer: Vec<Rgb>,
+    pub data: Vec<Rgb>,
 }
 
 impl ProceduralTexture {
@@ -127,13 +128,13 @@ impl ProceduralTexture {
         ProceduralTexture {
             width: width,
             height: height,
-            buffer: vec![Rgb::zero(); (width * height) as usize],
+            data: vec![Rgb::zero(); (width * height) as usize],
         }
     }
 
     #[inline]
     pub fn as_ptr(&self) -> *const u8 {
-        &self.buffer[0].r
+        &self.data[0].r
     }
 }
 
@@ -143,12 +144,39 @@ fn generate_checkerboard_texture(
 
     let mut texture = ProceduralTexture::new(width, height);
     for i in 0..((height * width) as usize) {
-        texture.buffer[i] = c1;
+        texture.data[i] = c1;
     }
 
     texture
 }
 
+fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, tex: &mut GLuint) -> bool {
+    unsafe {
+        gl::GenTextures(1, tex);
+        gl::ActiveTexture(gl::TEXTURE0);
+        gl::BindTexture(gl::TEXTURE_2D, *tex);
+        gl::TexImage2D(
+            gl::TEXTURE_2D, 0, gl::RGBA as i32, tex_data.width as i32, tex_data.height as i32, 0,
+            gl::RGBA, gl::UNSIGNED_BYTE,
+            tex_data.as_ptr() as *const GLvoid
+        );
+        gl::GenerateMipmap(gl::TEXTURE_2D);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, wrapping_mode as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, wrapping_mode as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
+    }
+
+    let mut max_aniso = 0.0;
+    // TODO: Check this against my OpenGL extension dependencies.
+    unsafe {
+        gl::GetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &mut max_aniso);
+        // Set the maximum!
+        gl::TexParameterf(gl::TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
+    }
+
+    true
+}
 /* ------------------ END PROCEDURAL TEXTURE -------------------- */
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
