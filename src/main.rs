@@ -95,12 +95,68 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     context.entities.meshes.insert(id, mesh);
 }
 
+/* ---------------- PROCEDURAL TEXTURE -------------------------- */
+#[derive(Copy, Clone, Eq, PartialEq)]
+struct Rgb {
+    r: u8,
+    g: u8,
+    b: u8,
+}
+
+impl Rgb {
+    #[inline]
+    pub fn new(r: u8, g: u8, b: u8) -> Rgb {
+        Rgb { r, g, b }
+    }
+
+    #[inline]
+    pub fn zero() -> Rgb {
+        Rgb { r: 0, g: 0, b: 0 }
+    }
+}
+
+struct ProceduralTexture {
+    pub width: u32,
+    pub height: u32,
+    pub buffer: Vec<Rgb>,
+}
+
+impl ProceduralTexture {
+    pub fn new(width: u32, height: u32) -> ProceduralTexture {
+        ProceduralTexture {
+            width: width,
+            height: height,
+            buffer: vec![Rgb::zero(); (width * height) as usize],
+        }
+    }
+
+    #[inline]
+    pub fn as_ptr(&self) -> *const u8 {
+        &self.buffer[0].r
+    }
+}
+
+fn generate_checkerboard_texture(
+    context: &mut GameState, width: u32, height: u32,
+    c0: Rgb, c1: Rgb, tile_count: usize) {
+
+    let mut texture = ProceduralTexture::new(width, height);
+    for i in 0..((height * width) as usize) {
+        texture.buffer[i] = c1;
+    }
+}
+
+/* ------------------ END PROCEDURAL TEXTURE -------------------- */
+
+fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
+
+}
+
 fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     let sp = glh::create_program_from_files(
         &context.gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
     assert!(sp > 0);
-    
     let mut sp_vp_loc = 0;
     assert!(sp_vp_loc > -1);
 
