@@ -124,28 +124,31 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
 
 /* ---------------- PROCEDURAL TEXTURE -------------------------- */
 #[derive(Copy, Clone, Eq, PartialEq)]
-struct Rgb {
+struct Rgba {
     r: u8,
     g: u8,
     b: u8,
+    a: u8,
 }
 
-impl Rgb {
+impl Rgba {
     #[inline]
-    pub fn new(r: u8, g: u8, b: u8) -> Rgb {
-        Rgb { r, g, b }
+    pub fn new(r: u8, g: u8, b: u8, a: u8) -> Rgba {
+        Rgba { r, g, b, a }
     }
+}
 
+impl Default for Rgba {
     #[inline]
-    pub fn zero() -> Rgb {
-        Rgb { r: 0, g: 0, b: 0 }
+    fn default() -> Rgba {
+        Rgba::new(0, 0, 0, 255)
     }
 }
 
 struct ProceduralTexture {
     pub width: u32,
     pub height: u32,
-    pub data: Vec<Rgb>,
+    pub data: Vec<Rgba>,
 }
 
 impl ProceduralTexture {
@@ -153,7 +156,7 @@ impl ProceduralTexture {
         ProceduralTexture {
             width: width,
             height: height,
-            data: vec![Rgb::zero(); (width * height) as usize],
+            data: vec![Rgba::default(); (width * height) as usize],
         }
     }
 
@@ -165,7 +168,7 @@ impl ProceduralTexture {
 
 fn generate_checkerboard_texture(
     width: u32, height: u32,
-    c0: Rgb, c1: Rgb, tile_count: usize) -> ProceduralTexture {
+    c0: Rgba, c1: Rgba, tile_count: usize) -> ProceduralTexture {
 
     let mut texture = ProceduralTexture::new(width, height);
     for i in 0..((height * width) as usize) {
@@ -205,7 +208,7 @@ fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, 
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
     let tex_data = generate_checkerboard_texture(
-        512, 512, Rgb::zero(), Rgb::new(245, 7, 185), 8
+        512, 512, Rgba::default(), Rgba::new(245, 7, 185, 255), 8
     );
     let mut tex = 0;
     load_procedural_texture(&tex_data, gl::CLAMP_TO_EDGE, &mut tex);
