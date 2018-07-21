@@ -32,6 +32,9 @@ use std::process;
 use std::ptr;
 use std::collections::HashMap;
 
+use stb_image::image;
+use stb_image::image::LoadResult;
+
 
 // OpenGL extension constants.
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
@@ -44,7 +47,7 @@ const GL_LOG_FILE: &str = "gl.log";
 struct EntityDatabase {
     meshes: HashMap<EntityID, ObjMesh>,
     shader_sources: HashMap<EntityID, ShaderSource>,
-    textures: HashMap<EntityID, ProceduralTexture>,
+    textures: HashMap<EntityID, TexImage2D>,
     model_matrices: HashMap<EntityID, Matrix4>,
 }
 
@@ -122,8 +125,8 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     context.entities.meshes.insert(id, mesh);
 }
 
-/* ---------------- PROCEDURAL TEXTURE -------------------------- */
-#[derive(Copy, Clone, Eq, PartialEq)]
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 struct Rgba {
     r: u8,
     g: u8,
@@ -145,17 +148,19 @@ impl Default for Rgba {
     }
 }
 
-struct ProceduralTexture {
+struct TexImage2D {
     pub width: u32,
     pub height: u32,
+    pub depth: u32,
     pub data: Vec<Rgba>,
 }
 
-impl ProceduralTexture {
-    pub fn new(width: u32, height: u32) -> ProceduralTexture {
-        ProceduralTexture {
+impl TexImage2D {
+    pub fn new(width: u32, height: u32) -> TexImage2D {
+        TexImage2D {
             width: width,
             height: height,
+            depth: 4,
             data: vec![Rgba::default(); (width * height) as usize],
         }
     }
@@ -166,19 +171,63 @@ impl ProceduralTexture {
     }
 }
 
-fn generate_checkerboard_texture(
-    width: u32, height: u32,
-    c0: Rgba, c1: Rgba, tile_count: usize) -> ProceduralTexture {
-
-    let mut texture = ProceduralTexture::new(width, height);
-    for i in 0..((height * width) as usize) {
-        texture.data[i] = c1;
+impl From<image::Image<u8>> for TexImage2D {
+    fn from(image: image::Image<u8>) -> TexImage2D {
+        let data = unsafe { mem::transmute(image.data) };
+        TexImage2D {
+            width: image.width as u32,
+            height: image.height as u32,
+            depth: image.depth as u32,
+            data: data,
+        }
     }
-
-    texture
 }
 
-fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, tex: &mut GLuint) -> bool {
+///
+/// Load texture image.
+///
+fn load_image(context: &mut GameState, id: EntityID, file_name: &str) -> bool {
+    let force_channels = 4;
+    let mut image_data = match image::load_with_depth(file_name, force_channels, false) {
+        LoadResult::ImageU8(image_data) => image_data,
+        LoadResult::Error(_) => {
+            eprintln!("ERROR: could not load {}", file_name);
+            return false;
+        }
+        LoadResult::ImageF32(_) => {
+            eprintln!("ERROR: Tried to load an image as byte vectors, got f32: {}", file_name);
+            return false;
+        }
+    };
+
+    let width = image_data.width;
+    let height = image_data.height;
+
+    // Check that the image size is a power of two.
+    if (width & (width - 1)) != 0 || (height & (height - 1)) != 0 {
+        eprintln!("WARNING: texture {} is not power-of-2 dimensions", file_name);
+    }
+
+    let width_in_bytes = 4 *width;
+    let half_height = height / 2;
+    for row in 0..half_height {
+        for col in 0..width_in_bytes {
+            let temp = image_data.data[row * width_in_bytes + col];
+            image_data.data[row * width_in_bytes + col] = image_data.data[((height - row - 1) * width_in_bytes) + col];
+            image_data.data[((height - row - 1) * width_in_bytes) + col] = temp;
+        }
+    }
+
+    let tex_image = TexImage2D::from(image_data);
+    context.entities.textures.insert(id, tex_image);
+
+    true
+}
+
+///
+/// Load texture image into the GPU.
+///
+fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) -> bool {
     unsafe {
         gl::GenTextures(1, tex);
         gl::ActiveTexture(gl::TEXTURE0);
@@ -204,17 +253,16 @@ fn load_procedural_texture(tex_data: &ProceduralTexture, wrapping_mode: GLuint, 
 
     true
 }
-/* ------------------ END PROCEDURAL TEXTURE -------------------- */
+
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
-    let tex_data = generate_checkerboard_texture(
-        512, 512, Rgba::default(), Rgba::new(245, 7, 185, 255), 8
-    );
+    load_image(context, id, "assets/checkerboard.png");
+    let tex_image = &context.entities.textures[&id];
+
     let mut tex = 0;
-    load_procedural_texture(&tex_data, gl::CLAMP_TO_EDGE, &mut tex);
+    load_texture(tex_image, gl::CLAMP_TO_EDGE, &mut tex);
     assert!(tex > 0);
 
-    context.entities.textures.insert(id, tex_data);
     context.gl_state.textures.insert(id, tex);
 }
 
