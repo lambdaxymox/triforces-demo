@@ -25,7 +25,6 @@ use simple_cgmath as math;
 use camera::Camera;
 use component::{BufferHandle, EntityID, ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource};
 use math::{Matrix4, Quaternion, AsArray};
-use obj::ObjMesh;
 
 use std::mem;
 use std::process;
@@ -45,7 +44,7 @@ const GL_LOG_FILE: &str = "gl.log";
 
 
 struct EntityDatabase {
-    meshes: HashMap<EntityID, ObjMesh>,
+    meshes: HashMap<EntityID, obj::ObjMesh>,
     shader_sources: HashMap<EntityID, ShaderSource>,
     textures: HashMap<EntityID, TexImage2D>,
     model_matrices: HashMap<EntityID, Matrix4>,
@@ -190,17 +189,15 @@ impl<'a> From<&'a image::Image<u8>> for TexImage2D {
 ///
 /// Load texture image.
 ///
-fn load_image(context: &mut GameState, id: EntityID, file_name: &str) -> bool {
+fn load_image(file_name: &str) -> Result<TexImage2D, String> {
     let force_channels = 4;
     let mut image_data = match image::load_with_depth(file_name, force_channels, false) {
         LoadResult::ImageU8(image_data) => image_data,
         LoadResult::Error(_) => {
-            eprintln!("ERROR: could not load {}", file_name);
-            return false;
+            return Err(format!("ERROR: could not load {}", file_name));
         }
         LoadResult::ImageF32(_) => {
-            eprintln!("ERROR: Tried to load an image as byte vectors, got f32: {}", file_name);
-            return false;
+            return Err(format!("ERROR: Tried to load an image as byte vectors, got f32: {}", file_name));
         }
     };
 
@@ -223,15 +220,14 @@ fn load_image(context: &mut GameState, id: EntityID, file_name: &str) -> bool {
     }
 
     let tex_image = TexImage2D::from(&image_data);
-    context.entities.textures.insert(id, tex_image);
 
-    true
+    Ok(tex_image)
 }
 
 ///
 /// Load texture image into the GPU.
 ///
-fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) -> bool {
+fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) -> Result<(), String> {
     unsafe {
         gl::GenTextures(1, tex);
         gl::ActiveTexture(gl::TEXTURE0);
@@ -255,18 +251,18 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) 
         gl::TexParameterf(gl::TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
     }
 
-    true
+    Ok(())
 }
 
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
-    load_image(context, id, "assets/checkerboard2.png");
-    let tex_image = &context.entities.textures[&id];
-    println!("{:?}", tex_image.data);
+    let tex_image = load_image("assets/checkerboard2.png").unwrap();
+
     let mut tex = 0;
-    load_texture(tex_image, gl::CLAMP_TO_EDGE, &mut tex);
+    load_texture(&tex_image, gl::CLAMP_TO_EDGE, &mut tex).unwrap();
     assert!(tex > 0);
 
+    context.entities.textures.insert(id, tex_image);
     context.gl_state.textures.insert(id, tex);
 }
 
