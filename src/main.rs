@@ -434,14 +434,14 @@ fn main() {
         }
         match context.gl_state.window.get_key(Key::W) {
             Action::Press | Action::Repeat => {
-                move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
+                move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
         match context.gl_state.window.get_key(Key::S) {
             Action::Press | Action::Repeat => {
-                move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
+                move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
