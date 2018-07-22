@@ -256,7 +256,6 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     Ok(TextureHandle::new(tex))
 }
 
-
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
     let tex_image = load_image("assets/checkerboard2.png").unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
@@ -323,6 +322,10 @@ fn create_camera(gl_state: &glh::GLState) -> Camera {
     let axis = Quaternion::new(0.0, 0.0, 1.0, 0.0);
 
     Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
+}
+
+fn reset_camera_to_default(context: &mut GameState) {
+    context.camera = create_camera(&context.gl_state);
 }
 
 ///
@@ -500,7 +503,13 @@ fn main() {
             }
             _ => {}
         }
-
+        match context.gl_state.window.get_key(Key::Backspace) {
+            Action::Press | Action::Repeat => {
+                reset_camera_to_default(&mut context);
+                cam_moved = true;
+            }
+            _ => {}
+        }
         match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
                 context.gl_state.window.set_should_close(true);
