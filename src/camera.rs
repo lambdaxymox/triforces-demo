@@ -1,7 +1,10 @@
 use math;
 use math::{Vector3, Vector4, Matrix4, Quaternion};
 
+use std::fmt;
 
+
+#[derive(Clone, Debug)]
 pub struct Camera {
     // Camera parameters.
     pub near: f32,
@@ -55,6 +58,26 @@ impl Camera {
             rot_mat: rot_mat,
             view_mat: view_mat,
         }
+    }
+}
+
+impl fmt::Display for Camera {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Camera Model:").unwrap();
+        writeln!(f, "near: {}", self.near).unwrap();
+        writeln!(f, "far: {}", self.far).unwrap();
+        writeln!(f, "aspect: {}", self.aspect).unwrap();
+        writeln!(f, "speed: {}", self.speed).unwrap();
+        writeln!(f, "yaw_speed: {}", self.yaw_speed).unwrap();
+        writeln!(f, "pos: {}", self.pos).unwrap();
+        writeln!(f, "fwd: {}", self.fwd).unwrap();
+        writeln!(f, "rgt: {}", self.rgt).unwrap();
+        writeln!(f, "up: {}", self.up).unwrap();
+        writeln!(f, "axis: {}", self.axis).unwrap();
+        writeln!(f, "proj_mat: {}", self.proj_mat).unwrap();
+        writeln!(f, "trans_mat: {}", self.trans_mat).unwrap();
+        writeln!(f, "rot_mat: {}", self.rot_mat).unwrap();
+        writeln!(f, "view_mat: {}", self.view_mat)
     }
 }
 

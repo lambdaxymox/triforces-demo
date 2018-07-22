@@ -309,15 +309,15 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let fov = 67.0;
     let aspect = width / height;
 
-    let cam_speed: GLfloat = 3.0;
+    let cam_speed: GLfloat = 5.0;
     let cam_yaw_speed: GLfloat = 50.0;
 
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
     let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
     let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 30.0));
+    let cam_pos = math::vec3((0.0, 0.0, 20.0));
     
-    let axis = Quaternion::new(0.0, 0.0, 1.0, 0.0);
+    let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
 
     Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
 }
@@ -383,9 +383,9 @@ fn main() {
         // Enable depth testing.
         gl::Enable(gl::DEPTH_TEST);
         gl::DepthFunc(gl::LESS);
-        gl::Enable(gl::CULL_FACE);
-        gl::CullFace(gl::BACK);
-        gl::FrontFace(gl::CCW);
+        //gl::Enable(gl::CULL_FACE);
+        //gl::CullFace(gl::BACK);
+        gl::FrontFace(gl::CW);
         // Gray background.
         gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
@@ -510,6 +510,12 @@ fn main() {
             }
             _ => {}
         }
+        match context.gl_state.window.get_key(Key::Space) {
+            Action::Press | Action::Repeat => {
+                println!("axis = {}; norm = {}", context.camera.axis, context.camera.axis.norm());
+            }
+            _ => {}
+        }
         match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
                 context.gl_state.window.set_should_close(true);
@@ -542,7 +548,7 @@ fn main() {
                 gl::UniformMatrix4fv(gp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
             }
         }
-:
+
         // Render the results.
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
