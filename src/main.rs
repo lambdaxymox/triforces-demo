@@ -108,7 +108,7 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
         gl::GenVertexArrays(1, &mut tex_coords_vao);
         gl::BindVertexArray(tex_coords_vao);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
-        gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
         gl::EnableVertexAttribArray(1);
     }
     assert!(tex_coords_vao > 0);
