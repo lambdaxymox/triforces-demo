@@ -383,9 +383,9 @@ fn main() {
         // Enable depth testing.
         gl::Enable(gl::DEPTH_TEST);
         gl::DepthFunc(gl::LESS);
-        //gl::Enable(gl::CULL_FACE);
-        //gl::CullFace(gl::BACK);
-        gl::FrontFace(gl::CW);
+        gl::Enable(gl::CULL_FACE);
+        gl::CullFace(gl::BACK);
+        gl::FrontFace(gl::CCW);
         // Gray background.
         gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
@@ -567,7 +567,7 @@ fn main() {
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id].into());
             gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, 12);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&id].point_count as i32);
         }
         
         // Send the results to the output.
