@@ -269,8 +269,6 @@ fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
         &context.gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
     assert!(sp > 0);
-    let mut sp_vp_loc = 0;
-    assert!(sp_vp_loc > -1);
 
     let sp_model_mat_loc = unsafe {
         gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)

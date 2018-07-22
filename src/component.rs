@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use obj::ObjMesh;
-use math::Matrix4;
 
 
 pub struct ShaderSource {
