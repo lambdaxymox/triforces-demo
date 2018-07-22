@@ -343,23 +343,6 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
     ));
 }
 
-fn render(context: &mut GameState, id: EntityID) {
-    let (width, height) = context.gl_state.window.get_framebuffer_size();
-    if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
-        glfw_framebuffer_size_callback(context, width as u32, height as u32);
-    }
-
-    unsafe {
-        gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
-
-        gl::UseProgram(context.gl_state.shaders[&id].handle.into());
-        gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id].into());
-        gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
-        gl::DrawArrays(gl::TRIANGLES, 0, 12);
-    }
-}
-
 fn init_game_state(id: EntityID) -> GameState {
     let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
@@ -426,7 +409,21 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         }
-        render(&mut context, id);
+
+        let (width, height) = context.gl_state.window.get_framebuffer_size();
+        if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
+            glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
+        }
+
+        unsafe {
+            gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
+
+            gl::UseProgram(context.gl_state.shaders[&id].handle.into());
+            gl::ActiveTexture(gl::TEXTURE0);
+            gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id].into());
+            gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
+            gl::DrawArrays(gl::TRIANGLES, 0, 12);
+        }
         
         // Send the results to the output.
         context.gl_state.window.swap_buffers();
