@@ -62,7 +62,7 @@ impl EntityDatabase {
 }
 
 struct GameState {
-    gl_state: glh::GLState,
+    gl: glh::GLState,
     camera: Camera,
     entities: EntityDatabase,
 }
@@ -119,7 +119,7 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     let tex_coords_handle = BufferHandle::new(tex_coords_vbo, tex_coords_vao);
     let model_mat = Matrix4::one();
 
-    context.gl_state.buffers.insert(id, vec![points_handle, tex_coords_handle]);
+    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
     context.entities.model_matrices.insert(id, model_mat);
     context.entities.meshes.insert(id, mesh);
 }
@@ -261,12 +261,12 @@ fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
-    context.gl_state.textures.insert(id, tex);
+    context.gl.textures.insert(id, tex);
 }
 
 fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     let sp = glh::create_program_from_files(
-        &context.gl_state, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
+        &context.gl, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
     assert!(sp > 0);
 
@@ -290,11 +290,11 @@ fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
     shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
 
-    context.gl_state.shaders.insert(id, shader);
+    context.gl.shaders.insert(id, shader);
 }
 
 fn create_ground_plane_uniforms(context: &GameState, id: EntityID) {
-    let shader = &context.gl_state.shaders[&id];
+    let shader = &context.gl.shaders[&id];
     unsafe {
         gl::UseProgram(shader.handle.into());
         gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
@@ -323,8 +323,8 @@ fn create_camera(width: f32, height: f32) -> Camera {
 }
 
 fn reset_camera_to_default(context: &mut GameState) {
-    let width = context.gl_state.width as f32;
-    let height = context.gl_state.height as f32;
+    let width = context.gl.width as f32;
+    let height = context.gl.height as f32;
     context.camera = create_camera(width, height);
 }
 
@@ -336,10 +336,10 @@ fn reset_camera_to_default(context: &mut GameState) {
 ///
 #[inline]
 fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u32) {
-    context.gl_state.width = width;
-    context.gl_state.height = height;
+    context.gl.width = width;
+    context.gl.height = height;
 
-    let aspect = context.gl_state.width as f32 / context.gl_state.height as f32;
+    let aspect = context.gl.width as f32 / context.gl.height as f32;
     context.camera.aspect = aspect;
     context.camera.proj_mat = math::perspective((
         context.camera.fov, aspect, context.camera.near, context.camera.far
@@ -358,7 +358,7 @@ fn init_game_state(id: EntityID) -> GameState {
 
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
     let mut context = GameState {
-        gl_state: gl_state,
+        gl: gl_state,
         camera: camera,
         entities: EntityDatabase::new(),
     };
@@ -376,7 +376,7 @@ fn main() {
     let mut context = init_game_state(id);
 
     unsafe {
-        gl::UseProgram(context.gl_state.shaders[&id].handle.into());
+        gl::UseProgram(context.gl.shaders[&id].handle.into());
     }
 
     unsafe {
@@ -388,18 +388,18 @@ fn main() {
         gl::FrontFace(gl::CCW);
         // Gray background.
         gl::ClearColor(0.2, 0.2, 0.2, 1.0);
-        gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
+        gl::Viewport(0, 0, context.gl.width as i32, context.gl.height as i32);
     }
 
     /* --------------------------- GAME LOOP ------------------------------- */
-    while !context.gl_state.window.should_close() {
+    while !context.gl.window.should_close() {
         // Check input.
-        let elapsed_seconds = glh::update_timers(&mut context.gl_state);
+        let elapsed_seconds = glh::update_timers(&mut context.gl);
 
         // Update the game world.
-        glh::update_fps_counter(&mut context.gl_state);
+        glh::update_fps_counter(&mut context.gl);
 
-        context.gl_state.glfw.poll_events();
+        context.gl.glfw.poll_events();
 
         // Camera control keys.
         let mut cam_moved = false;
@@ -407,49 +407,49 @@ fn main() {
         let mut cam_yaw = 0.0;
         let mut cam_pitch = 0.0;
         let mut cam_roll = 0.0;
-        match context.gl_state.window.get_key(Key::A) {
+        match context.gl.window.get_key(Key::A) {
             Action::Press | Action::Repeat => {
                 move_to.x -= context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::D) {
+        match context.gl.window.get_key(Key::D) {
             Action::Press | Action::Repeat => {
                 move_to.x += context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Q) {
+        match context.gl.window.get_key(Key::Q) {
             Action::Press | Action::Repeat => {
                 move_to.y += context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::E) {
+        match context.gl.window.get_key(Key::E) {
             Action::Press | Action::Repeat => {
                 move_to.y -= context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::W) {
+        match context.gl.window.get_key(Key::W) {
             Action::Press | Action::Repeat => {
                 move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::S) {
+        match context.gl.window.get_key(Key::S) {
             Action::Press | Action::Repeat => {
                 move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Left) {
+        match context.gl.window.get_key(Key::Left) {
             Action::Press | Action::Repeat => {
                 cam_yaw += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -458,7 +458,7 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Right) {
+        match context.gl.window.get_key(Key::Right) {
             Action::Press | Action::Repeat => {
                 cam_yaw -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -467,7 +467,7 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Up) {
+        match context.gl.window.get_key(Key::Up) {
             Action::Press | Action::Repeat => {
                 cam_pitch += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -476,7 +476,7 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Down) {
+        match context.gl.window.get_key(Key::Down) {
             Action::Press | Action::Repeat => {
                 cam_pitch -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -485,7 +485,7 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Z) {
+        match context.gl.window.get_key(Key::Z) {
             Action::Press | Action::Repeat => {
                 cam_roll -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -494,7 +494,7 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::C) {
+        match context.gl.window.get_key(Key::C) {
             Action::Press | Action::Repeat => {
                 cam_roll += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
@@ -503,22 +503,22 @@ fn main() {
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Backspace) {
+        match context.gl.window.get_key(Key::Backspace) {
             Action::Press | Action::Repeat => {
                 reset_camera_to_default(&mut context);
                 cam_moved = true;
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Space) {
+        match context.gl.window.get_key(Key::Space) {
             Action::Press | Action::Repeat => {
                 println!("axis = {}; norm = {}", context.camera.axis, context.camera.axis.norm());
             }
             _ => {}
         }
-        match context.gl_state.window.get_key(Key::Escape) {
+        match context.gl.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
-                context.gl_state.window.set_should_close(true);
+                context.gl.window.set_should_close(true);
             }
             _ => {}
         }
@@ -541,7 +541,7 @@ fn main() {
             context.camera.trans_mat = trans_mat_inv.inverse();
             context.camera.view_mat = context.camera.rot_mat * context.camera.trans_mat;
 
-            let gp_sp = &context.gl_state.shaders[&id];
+            let gp_sp = &context.gl.shaders[&id];
             let gp_view_mat_loc = gp_sp.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(gp_sp.handle.into());
@@ -555,22 +555,22 @@ fn main() {
             gl::ClearColor(0.2, 0.2, 0.2, 1.0);
         }
 
-        let (width, height) = context.gl_state.window.get_framebuffer_size();
-        if (width != context.gl_state.width as i32) && (height != context.gl_state.height as i32) {
+        let (width, height) = context.gl.window.get_framebuffer_size();
+        if (width != context.gl.width as i32) && (height != context.gl.height as i32) {
             glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
         }
 
         unsafe {
-            gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
+            gl::Viewport(0, 0, context.gl.width as i32, context.gl.height as i32);
 
-            gl::UseProgram(context.gl_state.shaders[&id].handle.into());
+            gl::UseProgram(context.gl.shaders[&id].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
-            gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id].into());
-            gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
+            gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&id].into());
+            gl::BindVertexArray(context.gl.buffers[&id][0].vao);
             gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&id].point_count as i32);
         }
         
         // Send the results to the output.
-        context.gl_state.window.swap_buffers();
+        context.gl.window.swap_buffers();
     }
 }
