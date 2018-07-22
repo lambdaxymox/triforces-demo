@@ -171,9 +171,13 @@ impl TexImage2D {
     }
 }
 
-impl From<image::Image<u8>> for TexImage2D {
-    fn from(image: image::Image<u8>) -> TexImage2D {
-        let data = unsafe { mem::transmute(image.data) };
+impl<'a> From<&'a image::Image<u8>> for TexImage2D {
+    fn from(image: &'a image::Image<u8>) -> TexImage2D {
+        let mut data = vec![];
+        for chunk in image.data.chunks(4) {
+            data.push(Rgba::new(chunk[0], chunk[1], chunk[2], chunk[3]));
+        }
+
         TexImage2D {
             width: image.width as u32,
             height: image.height as u32,
@@ -218,7 +222,7 @@ fn load_image(context: &mut GameState, id: EntityID, file_name: &str) -> bool {
         }
     }
 
-    let tex_image = TexImage2D::from(image_data);
+    let tex_image = TexImage2D::from(&image_data);
     context.entities.textures.insert(id, tex_image);
 
     true
@@ -256,9 +260,9 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) 
 
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
-    load_image(context, id, "assets/checkerboard.png");
+    load_image(context, id, "assets/checkerboard2.png");
     let tex_image = &context.entities.textures[&id];
-
+    println!("{:?}", tex_image.data);
     let mut tex = 0;
     load_texture(tex_image, gl::CLAMP_TO_EDGE, &mut tex);
     assert!(tex > 0);
@@ -354,6 +358,8 @@ fn render(context: &mut GameState, id: EntityID) {
         gl::Viewport(0, 0, context.gl_state.width as i32, context.gl_state.height as i32);
 
         gl::UseProgram(context.gl_state.shaders[&id].handle.into());
+        gl::ActiveTexture(gl::TEXTURE0);
+        gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id]);
         gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
         gl::DrawArrays(gl::TRIANGLES, 0, 12);
     }
