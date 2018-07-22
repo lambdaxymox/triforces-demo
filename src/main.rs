@@ -315,7 +315,7 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
     let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
     let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 20.0));
+    let cam_pos = math::vec3((0.0, 0.0, 30.0));
     
     let axis = Quaternion::new(0.0, 0.0, 1.0, 0.0);
 
@@ -437,14 +437,14 @@ fn main() {
         }
         match context.gl_state.window.get_key(Key::W) {
             Action::Press | Action::Repeat => {
-                move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
+                move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
         }
         match context.gl_state.window.get_key(Key::S) {
             Action::Press | Action::Repeat => {
-                move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
+                move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
             }
             _ => {}
@@ -520,17 +520,21 @@ fn main() {
         // Update view matrix.
         if cam_moved {
             // Recalculate local axes so we can move fwd in the direction the camera is pointing.
-            context.camera.rot_mat = Matrix4::from(context.camera.axis);
-            context.camera.fwd = context.camera.rot_mat * math::vec4((0.0, 0.0, -1.0, 0.0));
-            context.camera.rgt = context.camera.rot_mat * math::vec4((1.0, 0.0,  0.0, 0.0));
-            context.camera.up  = context.camera.rot_mat * math::vec4((0.0, 1.0,  0.0, 0.0));
+            let rot_mat_inv = Matrix4::from(context.camera.axis);
+            context.camera.fwd = rot_mat_inv * math::vec4((0.0, 0.0, -1.0, 0.0));
+            context.camera.rgt = rot_mat_inv * math::vec4((1.0, 0.0,  0.0, 0.0));
+            context.camera.up  = rot_mat_inv * math::vec4((0.0, 1.0,  0.0, 0.0));
 
             context.camera.pos += math::vec3(context.camera.fwd) * -move_to.z;
             context.camera.pos += math::vec3(context.camera.up)  *  move_to.y;
             context.camera.pos += math::vec3(context.camera.rgt) *  move_to.x;
-            context.camera.trans_mat = Matrix4::from_translation(context.camera.pos);
 
+            let trans_mat_inv = Matrix4::from_translation(context.camera.pos);
+
+            context.camera.rot_mat = rot_mat_inv.inverse();
+            context.camera.trans_mat = trans_mat_inv.inverse();
             context.camera.view_mat = context.camera.rot_mat * context.camera.trans_mat;
+
             let gp_sp = &context.gl_state.shaders[&id];
             let gp_view_mat_loc = gp_sp.uniforms["view_mat"];
             unsafe {
@@ -538,7 +542,7 @@ fn main() {
                 gl::UniformMatrix4fv(gp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
             }
         }
-
+:
         // Render the results.
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
