@@ -23,7 +23,7 @@ use obj_parser as obj;
 use simple_cgmath as math;
 
 use camera::Camera;
-use component::{BufferHandle, EntityID, ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource};
+use component::{BufferHandle, EntityID, ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource, TextureHandle};
 use math::{Matrix4, Quaternion, AsArray};
 
 use std::mem;
@@ -227,11 +227,12 @@ fn load_image(file_name: &str) -> Result<TexImage2D, String> {
 ///
 /// Load texture image into the GPU.
 ///
-fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) -> Result<(), String> {
+fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureHandle, String> {
+    let mut tex = 0;
     unsafe {
-        gl::GenTextures(1, tex);
+        gl::GenTextures(1, &mut tex);
         gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, *tex);
+        gl::BindTexture(gl::TEXTURE_2D, tex);
         gl::TexImage2D(
             gl::TEXTURE_2D, 0, gl::RGBA as i32, tex_data.width as i32, tex_data.height as i32, 0,
             gl::RGBA, gl::UNSIGNED_BYTE,
@@ -243,6 +244,7 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) 
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
     }
+    assert!(tex > 0);
 
     let mut max_aniso = 0.0;
     unsafe {
@@ -251,16 +253,13 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint, tex: &mut GLuint) 
         gl::TexParameterf(gl::TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
     }
 
-    Ok(())
+    Ok(TextureHandle::new(tex))
 }
 
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
     let tex_image = load_image("assets/checkerboard2.png").unwrap();
-
-    let mut tex = 0;
-    load_texture(&tex_image, gl::CLAMP_TO_EDGE, &mut tex).unwrap();
-    assert!(tex > 0);
+    let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
     context.gl_state.textures.insert(id, tex);
@@ -355,7 +354,7 @@ fn render(context: &mut GameState, id: EntityID) {
 
         gl::UseProgram(context.gl_state.shaders[&id].handle.into());
         gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id]);
+        gl::BindTexture(gl::TEXTURE_2D, context.gl_state.textures[&id].into());
         gl::BindVertexArray(context.gl_state.buffers[&id][0].vao);
         gl::DrawArrays(gl::TRIANGLES, 0, 12);
     }

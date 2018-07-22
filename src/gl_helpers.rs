@@ -12,7 +12,7 @@ use std::fmt;
 use std::collections::HashMap;
 
 use logger::Logger;
-use component::{ShaderProgram, ShaderProgramHandle, BufferHandle, EntityID};
+use component::{ShaderProgram, ShaderProgramHandle, BufferHandle, EntityID, TextureHandle};
 
 
 // 256 Kilobytes.
@@ -120,7 +120,7 @@ pub struct GLState {
     pub framerate_time_seconds: f64,
     pub frame_count: u32,
     pub shaders: HashMap<EntityID, ShaderProgram>,
-    pub textures: HashMap<EntityID, GLuint>,
+    pub textures: HashMap<EntityID, TextureHandle>,
     pub buffers: HashMap<EntityID, Vec<BufferHandle>>,
 }
 

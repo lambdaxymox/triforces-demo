@@ -79,6 +79,25 @@ impl BufferHandle {
 }
 
 #[derive(Copy, Clone, Hash, Eq, PartialEq)]
+pub struct TextureHandle {
+    pub inner: u32,
+}
+
+impl TextureHandle {
+    #[inline]
+    pub fn new(handle: u32) -> TextureHandle {
+        TextureHandle { inner: handle }
+    }
+}
+
+impl Into<u32> for TextureHandle {
+    #[inline]
+    fn into(self) -> u32 {
+        self.inner
+    }
+}
+
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
 pub struct EntityID {
     id: u32,
 }
