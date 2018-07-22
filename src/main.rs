@@ -303,11 +303,11 @@ fn create_ground_plane_uniforms(context: &GameState, id: EntityID) {
     }
 }
 
-fn create_camera(gl_state: &glh::GLState) -> Camera {
+fn create_camera(width: f32, height: f32) -> Camera {
     let near = 0.1;
     let far = 100.0;
     let fov = 67.0;
-    let aspect = gl_state.width as f32 / gl_state.height as f32;
+    let aspect = width / height;
 
     let cam_speed: GLfloat = 3.0;
     let cam_yaw_speed: GLfloat = 50.0;
@@ -323,7 +323,9 @@ fn create_camera(gl_state: &glh::GLState) -> Camera {
 }
 
 fn reset_camera_to_default(context: &mut GameState) {
-    context.camera = create_camera(&context.gl_state);
+    let width = context.gl_state.width as f32;
+    let height = context.gl_state.height as f32;
+    context.camera = create_camera(width, height);
 }
 
 ///
@@ -354,7 +356,7 @@ fn init_game_state(id: EntityID) -> GameState {
         }
     };
 
-    let camera = create_camera(&gl_state);
+    let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
     let mut context = GameState {
         gl_state: gl_state,
         camera: camera,
