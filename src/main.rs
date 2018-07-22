@@ -391,9 +391,116 @@ fn main() {
     /* --------------------------- GAME LOOP ------------------------------- */
     while !context.gl_state.window.should_close() {
         // Check input.
-        glh::update_timers(&mut context.gl_state);
+        let elapsed_seconds = glh::update_timers(&mut context.gl_state);
+
+        // Update the game world.
+        glh::update_fps_counter(&mut context.gl_state);
 
         context.gl_state.glfw.poll_events();
+
+        // Camera control keys.
+        let mut cam_moved = false;
+        let mut move_to = math::vec3((0.0, 0.0, 0.0));
+        let mut cam_yaw = 0.0;
+        let mut cam_pitch = 0.0;
+        let mut cam_roll = 0.0;
+        match context.gl_state.window.get_key(Key::A) {
+            Action::Press | Action::Repeat => {
+                move_to.x -= context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::D) {
+            Action::Press | Action::Repeat => {
+                move_to.x += context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Q) {
+            Action::Press | Action::Repeat => {
+                move_to.y += context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::E) {
+            Action::Press | Action::Repeat => {
+                move_to.y -= context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::W) {
+            Action::Press | Action::Repeat => {
+                move_to.z -= context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::S) {
+            Action::Press | Action::Repeat => {
+                move_to.z += context.camera.speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Left) {
+            Action::Press | Action::Repeat => {
+                cam_yaw += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
+                context.camera.axis = q_yaw * &context.camera.axis;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Right) {
+            Action::Press | Action::Repeat => {
+                cam_yaw -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
+                context.camera.axis = q_yaw * &context.camera.axis;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Up) {
+            Action::Press | Action::Repeat => {
+                cam_pitch += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
+                context.camera.axis = q_pitch * &context.camera.axis;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Down) {
+            Action::Press | Action::Repeat => {
+                cam_pitch -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
+                context.camera.axis = q_pitch * &context.camera.axis;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::Z) {
+            Action::Press | Action::Repeat => {
+                cam_roll -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
+                context.camera.axis = q_roll * &context.camera.axis;
+            }
+            _ => {}
+        }
+        match context.gl_state.window.get_key(Key::C) {
+            Action::Press | Action::Repeat => {
+                cam_roll += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
+                cam_moved = true;
+                let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
+                context.camera.axis = q_roll * &context.camera.axis;
+            }
+            _ => {}
+        }
+
         match context.gl_state.window.get_key(Key::Escape) {
             Action::Press | Action::Repeat => {
                 context.gl_state.window.set_should_close(true);
@@ -401,9 +508,28 @@ fn main() {
             _ => {}
         }
 
-        // Update the game world.
-        glh::update_fps_counter(&mut context.gl_state);
-        
+        // Update view matrix.
+        if cam_moved {
+            // Recalculate local axes so we can move fwd in the direction the camera is pointing.
+            context.camera.rot_mat = Matrix4::from(context.camera.axis);
+            context.camera.fwd = context.camera.rot_mat * math::vec4((0.0, 0.0, -1.0, 0.0));
+            context.camera.rgt = context.camera.rot_mat * math::vec4((1.0, 0.0,  0.0, 0.0));
+            context.camera.up  = context.camera.rot_mat * math::vec4((0.0, 1.0,  0.0, 0.0));
+
+            context.camera.pos += math::vec3(context.camera.fwd) * -move_to.z;
+            context.camera.pos += math::vec3(context.camera.up)  *  move_to.y;
+            context.camera.pos += math::vec3(context.camera.rgt) *  move_to.x;
+            context.camera.trans_mat = Matrix4::from_translation(context.camera.pos);
+
+            context.camera.view_mat = context.camera.rot_mat * context.camera.trans_mat;
+            let gp_sp = &context.gl_state.shaders[&id];
+            let gp_view_mat_loc = gp_sp.uniforms["view_mat"];
+            unsafe {
+                gl::UseProgram(gp_sp.handle.into());
+                gl::UniformMatrix4fv(gp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+            }
+        }
+
         // Render the results.
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
