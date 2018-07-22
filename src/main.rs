@@ -67,7 +67,7 @@ struct GameState {
     entities: EntityDatabase,
 }
 
-
+// TODO: Place the vertex normals for Blinn-Phong shading.
 fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
 
@@ -82,16 +82,6 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     }
     assert!(points_vbo > 0);
 
-    let mut points_vao = 0;
-    unsafe {
-        gl::GenVertexArrays(1, &mut points_vao);
-        gl::BindVertexArray(points_vao);
-        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
-        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
-        gl::EnableVertexAttribArray(0);
-    }
-    assert!(points_vao > 0);
-
     let mut tex_coords_vbo = 0;
     unsafe {
         gl::GenBuffers(1, &mut tex_coords_vbo);
@@ -103,20 +93,21 @@ fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
     }
     assert!(tex_coords_vbo > 0);
 
-    let mut tex_coords_vao = 0;
+    let mut vao = 0;
     unsafe {
-        gl::GenVertexArrays(1, &mut tex_coords_vao);
-        gl::BindVertexArray(tex_coords_vao);
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
+        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
+        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(0);
         gl::EnableVertexAttribArray(1);
     }
-    assert!(tex_coords_vao > 0);
+    assert!(vao > 0);
 
-    // TODO: Place the vertex normals for Blinn-Phong shading.
-
-    let points_handle = BufferHandle::new(points_vbo, points_vao);
-    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, tex_coords_vao);
+    let points_handle = BufferHandle::new(points_vbo, vao);
+    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
     let model_mat = Matrix4::one();
 
     context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
@@ -257,7 +248,7 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
 }
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
-    let tex_image = load_image("assets/checkerboard2.png").unwrap();
+    let tex_image = load_image("assets/checkerboard.png").unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
