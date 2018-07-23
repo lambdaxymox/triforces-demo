@@ -61,14 +61,14 @@ impl EntityDatabase {
     }
 }
 
-struct GameState {
+struct GameContext {
     gl: glh::GLState,
     camera: Camera,
     entities: EntityDatabase,
 }
 
 // TODO: Place the vertex normals for Blinn-Phong shading.
-fn create_ground_plane_geometry(context: &mut GameState, id: EntityID) {
+fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
 
     let mut points_vbo = 0;
@@ -247,7 +247,7 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     Ok(TextureHandle::new(tex))
 }
 
-fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
+fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
     let tex_image = load_image("assets/ground_plane.png").unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
@@ -255,7 +255,7 @@ fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
     context.gl.textures.insert(id, tex);
 }
 
-fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
+fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     let sp = glh::create_program_from_files(
         &context.gl, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
     );
@@ -284,7 +284,7 @@ fn create_ground_plane_shaders(context: &mut GameState, id: EntityID) {
     context.gl.shaders.insert(id, shader);
 }
 
-fn create_ground_plane_uniforms(context: &GameState, id: EntityID) {
+fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.gl.shaders[&id];
     unsafe {
         gl::UseProgram(shader.handle.into());
@@ -313,7 +313,7 @@ fn create_camera(width: f32, height: f32) -> Camera {
     Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
 }
 
-fn reset_camera_to_default(context: &mut GameState) {
+fn reset_camera_to_default(context: &mut GameContext) {
     let width = context.gl.width as f32;
     let height = context.gl.height as f32;
     context.camera = create_camera(width, height);
@@ -326,7 +326,7 @@ fn reset_camera_to_default(context: &mut GameState) {
 /// whenever the size of the viewport changes.
 ///
 #[inline]
-fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u32) {
+fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height: u32) {
     context.gl.width = width;
     context.gl.height = height;
 
@@ -337,7 +337,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameState, width: u32, height: u
     ));
 }
 
-fn init_game_state(id: EntityID) -> GameState {
+fn init_game_state(id: EntityID) -> GameContext {
     let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
@@ -348,7 +348,7 @@ fn init_game_state(id: EntityID) -> GameState {
     };
 
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
-    let mut context = GameState {
+    let mut context = GameContext {
         gl: gl_state,
         camera: camera,
         entities: EntityDatabase::new(),
