@@ -352,7 +352,7 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
     ShaderLog { index: shader_index, log: log }
 }
 
-pub fn create_shader(context: &GLState, file_name: &str, shader: &mut GLuint, gl_type: GLenum) -> bool {
+pub fn create_shader(context: &GLState, file_name: &str, gl_type: GLenum) -> Result<GLuint, String> {
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
@@ -360,7 +360,7 @@ pub fn create_shader(context: &GLState, file_name: &str, shader: &mut GLuint, gl
         Ok(val) => val,
         Err(st) => {
             log_err!(context.logger, &st);
-            return false;
+            return Err(st);
         }
     };
 
@@ -371,28 +371,27 @@ pub fn create_shader(context: &GLState, file_name: &str, shader: &mut GLuint, gl
         );
     }
 
-    *shader = unsafe { gl::CreateShader(gl_type) };
+    let shader = unsafe { gl::CreateShader(gl_type) };
     let p = shader_string.as_ptr() as *const GLchar;
     unsafe {
-        gl::ShaderSource(*shader, 1, &p, ptr::null());
-        gl::CompileShader(*shader);
+        gl::ShaderSource(shader, 1, &p, ptr::null());
+        gl::CompileShader(shader);
     }
 
     // Check for shader compile errors.
     let mut params = -1;
     unsafe {
-        gl::GetShaderiv(*shader, gl::COMPILE_STATUS, &mut params);
+        gl::GetShaderiv(shader, gl::COMPILE_STATUS, &mut params);
     }
 
     if params != gl::TRUE as i32 {
-        log_err!(context.logger, "ERROR: GL shader index {} did not compile\n", *shader);
-        log_err!(context.logger, "{}", shader_info_log(*shader));
-        
-        return false;
+        let log = shader_info_log(shader);
+        log_err!(context.logger, "ERROR: GL shader index {} did not compile\n{}", shader, log);
+        return Err(format!("{}", log));
     }
-    log!(context.logger, "Shader compiled with index {}\n", *shader);
+    log!(context.logger, "Shader compiled with index {}\n", shader);
     
-    true
+    Ok(shader)
 }
 
 
@@ -489,12 +488,10 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
 /// Compile and link a shader program directly from the files.
 ///
 pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> GLuint {
-    let mut vertex_shader = 0;
-    let mut fragment_shader = 0;
     let mut program = 0;
     
-    create_shader(context, vert_file_name, &mut vertex_shader, gl::VERTEX_SHADER);
-    create_shader(context, frag_file_name, &mut fragment_shader, gl::FRAGMENT_SHADER);
+    let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER).unwrap();
+    let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER).unwrap();
     create_program(context, vertex_shader, fragment_shader, &mut program);
 
     program
