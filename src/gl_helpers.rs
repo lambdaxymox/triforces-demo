@@ -455,32 +455,32 @@ pub fn is_program_valid(logger: &Logger, sp: GLuint) -> bool {
 ///
 /// Compile and link a shader program.
 ///
-pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint, program: &mut GLuint) -> bool {
+pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, String> {
     unsafe {
-        *program = gl::CreateProgram();
+        let program = gl::CreateProgram();
         log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n", 
             program, vertex_shader, fragment_shader
         );
-        gl::AttachShader(*program, vertex_shader);
-        gl::AttachShader(*program, fragment_shader);
+        gl::AttachShader(program, vertex_shader);
+        gl::AttachShader(program, fragment_shader);
 
         // Link the shader program. If binding input attributes do that before linking.
-        gl::LinkProgram(*program);
+        gl::LinkProgram(program);
         
         let mut params = -1;
-        gl::GetProgramiv(*program, gl::LINK_STATUS, &mut params);
+        gl::GetProgramiv(program, gl::LINK_STATUS, &mut params);
         if params != gl::TRUE as i32 {
-            log_err!(context.logger, "ERROR: could not link shader programme GL index {}\n", *program);
-            log_err!(context.logger, "{}", program_info_log(*program));
+            log_err!(context.logger, "ERROR: could not link shader programme GL index {}\n", program);
+            log_err!(context.logger, "{}", program_info_log(program));
         
-            return false;
+            return Err(String::new());
         }
-        is_program_valid(&context.logger, *program);
-        // Delete shaders here to free memory
+        is_program_valid(&context.logger, program);
+        // Delete shaders here to free memory.
         gl::DeleteShader(vertex_shader);
         gl::DeleteShader(fragment_shader);
         
-        true
+        Ok(program)
     }
 }
 
@@ -488,11 +488,9 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
 /// Compile and link a shader program directly from the files.
 ///
 pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> GLuint {
-    let mut program = 0;
-    
     let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER).unwrap();
     let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER).unwrap();
-    create_program(context, vertex_shader, fragment_shader, &mut program);
+    let program = create_program(context, vertex_shader, fragment_shader).unwrap();
 
     program
 }
