@@ -352,7 +352,7 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
     ShaderLog { index: shader_index, log: log }
 }
 
-pub fn create_shader(context: &GLState, file_name: &str, gl_type: GLenum) -> Result<GLuint, ()> {
+pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result<GLuint, ()> {
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
@@ -371,7 +371,7 @@ pub fn create_shader(context: &GLState, file_name: &str, gl_type: GLenum) -> Res
         );
     }
 
-    let shader = unsafe { gl::CreateShader(gl_type) };
+    let shader = unsafe { gl::CreateShader(kind) };
     let p = shader_string.as_ptr() as *const GLchar;
     unsafe {
         gl::ShaderSource(shader, 1, &p, ptr::null());
@@ -431,7 +431,8 @@ pub fn program_info_log(index: GLuint) -> ProgramLog {
 }
 
 ///
-/// Validate a shader program.
+/// Validate a shader program. Returns true if OpenGL reports that a shader
+/// contains no errors.
 ///
 pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
     let mut params = -1;
