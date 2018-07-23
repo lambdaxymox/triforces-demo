@@ -286,7 +286,7 @@ pub fn update_fps_counter(context: &mut GLState) {
     if elapsed_seconds > 0.5 {
         context.framerate_time_seconds = current_time_seconds;
         let fps = context.frame_count as f64 / elapsed_seconds;
-        context.window.set_title(&format!("Metroid DEMO @ {:.2} FPS", fps));
+        context.window.set_title(&format!("Triforces DEMO @ {:.2} FPS", fps));
         context.frame_count = 0;
     }
 
@@ -412,16 +412,16 @@ impl fmt::Display for ProgramLog {
 }
 
 ///
-/// Query the shader program information log generated during shader compilation 
+/// Query the shader program information log generated during shader compilation
 /// from OpenGL.
-/// 
+///
 pub fn program_info_log(index: GLuint) -> ProgramLog {
     let mut actual_length = 0;
     let mut raw_log = [0 as i8; 2048];
     unsafe {
         gl::GetProgramInfoLog(index, raw_log.len() as i32, &mut actual_length, &mut raw_log[0]);
     }
-    
+
     let mut log = String::new();
     for i in 0..actual_length as usize {
         log.push(raw_log[i] as u8 as char);
@@ -433,7 +433,7 @@ pub fn program_info_log(index: GLuint) -> ProgramLog {
 ///
 /// Validate a shader program.
 ///
-pub fn is_program_valid(logger: &Logger, sp: GLuint) -> bool {
+pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
     let mut params = -1;
     unsafe {
         gl::ValidateProgram(sp);
@@ -456,13 +456,13 @@ pub fn is_program_valid(logger: &Logger, sp: GLuint) -> bool {
 /// Compile and link a shader program.
 ///
 pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ()> {
-    let program =unsafe {  gl::CreateProgram() };
+    let program =unsafe { gl::CreateProgram() };
     log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n",
         program, vertex_shader, fragment_shader
     );
 
     unsafe {
-         gl::AttachShader(program, vertex_shader);
+        gl::AttachShader(program, vertex_shader);
         gl::AttachShader(program, fragment_shader);
 
         // Link the shader program. If binding input attributes do that before linking.
@@ -478,7 +478,7 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
         log_err!(context.logger, "{}", program_info_log(program));
         return Err(());
     }
-    is_program_valid(&context.logger, program);
+    validate_shader_program(&context.logger, program);
     unsafe {
         // Delete shaders here to free memory.
         gl::DeleteShader(vertex_shader);
