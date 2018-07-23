@@ -248,7 +248,7 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
 }
 
 fn create_ground_plane_texture(context: &mut GameState, id: EntityID) {
-    let tex_image = load_image("assets/checkerboard.png").unwrap();
+    let tex_image = load_image("assets/ground_plane.png").unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
