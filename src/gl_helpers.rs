@@ -339,7 +339,10 @@ impl fmt::Display for ShaderLog {
 /// 
 pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
     let mut actual_length = 0;
-    let mut raw_log: [i8; 2048] = [0; 2048];
+    unsafe {
+        gl::GetShaderiv(shader_index, gl::INFO_LOG_LENGTH, &mut actual_length);
+    }
+    let mut raw_log = vec![0 as i8; actual_length as usize];
     unsafe {
         gl::GetShaderInfoLog(shader_index, raw_log.len() as i32, &mut actual_length, &mut raw_log[0]);
     }
@@ -417,7 +420,10 @@ impl fmt::Display for ProgramLog {
 ///
 pub fn program_info_log(index: GLuint) -> ProgramLog {
     let mut actual_length = 0;
-    let mut raw_log = [0 as i8; 2048];
+    unsafe {
+        gl::GetProgramiv(index, gl::INFO_LOG_LENGTH, &mut actual_length);
+    }
+    let mut raw_log = vec![0 as i8; actual_length as usize];
     unsafe {
         gl::GetProgramInfoLog(index, raw_log.len() as i32, &mut actual_length, &mut raw_log[0]);
     }
