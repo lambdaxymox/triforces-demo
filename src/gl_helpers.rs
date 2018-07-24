@@ -8,6 +8,7 @@ use std::fs::File;
 use std::io::{Read, BufReader};
 use std::sync::mpsc::Receiver;
 use std::ptr;
+use std::error;
 use std::fmt;
 use std::collections::HashMap;
 
@@ -293,13 +294,31 @@ pub fn update_fps_counter(context: &mut GLState) {
     context.frame_count += 1;
 }
 
+#[derive(Clone, Debug)]
+pub enum ParseError {
+    ShaderNotFound(String),
+    CouldNotReadShader(String),
+}
 
-pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, String> {
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &ParseError::ShaderNotFound(ref file_name) => {
+                write!(f, "Could not open the shader file for reading: {}", file_name.to_string())
+            }
+            &ParseError::CouldNotReadShader(ref file_name) => {
+                write!(f, "The shader file exists, but there was an error in reading it: {}", file_name.to_string())
+            }
+        }
+    }
+}
+
+pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, ParseError> {
     shader_str[0] = 0;
     let file = match File::open(file_name) {
         Ok(val) => val,
         Err(_) => {
-            return Err(format!("ERROR: opening file for reading: {}\n", file_name));
+            return Err(ParseError::ShaderNotFound(file_name.to_string()));
         }
     };
 
@@ -307,7 +326,7 @@ pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, Str
     let bytes_read = match reader.read(shader_str) {
         Ok(val) => val,
         Err(_) => {
-            return Err(format!("ERROR: reading shader file {}\n", file_name));
+            return Err(ParseError::CouldNotReadShader(file_name.to_string()));
         }
     };
 
@@ -361,8 +380,8 @@ pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
     let bytes_read = match parse_shader(file_name, &mut shader_string) {
         Ok(val) => val,
-        Err(st) => {
-            log_err!(context.logger, &st);
+        Err(e) => {
+            log_err!(context.logger, &format!("{}", e));
             return Err(());
         }
     };
