@@ -128,6 +128,26 @@ impl<'a> From<&'a image::Image<u8>> for TexImage2D {
     }
 }
 
+
+fn create_camera(width: f32, height: f32) -> Camera {
+    let near = 0.1;
+    let far = 100.0;
+    let fov = 67.0;
+    let aspect = width / height;
+
+    let cam_speed: GLfloat = 5.0;
+    let cam_yaw_speed: GLfloat = 50.0;
+
+    let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
+    let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
+    let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
+    let cam_pos = math::vec3((0.0, 0.0, 20.0));
+
+    let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
+
+    Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
+}
+
 ///
 /// Load texture image.
 ///
@@ -340,36 +360,51 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
     context.entities.meshes.insert(id, mesh);
 }
 
-fn create_triforce_shaders() {
+fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
+    let sp = glh::create_program_from_files(
+        &context.gl, "shaders/triangle.vert.glsl", "shaders/triangle.frag.glsl"
+    ).unwrap();
+    assert!(sp > 0);
 
+    let sp_model_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)
+    };
+    assert!(sp_model_mat_loc > -1);
+
+    let sp_view_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8)
+    };
+    assert!(sp_view_mat_loc > -1);
+
+    let sp_proj_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8)
+    };
+    assert!(sp_proj_mat_loc > -1);
+
+    let mut shader = ShaderProgram::new(ShaderProgramHandle::from(sp));
+    shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
+    shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
+    shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
+
+    context.gl.shaders.insert(id, shader);
 }
 
-fn create_triforce_texture() {
+fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
+    let tex_image = load_image("assets/triangle.png").unwrap();
+    let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
+    context.entities.textures.insert(id, tex_image);
+    context.gl.textures.insert(id, tex);
 }
 
-fn create_triforce_uniforms() {
-
-}
-
-
-fn create_camera(width: f32, height: f32) -> Camera {
-    let near = 0.1;
-    let far = 100.0;
-    let fov = 67.0;
-    let aspect = width / height;
-
-    let cam_speed: GLfloat = 5.0;
-    let cam_yaw_speed: GLfloat = 50.0;
-
-    let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
-    let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
-    let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 20.0));
-    
-    let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
-
-    Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
+fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
+    let shader = &context.gl.shaders[&id];
+    unsafe {
+        gl::UseProgram(shader.handle.into());
+        gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
+        gl::UniformMatrix4fv(shader.uniforms["view_mat"].into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+        gl::UniformMatrix4fv(shader.uniforms["proj_mat"].into(), 1, gl::FALSE, context.camera.proj_mat.as_ptr());
+    }
 }
 
 fn reset_camera_to_default(context: &mut GameContext) {
@@ -422,11 +457,11 @@ fn init_game_state(id: EntityID) -> GameContext {
 }
 
 fn main() {
-    let id = EntityID::new(0);
-    let mut context = init_game_state(id);
+    let ids = [EntityID::new(0), EntityID::new(1)];
+    let mut context = init_game_state(ids[0]);
 
     unsafe {
-        gl::UseProgram(context.gl.shaders[&id].handle.into());
+        gl::UseProgram(context.gl.shaders[&ids[0]].handle.into());
     }
 
     unsafe {
@@ -591,7 +626,7 @@ fn main() {
             context.camera.trans_mat = trans_mat_inv.inverse();
             context.camera.view_mat = context.camera.rot_mat * context.camera.trans_mat;
 
-            let gp_sp = &context.gl.shaders[&id];
+            let gp_sp = &context.gl.shaders[&ids[0]];
             let gp_view_mat_loc = gp_sp.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(gp_sp.handle.into());
@@ -613,11 +648,11 @@ fn main() {
         unsafe {
             gl::Viewport(0, 0, context.gl.width as i32, context.gl.height as i32);
 
-            gl::UseProgram(context.gl.shaders[&id].handle.into());
+            gl::UseProgram(context.gl.shaders[&ids[0]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
-            gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&id].into());
-            gl::BindVertexArray(context.gl.buffers[&id][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&id].point_count as i32);
+            gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[0]].into());
+            gl::BindVertexArray(context.gl.buffers[&ids[0]][0].vao);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].point_count as i32);
         }
         
         // Send the results to the output.
