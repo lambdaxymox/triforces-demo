@@ -353,7 +353,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
 
     let points_handle = BufferHandle::new(points_vbo, vao);
     let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
-    let model_mat = Matrix4::one();
+    let model_mat = Matrix4::from_translation(math::vec3((0.0, 0.0, 1.0)));
 
     context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
     context.entities.model_matrices.insert(id, model_mat);
