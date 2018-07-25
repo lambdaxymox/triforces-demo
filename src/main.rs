@@ -431,7 +431,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
     ));
 }
 
-fn init_game_state(id: EntityID) -> GameContext {
+fn init_game_state(ids: &[EntityID]) -> GameContext {
     let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
@@ -448,17 +448,17 @@ fn init_game_state(id: EntityID) -> GameContext {
         entities: EntityDatabase::new(),
     };
 
-    create_ground_plane_geometry(&mut context, id);
-    create_ground_plane_shaders(&mut context, id);
-    create_ground_plane_uniforms(&context, id);
-    create_ground_plane_texture(&mut context, id);
+    create_ground_plane_geometry(&mut context, ids[0]);
+    create_ground_plane_shaders(&mut context, ids[0]);
+    create_ground_plane_uniforms(&context, ids[0]);
+    create_ground_plane_texture(&mut context, ids[0]);
 
     context
 }
 
 fn main() {
     let ids = [EntityID::new(0), EntityID::new(1)];
-    let mut context = init_game_state(ids[0]);
+    let mut context = init_game_state(&ids);
 
     unsafe {
         gl::UseProgram(context.gl.shaders[&ids[0]].handle.into());
