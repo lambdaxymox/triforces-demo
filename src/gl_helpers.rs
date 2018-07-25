@@ -295,7 +295,7 @@ pub fn update_fps_counter(context: &mut GLState) {
 }
 
 #[derive(Clone, Debug)]
-pub enum ShaderCompileError {
+pub enum ShaderCompilationError {
     ShaderNotFound(String),
     CouldNotParseShader(String),
     CouldNotCompileShader(String),
@@ -303,34 +303,34 @@ pub enum ShaderCompileError {
     ShaderValidationFailed,
 }
 
-impl fmt::Display for ShaderCompileError {
+impl fmt::Display for ShaderCompilationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &ShaderCompileError::ShaderNotFound(ref file_name) => {
+            &ShaderCompilationError::ShaderNotFound(ref file_name) => {
                 write!(f, "Could not open the shader file for reading: {}", file_name.to_string())
             }
-            &ShaderCompileError::CouldNotParseShader(ref file_name) => {
+            &ShaderCompilationError::CouldNotParseShader(ref file_name) => {
                 write!(f, "The shader file exists, but there was an error in reading it: {}", file_name.to_string())
             }
-            &ShaderCompileError::CouldNotCompileShader(ref file_name) => {
+            &ShaderCompilationError::CouldNotCompileShader(ref file_name) => {
                 write!(f, "The shader could not be compiled: {}", file_name.to_string())
             }
-            &ShaderCompileError::CouldNotLinkShader => {
+            &ShaderCompilationError::CouldNotLinkShader => {
                 write!(f, "The shader program could not be linked.")
             }
-            &ShaderCompileError::ShaderValidationFailed => {
+            &ShaderCompilationError::ShaderValidationFailed => {
                 write!(f, "Shader validation failed.")
             }
         }
     }
 }
 
-pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, ShaderCompileError> {
+pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, ShaderCompilationError> {
     shader_str[0] = 0;
     let file = match File::open(file_name) {
         Ok(val) => val,
         Err(_) => {
-            return Err(ShaderCompileError::ShaderNotFound(file_name.to_string()));
+            return Err(ShaderCompilationError::ShaderNotFound(file_name.to_string()));
         }
     };
 
@@ -338,7 +338,7 @@ pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, Sha
     let bytes_read = match reader.read(shader_str) {
         Ok(val) => val,
         Err(_) => {
-            return Err(ShaderCompileError::CouldNotParseShader(file_name.to_string()));
+            return Err(ShaderCompilationError::CouldNotParseShader(file_name.to_string()));
         }
     };
 
@@ -388,7 +388,7 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
 
 
 
-pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompileError> {
+pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
@@ -423,7 +423,7 @@ pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result
     if params != gl::TRUE as i32 {
         let log = shader_info_log(shader);
         log_err!(context.logger, "ERROR: GL shader index {} did not compile\n{}", shader, log);
-        return Err(ShaderCompileError::CouldNotCompileShader(file_name.to_string()));
+        return Err(ShaderCompilationError::CouldNotCompileShader(file_name.to_string()));
     }
     log!(context.logger, "Shader compiled with index {}\n", shader);
     
@@ -495,7 +495,7 @@ pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
 ///
 /// Compile and link a shader program.
 ///
-pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompileError> {
+pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
     let program =unsafe { gl::CreateProgram() };
     log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n",
         program, vertex_shader, fragment_shader
@@ -516,11 +516,11 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
     if params != gl::TRUE as i32 {
         log_err!(context.logger, "ERROR: could not link shader programme GL index {}\n", program);
         log_err!(context.logger, "{}", program_info_log(program));
-        return Err(ShaderCompileError::CouldNotLinkShader);
+        return Err(ShaderCompilationError::CouldNotLinkShader);
     }
 
     if !validate_shader_program(&context.logger, program) {
-        return Err(ShaderCompileError::ShaderValidationFailed);
+        return Err(ShaderCompilationError::ShaderValidationFailed);
     }
     unsafe {
         // Delete shaders here to free memory.
