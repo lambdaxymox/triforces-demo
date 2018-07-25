@@ -452,6 +452,10 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     create_ground_plane_shaders(&mut context, ids[0]);
     create_ground_plane_uniforms(&context, ids[0]);
     create_ground_plane_texture(&mut context, ids[0]);
+    create_triforce_geometry(&mut context, ids[1]);
+    create_triforce_shaders(&mut context, ids[1]);
+    create_triforce_uniforms(&mut context, ids[1]);
+    create_triforce_texture(&mut context, ids[1]);
 
     context
 }
@@ -459,10 +463,6 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
 fn main() {
     let ids = [EntityID::new(0), EntityID::new(1)];
     let mut context = init_game_state(&ids);
-
-    unsafe {
-        gl::UseProgram(context.gl.shaders[&ids[0]].handle.into());
-    }
 
     unsafe {
         // Enable depth testing.
@@ -648,11 +648,19 @@ fn main() {
         unsafe {
             gl::Viewport(0, 0, context.gl.width as i32, context.gl.height as i32);
 
+            // Render the ground plane.
             gl::UseProgram(context.gl.shaders[&ids[0]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[0]].into());
             gl::BindVertexArray(context.gl.buffers[&ids[0]][0].vao);
             gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].point_count as i32);
+
+            // Render the triforce.
+            gl::UseProgram(context.gl.shaders[&ids[1]].handle.into());
+            gl::ActiveTexture(gl::TEXTURE0);
+            gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[1]].into());
+            gl::BindVertexArray(context.gl.buffers[&ids[1]][0].vao);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[1]].point_count as i32);
         }
         
         // Send the results to the output.
