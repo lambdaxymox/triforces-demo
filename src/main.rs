@@ -141,7 +141,7 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
     let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
     let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 20.0));
+    let cam_pos = math::vec3((0.0, 0.0, 12.0));
 
     let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
 
@@ -353,7 +353,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
 
     let points_handle = BufferHandle::new(points_vbo, vao);
     let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
-    let model_mat = Matrix4::from_translation(math::vec3((0.0, 0.0, 1.0)));
+    let model_mat = Matrix4::from_translation(math::vec3((0.0, 0.0, 3.0)));
 
     context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
     context.entities.model_matrices.insert(id, model_mat);
