@@ -387,7 +387,6 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
 }
 
 
-
 pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
@@ -534,10 +533,10 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
 ///
 /// Compile and link a shader program directly from the files.
 ///
-pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> GLuint {
-    let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER).unwrap_or(0);
-    let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER).unwrap_or(0);
-    let program = create_program(context, vertex_shader, fragment_shader).unwrap_or(0);
+pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> Result<GLuint, ShaderCompilationError> {
+    let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER)?;
+    let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER)?;
+    let program = create_program(context, vertex_shader, fragment_shader)?;
 
-    program
+    Ok(program)
 }

@@ -258,7 +258,7 @@ fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
 fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     let sp = glh::create_program_from_files(
         &context.gl, "shaders/ground_plane.vert.glsl", "shaders/ground_plane.frag.glsl"
-    );
+    ).unwrap();
     assert!(sp > 0);
 
     let sp_model_mat_loc = unsafe {
