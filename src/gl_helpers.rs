@@ -495,7 +495,7 @@ pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
 /// Compile and link a shader program.
 ///
 pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
-    let program =unsafe { gl::CreateProgram() };
+    let program = unsafe { gl::CreateProgram() };
     log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n",
         program, vertex_shader, fragment_shader
     );

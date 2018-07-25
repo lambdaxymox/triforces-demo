@@ -67,55 +67,6 @@ struct GameContext {
     entities: EntityDatabase,
 }
 
-// TODO: Place the vertex normals for Blinn-Phong shading.
-fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
-
-    let mut points_vbo = 0;
-    unsafe {
-        gl::GenBuffers(1, &mut points_vbo);
-        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
-        gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
-            mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
-        );
-    }
-    assert!(points_vbo > 0);
-
-    let mut tex_coords_vbo = 0;
-    unsafe {
-        gl::GenBuffers(1, &mut tex_coords_vbo);
-        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
-        gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
-            mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
-        )
-    }
-    assert!(tex_coords_vbo > 0);
-
-    let mut vao = 0;
-    unsafe {
-        gl::GenVertexArrays(1, &mut vao);
-        gl::BindVertexArray(vao);
-        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
-        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
-        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
-        gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
-        gl::EnableVertexAttribArray(0);
-        gl::EnableVertexAttribArray(1);
-    }
-    assert!(vao > 0);
-
-    let points_handle = BufferHandle::new(points_vbo, vao);
-    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
-    let model_mat = Matrix4::one();
-
-    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
-    context.entities.model_matrices.insert(id, model_mat);
-    context.entities.meshes.insert(id, mesh);
-}
-
-
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 struct Rgba {
     r: u8,
@@ -245,6 +196,54 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     }
 
     Ok(TextureHandle::new(tex))
+}
+
+// TODO: Place the vertex normals for Blinn-Phong shading.
+fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
+    let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
+
+    let mut points_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut points_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        );
+    }
+    assert!(points_vbo > 0);
+
+    let mut tex_coords_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut tex_coords_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        )
+    }
+    assert!(tex_coords_vbo > 0);
+
+    let mut vao = 0;
+    unsafe {
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
+        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
+        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(0);
+        gl::EnableVertexAttribArray(1);
+    }
+    assert!(vao > 0);
+
+    let points_handle = BufferHandle::new(points_vbo, vao);
+    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
+    let model_mat = Matrix4::one();
+
+    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
+    context.entities.model_matrices.insert(id, model_mat);
+    context.entities.meshes.insert(id, mesh);
 }
 
 fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
