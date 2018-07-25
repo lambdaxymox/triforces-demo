@@ -632,6 +632,13 @@ fn main() {
                 gl::UseProgram(gp_sp.handle.into());
                 gl::UniformMatrix4fv(gp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
             }
+
+            let tri_sp = &context.gl.shaders[&ids[1]];
+            let tri_sp_view_mat_loc = tri_sp.uniforms["view_mat"];
+            unsafe {
+                gl::UseProgram(tri_sp.handle.into());
+                gl::UniformMatrix4fv(tri_sp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+            }
         }
 
         // Render the results.
