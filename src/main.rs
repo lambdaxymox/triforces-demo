@@ -293,6 +293,66 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
+fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
+    let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
+
+    let mut points_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut points_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        );
+    }
+    assert!(points_vbo > 0);
+
+    let mut tex_coords_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut tex_coords_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        )
+    }
+    assert!(tex_coords_vbo > 0);
+
+    let mut vao = 0;
+    unsafe {
+        gl::GenVertexArrays(1, &mut vao);
+        gl::BindVertexArray(vao);
+        gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
+        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
+        gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(0);
+        gl::EnableVertexAttribArray(1);
+    }
+    assert!(vao > 0);
+
+    let points_handle = BufferHandle::new(points_vbo, vao);
+    let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
+    let model_mat = Matrix4::one();
+
+    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
+    context.entities.model_matrices.insert(id, model_mat);
+    context.entities.meshes.insert(id, mesh);
+}
+
+fn create_triforce_shaders() {
+
+}
+
+fn create_triforce_texture() {
+
+}
+
+fn create_triforce_uniforms() {
+
+}
+
+
 fn create_camera(width: f32, height: f32) -> Camera {
     let near = 0.1;
     let far = 100.0;
