@@ -141,7 +141,7 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
     let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
     let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 12.0));
+    let cam_pos = math::vec3((0.0, 0.0, 10.0));
 
     let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
 
@@ -641,18 +641,16 @@ fn main() {
             }
         }
 
-        // Render the results.
-        unsafe {
-            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-            gl::ClearColor(0.2, 0.2, 0.2, 1.0);
-        }
-
         let (width, height) = context.gl.window.get_framebuffer_size();
         if (width != context.gl.width as i32) && (height != context.gl.height as i32) {
             glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
         }
 
+        // Render the results.
         unsafe {
+            // Clear the screen.
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+            gl::ClearColor(0.2, 0.2, 0.2, 1.0);
             gl::Viewport(0, 0, context.gl.width as i32, context.gl.height as i32);
 
             // Render the ground plane.
