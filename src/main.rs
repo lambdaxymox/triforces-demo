@@ -318,6 +318,12 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
     let shader = context.gl.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, "v_pos".as_ptr() as *const i8) };
+    assert!(points_loc > -1);
+    let points_loc = points_loc as u32;
+
+    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, "v_tex".as_ptr() as *const i8) };
+    assert!(tex_coords_loc > -1);
+    let tex_coords_loc = tex_coords_loc as u32;
 
     let mut points_vbo = 0;
     unsafe {
@@ -346,11 +352,11 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
         gl::GenVertexArrays(1, &mut vao);
         gl::BindVertexArray(vao);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
-        gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::VertexAttribPointer(points_loc, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(points_loc);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
-        gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
-        gl::EnableVertexAttribArray(0);
-        gl::EnableVertexAttribArray(1);
+        gl::VertexAttribPointer(tex_coords_loc, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(tex_coords_loc);
     }
     assert!(vao > 0);
 
