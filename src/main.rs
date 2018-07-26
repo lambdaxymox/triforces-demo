@@ -315,6 +315,9 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
     let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
+    let shader = context.gl.shaders[&id].handle.into();
+
+    let points_loc = unsafe { gl::GetAttribLocation(shader, "v_pos".as_ptr() as *const i8) };
 
     let mut points_vbo = 0;
     unsafe {
@@ -448,12 +451,12 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
         entities: EntityDatabase::new(),
     };
 
-    create_ground_plane_geometry(&mut context, ids[0]);
     create_ground_plane_shaders(&mut context, ids[0]);
+    create_ground_plane_geometry(&mut context, ids[0]);
     create_ground_plane_uniforms(&context, ids[0]);
     create_ground_plane_texture(&mut context, ids[0]);
-    create_triforce_geometry(&mut context, ids[1]);
     create_triforce_shaders(&mut context, ids[1]);
+    create_triforce_geometry(&mut context, ids[1]);
     create_triforce_uniforms(&mut context, ids[1]);
     create_triforce_texture(&mut context, ids[1]);
 
