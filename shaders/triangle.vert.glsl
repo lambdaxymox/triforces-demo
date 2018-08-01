@@ -2,8 +2,7 @@
 
 in layout (location = 0) vec3 v_pos;
 in layout (location = 1) vec2 v_tex;
-in layout (location = 2) mat4 model_mat;
-uniform mat4 proj_mat, view_mat;
+uniform mat4 proj_mat, view_mat, model_mat;
 out vec2 tex_coord;
 
 

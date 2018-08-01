@@ -313,7 +313,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
-fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
+fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
     let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
@@ -324,10 +324,6 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
     let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, "v_tex".as_ptr() as *const i8) };
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
-
-    let model_mat_loc = unsafe { gl::GetAttribLocation(shader, "model_mat".as_ptr() as *const i8) };
-    assert!(model_mat_loc > -1);
-    let model_mat_loc = model_mat_loc as u32;
 
     let mut points_vbo = 0;
     unsafe {
@@ -364,39 +360,11 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID) {
     }
     assert!(vao > 0);
 
-    let model_mats = vec![
-        Matrix4::from_translation(math::vec3(( 0.0, -0.5, 3.0))),
-        Matrix4::from_translation(math::vec3((-0.5,  0.5, 3.0))),
-        Matrix4::from_translation(math::vec3(( 0.5,  0.5, 3.0))),
-    ];
-    let mut model_mats_vbo = 0;
-    unsafe {
-        gl::GenBuffers(1, &mut model_mats_vbo);
-        gl::BindBuffer(gl::ARRAY_BUFFER, model_mats_vbo);
-        gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<Matrix4>() * model_mats.len()) as GLsizeiptr,
-            model_mats.as_ptr() as *const GLvoid, gl::STATIC_DRAW
-        );
-    }
-    assert!(model_mats_vbo > 0);
-
-    for i in 0..model_mats.len() {
-        unsafe {
-            gl::VertexAttribPointer(
-                model_mat_loc + i as u32, 3, gl::FLOAT, gl::FALSE,
-                mem::size_of::<Matrix4>() as GLint, model_mats[i].as_ptr() as *const GLvoid
-            );
-            gl::EnableVertexAttribArray(model_mat_loc + i as u32);
-            gl::VertexAttribDivisor(model_mat_loc + i as u32, 1);
-        }
-    }
-
     let points_handle = BufferHandle::new(points_vbo, vao);
     let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
 
-
     context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
-    context.entities.model_matrices.insert(id, model_mats[0]);
+    context.entities.model_matrices.insert(id, model_mat);
     context.entities.meshes.insert(id, mesh);
 }
 
@@ -406,10 +374,10 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     ).unwrap();
     assert!(sp > 0);
 
-    //let sp_model_mat_loc = unsafe {
-    //    gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)
-    //};
-    //assert!(sp_model_mat_loc > -1);
+    let sp_model_mat_loc = unsafe {
+        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)
+    };
+    assert!(sp_model_mat_loc > -1);
 
     let sp_view_mat_loc = unsafe {
         gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8)
@@ -422,7 +390,7 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     assert!(sp_proj_mat_loc > -1);
 
     let mut shader = ShaderProgram::new(ShaderProgramHandle::from(sp));
-    //shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
+    shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
     shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
     shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
 
@@ -441,7 +409,7 @@ fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.gl.shaders[&id];
     unsafe {
         gl::UseProgram(shader.handle.into());
-        //gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
+        gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
         gl::UniformMatrix4fv(shader.uniforms["view_mat"].into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
         gl::UniformMatrix4fv(shader.uniforms["proj_mat"].into(), 1, gl::FALSE, context.camera.proj_mat.as_ptr());
     }
