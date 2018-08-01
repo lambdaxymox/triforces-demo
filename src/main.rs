@@ -456,20 +456,26 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
         entities: EntityDatabase::new(),
     };
 
+    let model_mats = [
+        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((0.0, 0.5, 3.0))),
+        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((-0.5, -0.5, 3.0))),
+        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((0.5, -0.5, 3.0))),
+    ];
+
     create_ground_plane_shaders(&mut context, ids[0]);
     create_ground_plane_geometry(&mut context, ids[0]);
     create_ground_plane_uniforms(&context, ids[0]);
     create_ground_plane_texture(&mut context, ids[0]);
     create_triforce_shaders(&mut context, ids[1]);
-    create_triforce_geometry(&mut context, ids[1], Matrix4::from_translation(math::vec3((0.0, -0.5, 3.0))));
+    create_triforce_geometry(&mut context, ids[1], model_mats[0]);
     create_triforce_uniforms(&mut context, ids[1]);
     create_triforce_texture(&mut context, ids[1]);
     create_triforce_shaders(&mut context, ids[2]);
-    create_triforce_geometry(&mut context, ids[2], Matrix4::from_translation(math::vec3((-0.5, 0.5, 3.0))));
+    create_triforce_geometry(&mut context, ids[2], model_mats[1]);
     create_triforce_uniforms(&mut context, ids[2]);
     create_triforce_texture(&mut context, ids[2]);
     create_triforce_shaders(&mut context, ids[3]);
-    create_triforce_geometry(&mut context, ids[3], Matrix4::from_translation(math::vec3((0.5, 0.5, 3.0))));
+    create_triforce_geometry(&mut context, ids[3], model_mats[2]);
     create_triforce_uniforms(&mut context, ids[3]);
     create_triforce_texture(&mut context, ids[3]);
 
