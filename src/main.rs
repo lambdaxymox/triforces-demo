@@ -461,7 +461,7 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     create_ground_plane_uniforms(&context, ids[0]);
     create_ground_plane_texture(&mut context, ids[0]);
     create_triforce_shaders(&mut context, ids[1]);
-    create_triforce_geometry(&mut context, ids[1]);
+    create_triforce_geometry(&mut context, ids[1], Matrix4::from_translation(math::vec3((0.0, 0.0, 3.0))));
     create_triforce_uniforms(&mut context, ids[1]);
     create_triforce_texture(&mut context, ids[1]);
 
