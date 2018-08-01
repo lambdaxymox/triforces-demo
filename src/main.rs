@@ -424,6 +424,9 @@ fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
+///
+/// Reset the position of the camera to the default position and orientation.
+///
 fn reset_camera_to_default(context: &mut GameContext) {
     let width = context.gl.width as f32;
     let height = context.gl.height as f32;
