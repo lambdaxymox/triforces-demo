@@ -23,7 +23,11 @@ use obj_parser as obj;
 use simple_cgmath as math;
 
 use camera::Camera;
-use component::{BufferHandle, EntityID, ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource, TextureHandle};
+use component::{
+    BufferHandle, EntityID,
+    ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource,
+    TextureHandle
+};
 use math::{Matrix4, Vector4, Quaternion, AsArray};
 
 use std::mem;
@@ -322,6 +326,9 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
+///
+/// Load the geometry for the triforce.
+///
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
     let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
@@ -377,6 +384,9 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     context.entities.meshes.insert(id, mesh);
 }
 
+///
+/// Load the triforce shader program.
+///
 fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     let sp = glh::create_program_from_files(
         &context.gl, "shaders/triangle.vert.glsl", "shaders/triangle.frag.glsl"
@@ -406,6 +416,9 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     context.gl.shaders.insert(id, shader);
 }
 
+///
+/// Load the triforce texture.
+///
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     let tex_image = load_image("assets/triangle.png").unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
@@ -414,6 +427,9 @@ fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     context.gl.textures.insert(id, tex);
 }
 
+///
+/// Send the uniform variables for a triforce to the GPU.
+///
 fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.gl.shaders[&id];
     unsafe {
@@ -451,6 +467,9 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
     ));
 }
 
+///
+/// Initialize the demo.
+///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
     let mut gl_state = match glh::start_gl(640, 480, GL_LOG_FILE) {
         Ok(val) => val,
