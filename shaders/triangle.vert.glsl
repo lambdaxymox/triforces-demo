@@ -2,11 +2,14 @@
 
 in layout (location = 0) vec3 v_pos;
 in layout (location = 1) vec2 v_tex;
+in layout (location = 2) vec3 v_norm;
 uniform mat4 proj_mat, view_mat, model_mat;
 out vec2 tex_coord;
+out vec3 normal;
 
 
 void main() {
     tex_coord = v_tex;
+    normal = v_norm;
     gl_Position = proj_mat * view_mat * model_mat * vec4 (v_pos, 1.0);
 }
