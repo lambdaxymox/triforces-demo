@@ -341,6 +341,10 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
 
+    let normals_loc = 2; //unsafe { gl::GetAttribLocation(shader, "v_norm".as_ptr() as *const i8) };
+    assert!(normals_loc > -1);
+    let normals_loc = normals_loc as u32;
+
     let mut points_vbo = 0;
     unsafe {
         gl::GenBuffers(1, &mut points_vbo);
@@ -363,6 +367,17 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     }
     assert!(tex_coords_vbo > 0);
 
+    let mut normals_vbo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut normals_vbo);
+        gl::BindBuffer(gl::ARRAY_BUFFER, normals_vbo);
+        gl::BufferData(
+            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.normals.len()) as GLsizeiptr,
+            mesh.normals.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        );
+    }
+    assert!(normals_vbo > 0);
+
     let mut vao = 0;
     unsafe {
         gl::GenVertexArrays(1, &mut vao);
@@ -373,13 +388,17 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::VertexAttribPointer(tex_coords_loc, 2, gl::FLOAT, gl::FALSE, 0, ptr::null());
         gl::EnableVertexAttribArray(tex_coords_loc);
+        gl::BindBuffer(gl::ARRAY_BUFFER, normals_vbo);
+        gl::VertexAttribPointer(normals_loc, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
+        gl::EnableVertexAttribArray(normals_loc);
     }
     assert!(vao > 0);
 
     let points_handle = BufferHandle::new(points_vbo, vao);
     let tex_coords_handle = BufferHandle::new(tex_coords_vbo, vao);
+    let normals_handle = BufferHandle::new(normals_vbo, vao);
 
-    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle]);
+    context.gl.buffers.insert(id, vec![points_handle, tex_coords_handle, normals_handle]);
     context.entities.model_matrices.insert(id, model_mat);
     context.entities.meshes.insert(id, mesh);
 }
