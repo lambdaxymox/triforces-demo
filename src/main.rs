@@ -174,6 +174,44 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     Ok(TextureHandle::new(tex))
 }
 
+fn create_triforce_lights(context: &GameContext, id: EntityID) {
+    use std::ffi::CString;
+
+    let shader = context.gl.shaders[&id].handle.into();
+
+    let ubo_index = unsafe { gl::GetUniformBlockIndex(shader, "PointLight".as_ptr() as *const i8) };
+    assert!(ubo_index != gl::INVALID_INDEX);
+
+    let mut ubo_size = 0;
+    unsafe {
+        gl::GetActiveUniformBlockiv(shader, ubo_index, gl::UNIFORM_BLOCK_DATA_SIZE, &mut ubo_size)
+    };
+    assert!(ubo_size > 0);
+
+    let la: f32 = 1.0;
+    let ld: f32 = 1.0;
+    let ls: f32 = 1.0;
+    let light_pos_wor: [f32; 3] = [20.0, 20.0, 20.0];
+    let names = ["La", "Ls", "Ld", "pos_wor"];
+    let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
+
+    let mut indices = [0; 4];
+    let mut sizes = [0; 4];
+    let mut offsets = [0; 4];
+    let mut types = [0; 4];
+
+    unsafe {
+        gl::GetUniformIndices(shader, 4, ptrs.as_ptr(), indices.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_SIZE, sizes.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_TYPE, types.as_mut_ptr());
+    }
+
+    let mut buffer = vec![0 as u8; ubo_size as usize];
+
+
+}
+
 // TODO: Place the vertex normals for Blinn-Phong shading.
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
@@ -474,14 +512,17 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     create_triforce_geometry(&mut context, ids[1], model_mats[0]);
     create_triforce_uniforms(&mut context, ids[1]);
     create_triforce_texture(&mut context, ids[1]);
+    create_triforce_lights(&mut context, ids[1]);
     create_triforce_shaders(&mut context, ids[2]);
     create_triforce_geometry(&mut context, ids[2], model_mats[1]);
     create_triforce_uniforms(&mut context, ids[2]);
     create_triforce_texture(&mut context, ids[2]);
+    create_triforce_lights(&mut context, ids[2]);
     create_triforce_shaders(&mut context, ids[3]);
     create_triforce_geometry(&mut context, ids[3], model_mats[2]);
     create_triforce_uniforms(&mut context, ids[3]);
     create_triforce_texture(&mut context, ids[3]);
+    create_triforce_lights(&mut context, ids[3]);
 
     context
 }
