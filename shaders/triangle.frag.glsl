@@ -1,7 +1,8 @@
 #version 420 core
 
+in vec3 position_eye;
 in vec2 tex_coord;
-in vec3 normal;
+in vec3 normal_eye;
 uniform sampler2D tex;
 out vec4 frag_color;
 
