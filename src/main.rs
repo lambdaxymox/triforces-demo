@@ -18,7 +18,9 @@ mod lights;
 mod texture;
 
 use glfw::{Action, Context, Key};
-use gl::types::{GLfloat, GLint, GLsizeiptr, GLuint, GLvoid};
+use gl::types::{
+    GLboolean, GLenum, GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
+};
 
 use gl_helpers as glh;
 use obj_parser as obj;
@@ -82,7 +84,7 @@ fn create_light() -> PointLight {
     let ambient = 1.0;
     let light_pos = math::vec3((20.0, 20.0, 20.0));
 
-    PointLight::new(specular, diffuse, ambient, light_pos)
+    PointLight::new(ambient, diffuse, specular, light_pos)
 }
 
 fn create_camera(width: f32, height: f32) -> Camera {
@@ -174,6 +176,40 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     Ok(TextureHandle::new(tex))
 }
 
+///
+/// Helper function to convert GLSL types to storage sizes
+///
+fn type_size(gl_type: GLenum) -> usize {
+    match gl_type {
+        gl::FLOAT             => 1 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_VEC2        => 2 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_VEC3        => 3 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_VEC4        => 4 * mem::size_of::<GLfloat>(),
+        gl::INT               => 1 * mem::size_of::<GLint>(),
+        gl::INT_VEC2          => 2 * mem::size_of::<GLint>(),
+        gl::INT_VEC3          => 3 * mem::size_of::<GLint>(),
+        gl::INT_VEC4          => 4 * mem::size_of::<GLint>(),
+        gl::UNSIGNED_INT      => 1 * mem::size_of::<GLuint>(),
+        gl::UNSIGNED_INT_VEC2 => 2 * mem::size_of::<GLuint>(),
+        gl::UNSIGNED_INT_VEC3 => 3 * mem::size_of::<GLuint>(),
+        gl::UNSIGNED_INT_VEC4 => 4 * mem::size_of::<GLuint>(),
+        gl::BOOL              => 1 * mem::size_of::<GLboolean>(),
+        gl::BOOL_VEC2         => 2 * mem::size_of::<GLboolean>(),
+        gl::BOOL_VEC3         => 3 * mem::size_of::<GLboolean>(),
+        gl::BOOL_VEC4         => 4 * mem::size_of::<GLboolean>(),
+        gl::FLOAT_MAT2        => 4 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT2x3      => 6 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT2x4      => 8 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT3        => 9 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT3x2      => 6 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT3x4      => 12 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT4        => 16 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT4x2      => 8 * mem::size_of::<GLfloat>(),
+        gl::FLOAT_MAT4x3      => 12 * mem::size_of::<GLfloat>(),
+        _ => panic!()
+    }
+}
+
 fn create_triforce_lights(context: &GameContext, id: EntityID) {
     use std::ffi::CString;
 
@@ -199,7 +235,6 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     let mut sizes = [0; 4];
     let mut offsets = [0; 4];
     let mut types = [0; 4];
-
     unsafe {
         gl::GetUniformIndices(shader, 4, ptrs.as_ptr(), indices.as_mut_ptr());
         gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
