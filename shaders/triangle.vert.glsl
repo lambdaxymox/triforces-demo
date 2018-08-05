@@ -3,9 +3,11 @@
 in layout (location = 0) vec3 v_pos;
 in layout (location = 1) vec2 v_tex;
 in layout (location = 2) vec3 v_norm;
+
 uniform mat4 proj_mat;
 uniform mat4 view_mat;
 uniform mat4 model_mat;
+
 out vec3 position_eye;
 out vec2 tex_coord;
 out vec3 normal_eye;
