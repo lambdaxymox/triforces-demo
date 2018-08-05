@@ -14,6 +14,7 @@ mod camera;
 mod gl_helpers;
 mod component;
 mod obj_parser;
+mod lights;
 
 use glfw::{Action, Context, Key};
 use gl::types::{GLfloat, GLint, GLsizeiptr, GLuint, GLvoid};
