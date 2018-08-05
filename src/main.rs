@@ -208,7 +208,17 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     }
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
-
+    let mut ubo = 0;
+    unsafe {
+        gl::GenBuffers(1, &mut ubo);
+        gl::BindBuffer(gl::UNIFORM_BUFFER, ubo);
+        gl::BufferData(
+            gl::UNIFORM_BUFFER, ubo_size as GLsizeiptr,
+            buffer.as_ptr() as *const GLvoid, gl::STATIC_DRAW
+        );
+        gl::BindBufferBase(gl::UNIFORM_BUFFER, ubo_index, ubo);
+    }
+    assert!(ubo > 0);
 
 }
 
