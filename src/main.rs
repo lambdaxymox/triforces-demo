@@ -31,6 +31,7 @@ use component::{
     TextureHandle
 };
 use math::{Matrix4, Vector4, Quaternion, AsArray};
+use lights::PointLight;
 use texture::{TexImage2D};
 
 use std::mem;
@@ -71,9 +72,18 @@ impl EntityDatabase {
 struct GameContext {
     gl: glh::GLState,
     camera: Camera,
+    light: PointLight,
     entities: EntityDatabase,
 }
 
+fn create_light() -> PointLight {
+    let specular = 1.0;
+    let diffuse = 1.0;
+    let ambient = 1.0;
+    let light_pos = math::vec3((20.0, 20.0, 20.0));
+
+    PointLight::new(specular, diffuse, ambient, light_pos)
+}
 
 fn create_camera(width: f32, height: f32) -> Camera {
     let near = 0.1;
@@ -442,9 +452,11 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
+    let light = create_light();
     let mut context = GameContext {
         gl: gl_state,
         camera: camera,
+        light: light,
         entities: EntityDatabase::new(),
     };
 
