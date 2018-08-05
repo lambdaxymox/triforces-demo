@@ -243,6 +243,13 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     }
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
+    unsafe {
+        ptr::copy(&la, mem::transmute(&mut buffer[offsets[0] as usize]), 1);
+        ptr::copy(&ld, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
+        ptr::copy(&ls, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
+        ptr::copy(&light_pos_wor, mem::transmute(&mut buffer[offsets[3] as usize]), 3);
+    }
+
     let mut ubo = 0;
     unsafe {
         gl::GenBuffers(1, &mut ubo);
