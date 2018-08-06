@@ -80,7 +80,7 @@ struct GameContext {
 
 fn create_light() -> PointLight {
     let ambient = math::vec3((0.5, 0.5, 0.5));
-    let diffuse = math::vec3((0.75, 0.75, 0.75));
+    let diffuse = math::vec3((0.85, 0.85, 0.85));
     let specular = math::vec3((1.0, 1.0, 1.0));
     let specular_exponent = 1000.0;
     let light_pos = math::vec3((5.0, 5.0, 30.0));
@@ -98,8 +98,8 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let cam_yaw_speed: GLfloat = 50.0;
 
     let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
-    let rgt = math::vec4((1.0, 0.0,  0.0, 0.0));
-    let up  = math::vec4((0.0, 1.0,  0.0, 0.0));
+    let rgt = math::vec4((1.0, 0.0, 0.0, 0.0));
+    let up  = math::vec4((0.0, 1.0, 0.0, 0.0));
     let cam_pos = math::vec3((0.0, 0.0, 10.0));
 
     let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
@@ -517,9 +517,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let model_mats = [
-        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 3.0))),
-        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 3.0))),
-        Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 3.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
     ];
 
     create_ground_plane_shaders(&mut context, ids[0]);
