@@ -39,6 +39,5 @@ void main() {
 	float specular_factor = pow (dot_specular, light.specular_exponent);
 	vec3 Is = light.Ls * Ks * specular_factor;
 
-    //frag_color = vec4 (Ia + Id + Is, 1.0);
     frag_color = vec4(Ia + Id + Is, 1.0);
 }
