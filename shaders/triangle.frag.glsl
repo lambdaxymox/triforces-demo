@@ -18,6 +18,7 @@ uniform PointLight {
 
 out vec4 frag_color;
 
+
 void main() {
     vec3 K = vec3 (texture (tex, tex_coord));
     vec3 Ka = K;
