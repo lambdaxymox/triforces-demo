@@ -79,11 +79,11 @@ struct GameContext {
 }
 
 fn create_light() -> PointLight {
-    let ambient = math::vec3((0.2, 0.2, 0.2));
+    let ambient = math::vec3((0.5, 0.5, 0.5));
     let diffuse = math::vec3((0.7, 0.7, 0.7));
     let specular = math::vec3((1.0, 1.0, 1.0));
     let specular_exponent = 100.0;
-    let light_pos = math::vec3((10.0, 10.0, 30.0));
+    let light_pos = math::vec3((5.0, 5.0, 30.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -212,7 +212,7 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         ptr::copy(&light.diffuse, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
         ptr::copy(&light.specular, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
         ptr::copy(&light.specular_exponent, mem::transmute(&mut buffer[offsets[3] as usize]), 1);
-        //ptr::copy(&light.position, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
+        ptr::copy(&light.position, mem::transmute(&mut buffer[offsets[4] as usize]), 1);
     }
 
     let mut ubo = 0;
