@@ -80,10 +80,10 @@ struct GameContext {
 
 fn create_light() -> PointLight {
     let ambient = math::vec3((0.2, 0.2, 0.2));
-    let diffuse = math::vec3((0.7, 0.7, 0.7));
-    let specular = math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 100.0;
-    let light_pos = math::vec3((10.0, 10.0, 20.0));
+    let diffuse = math::vec3((0.0, 0.0, 0.0));//math::vec3((0.7, 0.7, 0.7));
+    let specular = math::vec3((0.0, 0.0, 0.0));//math::vec3((1.0, 1.0, 1.0));
+    let specular_exponent = 1000.0;
+    let light_pos = math::vec3((10.0, 10.0, 30.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -175,40 +175,6 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     }
 
     Ok(TextureHandle::new(tex))
-}
-
-///
-/// Helper function to convert GLSL types to storage sizes
-///
-fn type_size(gl_type: GLenum) -> usize {
-    match gl_type {
-        gl::FLOAT             => 1 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_VEC2        => 2 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_VEC3        => 3 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_VEC4        => 4 * mem::size_of::<GLfloat>(),
-        gl::INT               => 1 * mem::size_of::<GLint>(),
-        gl::INT_VEC2          => 2 * mem::size_of::<GLint>(),
-        gl::INT_VEC3          => 3 * mem::size_of::<GLint>(),
-        gl::INT_VEC4          => 4 * mem::size_of::<GLint>(),
-        gl::UNSIGNED_INT      => 1 * mem::size_of::<GLuint>(),
-        gl::UNSIGNED_INT_VEC2 => 2 * mem::size_of::<GLuint>(),
-        gl::UNSIGNED_INT_VEC3 => 3 * mem::size_of::<GLuint>(),
-        gl::UNSIGNED_INT_VEC4 => 4 * mem::size_of::<GLuint>(),
-        gl::BOOL              => 1 * mem::size_of::<GLboolean>(),
-        gl::BOOL_VEC2         => 2 * mem::size_of::<GLboolean>(),
-        gl::BOOL_VEC3         => 3 * mem::size_of::<GLboolean>(),
-        gl::BOOL_VEC4         => 4 * mem::size_of::<GLboolean>(),
-        gl::FLOAT_MAT2        => 4 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT2x3      => 6 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT2x4      => 8 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT3        => 9 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT3x2      => 6 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT3x4      => 12 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT4        => 16 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT4x2      => 8 * mem::size_of::<GLfloat>(),
-        gl::FLOAT_MAT4x3      => 12 * mem::size_of::<GLfloat>(),
-        _ => panic!()
-    }
 }
 
 fn create_triforce_lights(context: &GameContext, id: EntityID) {
