@@ -18,14 +18,11 @@ uniform PointLight {
 
 out vec4 frag_color;
 
-
-vec3 La = vec3(0.2, 0.2, 0.2);
-
 void main() {
     vec3 K = vec3 (texture (tex, tex_coord));
-    vec3 Ka = vec3(1.0, 1.0, 1.0); //K;
-    vec3 Kd = vec3(1.0, 1.0, 1.0); //K;
-    vec3 Ks = vec3(1.0, 1.0, 1.0); //K;
+    vec3 Ka = K;
+    vec3 Kd = K;
+    vec3 Ks = K;
 
     vec3 norm_eye = normalize (normal_eye);
     vec3 Ia = light.La * Ka;
@@ -43,5 +40,5 @@ void main() {
 	vec3 Is = light.Ls * Ks * specular_factor;
 
     //frag_color = vec4 (Ia + Id + Is, 1.0);
-    frag_color = vec4(light.La * K, 1.0);
+    frag_color = vec4(Ia + Id + Is, 1.0);
 }

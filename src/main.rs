@@ -80,9 +80,9 @@ struct GameContext {
 
 fn create_light() -> PointLight {
     let ambient = math::vec3((0.2, 0.2, 0.2));
-    let diffuse = math::vec3((0.0, 0.0, 0.0));//math::vec3((0.7, 0.7, 0.7));
-    let specular = math::vec3((0.0, 0.0, 0.0));//math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 1000.0;
+    let diffuse = math::vec3((0.7, 0.7, 0.7));
+    let specular = math::vec3((1.0, 1.0, 1.0));
+    let specular_exponent = 100.0;
     let light_pos = math::vec3((10.0, 10.0, 30.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
@@ -200,10 +200,10 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     let mut offsets = [0; 5];
     let mut types = [0; 5];
     unsafe {
-        gl::GetUniformIndices(shader, 5, ptrs.as_ptr(), indices.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_SIZE, sizes.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_TYPE, types.as_mut_ptr());
+        gl::GetActiveUniformBlockiv(shader, ubo_index, gl::UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_SIZE, sizes.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_TYPE, types.as_mut_ptr());
     }
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
@@ -212,7 +212,7 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         ptr::copy(&light.diffuse, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
         ptr::copy(&light.specular, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
         ptr::copy(&light.specular_exponent, mem::transmute(&mut buffer[offsets[3] as usize]), 1);
-        ptr::copy(&light.position, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
+        //ptr::copy(&light.position, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
     }
 
     let mut ubo = 0;
