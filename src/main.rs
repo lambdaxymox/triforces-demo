@@ -82,8 +82,8 @@ fn create_light() -> PointLight {
     let ambient = math::vec3((0.7, 0.7, 0.7));
     let diffuse = math::vec3((0.85, 0.85, 0.85));
     let specular = math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 100.0;
-    let light_pos = math::vec3((5.0, 0.0, 40.0));
+    let specular_exponent = 200.0;
+    let light_pos = math::vec3((5.0, 0.0, 25.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -550,8 +550,8 @@ fn main() {
     let mut context = init_game_state(&ids);
 
     // Triforce animation parameters.
-    let v_triforce = 2.0; // Meters per second.
-
+    let mut v_triforce: f32 = 1.0; // Meters per second.
+    let mut vhat_triforce = math::vec3((1.0, 0.0, 0.0));
 
     unsafe {
         // Enable depth testing.
@@ -750,7 +750,43 @@ fn main() {
         }
 
         // Update the kinematics of the triforce.
+        let trans_mat = Matrix4::from_translation(vhat_triforce * v_triforce);
+        let model_mat = context.entities.model_matrices[&ids[1]];
+        context.entities.model_matrices.insert(ids[1], trans_mat * model_mat);
+        let model_mat = context.entities.model_matrices[&ids[2]];
+        context.entities.model_matrices.insert(ids[2], trans_mat * model_mat);
+        let model_mat = context.entities.model_matrices[&ids[3]];
+        context.entities.model_matrices.insert(ids[3], trans_mat * model_mat);
 
+        let tri_sp1 = &context.gl.shaders[&ids[1]];
+        let tri_sp_model_mat_loc1 = tri_sp1.uniforms["model_mat"];
+        unsafe {
+            gl::UseProgram(tri_sp1.handle.into());
+            gl::UniformMatrix4fv(
+                tri_sp_model_mat_loc1.into(), 1, gl::FALSE,
+                context.entities.model_matrices[&ids[1]].as_ptr()
+            );
+        }
+
+        let tri_sp2 = &context.gl.shaders[&ids[2]];
+        let tri_sp_model_mat_loc2 = tri_sp1.uniforms["model_mat"];
+        unsafe {
+            gl::UseProgram(tri_sp2.handle.into());
+            gl::UniformMatrix4fv(
+                tri_sp_model_mat_loc2.into(), 1, gl::FALSE,
+                context.entities.model_matrices[&ids[2]].as_ptr()
+            );
+        }
+
+        let tri_sp3 = &context.gl.shaders[&ids[3]];
+        let tri_sp_model_mat_loc3 = tri_sp1.uniforms["model_mat"];
+        unsafe {
+            gl::UseProgram(tri_sp3.handle.into());
+            gl::UniformMatrix4fv(
+                tri_sp_model_mat_loc3.into(), 1, gl::FALSE,
+                context.entities.model_matrices[&ids[3]].as_ptr()
+            );
+        }
 
         // Render the results.
         unsafe {
