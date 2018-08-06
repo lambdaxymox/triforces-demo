@@ -82,8 +82,8 @@ fn create_light() -> PointLight {
     let ambient = math::vec3((0.7, 0.7, 0.7));
     let diffuse = math::vec3((0.85, 0.85, 0.85));
     let specular = math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 1000.0;
-    let light_pos = math::vec3((5.0, 5.0, 30.0));
+    let specular_exponent = 100.0;
+    let light_pos = math::vec3((5.0, 0.0, 40.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -549,6 +549,10 @@ fn main() {
     let ids = [EntityID::new(0), EntityID::new(1), EntityID::new(2), EntityID::new(3)];
     let mut context = init_game_state(&ids);
 
+    // Triforce animation parameters.
+    let v_triforce = 2.0; // Meters per second.
+
+
     unsafe {
         // Enable depth testing.
         gl::Enable(gl::DEPTH_TEST);
@@ -744,6 +748,9 @@ fn main() {
         if (width != context.gl.width as i32) && (height != context.gl.height as i32) {
             glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
         }
+
+        // Update the kinematics of the triforce.
+
 
         // Render the results.
         unsafe {
