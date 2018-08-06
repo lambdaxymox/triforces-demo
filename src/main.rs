@@ -226,9 +226,6 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         gl::BindBufferBase(gl::UNIFORM_BUFFER, ubo_index, ubo);
     }
     assert!(ubo > 0);
-
-    // TODO: Add buffer to the GL database.
-
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
