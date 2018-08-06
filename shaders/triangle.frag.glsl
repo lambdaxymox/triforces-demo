@@ -29,7 +29,7 @@ void main() {
     vec3 Ia = light.La * Ka;
 
     vec3 light_pos_eye = vec3 (view_mat * vec4 (light.pos_wor, 1.0));
-    vec3 dist_to_light_eye = light_pos_eye - position_eye;
+    vec3 dist_to_light_eye = - position_eye - light_pos_eye;
     vec3 dir_to_light_eye = normalize (dist_to_light_eye);
     float dot_diffuse = max (dot (dir_to_light_eye, norm_eye), 0.0);
     vec3 Id = light.Ld * Kd * dot_diffuse;

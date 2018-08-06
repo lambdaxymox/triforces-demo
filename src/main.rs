@@ -79,10 +79,10 @@ struct GameContext {
 }
 
 fn create_light() -> PointLight {
-    let ambient = math::vec3((0.7, 0.7, 0.7));
-    let diffuse = math::vec3((0.85, 0.85, 0.85));
+    let ambient = math::vec3((0.3, 0.3, 0.3));
+    let diffuse = math::vec3((0.7, 0.7, 0.7));
     let specular = math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 200.0;
+    let specular_exponent = 100.0;
     let light_pos = math::vec3((5.0, 0.0, 25.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
