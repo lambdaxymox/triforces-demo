@@ -82,7 +82,7 @@ fn create_light() -> PointLight {
     let ambient = math::vec3((0.5, 0.5, 0.5));
     let diffuse = math::vec3((0.7, 0.7, 0.7));
     let specular = math::vec3((1.0, 1.0, 1.0));
-    let specular_exponent = 100.0;
+    let specular_exponent = 1000.0;
     let light_pos = math::vec3((5.0, 5.0, 30.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
