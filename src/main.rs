@@ -177,7 +177,7 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
     Ok(TextureHandle::new(tex))
 }
 
-fn create_triforce_lights(context: &GameContext, id: EntityID) {
+fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
     use std::ffi::CString;
 
     let shader = context.gl.shaders[&id].handle.into();
@@ -226,6 +226,11 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         gl::BindBufferBase(gl::UNIFORM_BUFFER, ubo_index, ubo);
     }
     assert!(ubo > 0);
+
+    let ubo_handle = BufferHandle::new(ubo, 0);
+    let mut buffers = (context.gl.buffers[&id]).clone();
+    buffers.push(ubo_handle);
+    context.gl.buffers.insert(id, buffers);
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
