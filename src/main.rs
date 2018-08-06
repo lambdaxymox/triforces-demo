@@ -231,7 +231,6 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
 
 }
 
-// TODO: Place the vertex normals for Blinn-Phong shading.
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
