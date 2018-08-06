@@ -18,5 +18,12 @@ out vec4 frag_color;
 
 
 void main() {
-    frag_color = texture (tex, tex_coord);
+    vec4 K = texture (tex, tex_coord);
+    vec3 n_eye = normalize (normal_eye);
+    vec3 Ia = vec3 (light.La * K);
+
+    vec3 Id = vec3(0.0, 0.0, 0.0);
+
+    vec3 Is = vec3(0.0, 0.0, 0.0);
+    frag_color = vec4 (Ia + Id + Is, 1.0);
 }
