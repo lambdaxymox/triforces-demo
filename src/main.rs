@@ -79,11 +79,11 @@ struct GameContext {
 }
 
 fn create_light() -> PointLight {
-    let ambient = 1.0;
-    let diffuse = 1.0;
-    let specular = 1.0;
+    let ambient = math::vec3((0.2, 0.2, 0.2));
+    let diffuse = math::vec3((0.7, 0.7, 0.7));
+    let specular = math::vec3((1.0, 1.0, 1.0));
     let specular_exponent = 100.0;
-    let light_pos = math::vec3((20.0, 20.0, 20.0));
+    let light_pos = math::vec3((10.0, 10.0, 20.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -225,12 +225,8 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     };
     assert!(ubo_size > 0);
 
-    let la: f32 = 0.2;
-    let ld: f32 = 0.7;
-    let ls: f32 = 1.0;
-    let p: f32 = 100.0;
-    let light_pos_wor: [f32; 3] = [0.0, 0.0, 20.0];
-    let names = ["La", "Ls", "Ld", "p", "pos_wor"];
+    let light = &context.light;
+    let names = ["La", "Ls", "Ld", "specular_exponent", "pos_wor"];
     let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
 
     let mut indices = [0; 5];
@@ -246,11 +242,11 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
     unsafe {
-        ptr::copy(&la, mem::transmute(&mut buffer[offsets[0] as usize]), 1);
-        ptr::copy(&ld, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
-        ptr::copy(&ls, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
-        ptr::copy(&p, mem::transmute(&mut buffer[offsets[3] as usize]), 1);
-        ptr::copy(&light_pos_wor, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
+        ptr::copy(&light.ambient, mem::transmute(&mut buffer[offsets[0] as usize]), 1);
+        ptr::copy(&light.diffuse, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
+        ptr::copy(&light.specular, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
+        ptr::copy(&light.specular_exponent, mem::transmute(&mut buffer[offsets[3] as usize]), 1);
+        ptr::copy(&light.position, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
     }
 
     let mut ubo = 0;

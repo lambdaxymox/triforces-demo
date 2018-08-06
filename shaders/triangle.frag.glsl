@@ -9,10 +9,10 @@ uniform mat4 model_mat;
 uniform sampler2D tex;
 
 uniform PointLight {
-    float La;
-    float Ld;
-    float Ls;
-    float p;
+    vec3 La;
+    vec3 Ld;
+    vec3 Ls;
+    float specular_exponent;
     vec3 pos_wor;
 } light;
 
@@ -38,8 +38,8 @@ void main() {
 	vec3 surface_to_viewer_eye = normalize (-position_eye);
 	vec3 half_vec_eye = normalize (surface_to_viewer_eye + dir_to_light_eye);
 	float dot_specular = max (dot (half_vec_eye, norm_eye), 0.0);
-	float specular_factor = pow (dot_specular, light.p);
-	vec3 Is = light.Ls * Ks * light.p;
+	float specular_factor = pow (dot_specular, light.specular_exponent);
+	vec3 Is = light.Ls * Ks * specular_factor;
 
     frag_color = vec4 (Ia + Id + Is, 1.0);
 }
