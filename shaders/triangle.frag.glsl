@@ -10,6 +10,7 @@ uniform PointLight {
     float La;
     float Ld;
     float Ls;
+    float p;
     vec3 pos_wor;
 } light;
 

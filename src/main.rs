@@ -228,19 +228,20 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     let la: f32 = 1.0;
     let ld: f32 = 1.0;
     let ls: f32 = 1.0;
+    let p: f32 = 100.0;
     let light_pos_wor: [f32; 3] = [20.0, 20.0, 20.0];
-    let names = ["La", "Ls", "Ld", "pos_wor"];
+    let names = ["La", "Ls", "Ld", "p", "pos_wor"];
     let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
 
-    let mut indices = [0; 4];
-    let mut sizes = [0; 4];
-    let mut offsets = [0; 4];
-    let mut types = [0; 4];
+    let mut indices = [0; 5];
+    let mut sizes = [0; 5];
+    let mut offsets = [0; 5];
+    let mut types = [0; 5];
     unsafe {
-        gl::GetUniformIndices(shader, 4, ptrs.as_ptr(), indices.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_SIZE, sizes.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 4, indices.as_ptr(), gl::UNIFORM_TYPE, types.as_mut_ptr());
+        gl::GetUniformIndices(shader, 5, ptrs.as_ptr(), indices.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_SIZE, sizes.as_mut_ptr());
+        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr(), gl::UNIFORM_TYPE, types.as_mut_ptr());
     }
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
@@ -248,7 +249,8 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         ptr::copy(&la, mem::transmute(&mut buffer[offsets[0] as usize]), 1);
         ptr::copy(&ld, mem::transmute(&mut buffer[offsets[1] as usize]), 1);
         ptr::copy(&ls, mem::transmute(&mut buffer[offsets[2] as usize]), 1);
-        ptr::copy(&light_pos_wor, mem::transmute(&mut buffer[offsets[3] as usize]), 3);
+        ptr::copy(&p, mem::transmute(&mut buffer[offsets[3] as usize]), 1);
+        ptr::copy(&light_pos_wor, mem::transmute(&mut buffer[offsets[4] as usize]), 3);
     }
 
     let mut ubo = 0;
@@ -262,6 +264,8 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
         gl::BindBufferBase(gl::UNIFORM_BUFFER, ubo_index, ubo);
     }
     assert!(ubo > 0);
+
+    // TODO: Add buffer to the GL database.
 
 }
 
