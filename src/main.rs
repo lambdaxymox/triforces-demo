@@ -225,11 +225,11 @@ fn create_triforce_lights(context: &GameContext, id: EntityID) {
     };
     assert!(ubo_size > 0);
 
-    let la: f32 = 0.333333;
-    let ld: f32 = 0.333333;
-    let ls: f32 = 0.333333; //1.0;
-    let p: f32 = 10.0;
-    let light_pos_wor: [f32; 3] = [10.0, 10.0, 20.0];
+    let la: f32 = 0.2;
+    let ld: f32 = 0.7;
+    let ls: f32 = 1.0;
+    let p: f32 = 100.0;
+    let light_pos_wor: [f32; 3] = [0.0, 0.0, 20.0];
     let names = ["La", "Ls", "Ld", "p", "pos_wor"];
     let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
 
