@@ -550,8 +550,10 @@ fn main() {
     let mut context = init_game_state(&ids);
 
     // Triforce animation parameters.
-    let mut v_triforce: f32 = 1.0; // Meters per second.
+    let v_triforce: f32 = 5.0; // Meters per second.
     let mut vhat_triforce = math::vec3((1.0, 0.0, 0.0));
+    let mut position_triforce = 0.0;
+    let mut direction = 1.0;
 
     unsafe {
         // Enable depth testing.
@@ -750,7 +752,13 @@ fn main() {
         }
 
         // Update the kinematics of the triforce.
-        let trans_mat = Matrix4::from_translation(vhat_triforce * v_triforce);
+        let dx = v_triforce * elapsed_seconds as f32;
+        position_triforce += dx * direction;
+        if position_triforce > 10.0 || position_triforce < -10.0 {
+            vhat_triforce = -vhat_triforce;
+            direction = -direction;
+        }
+        let trans_mat = Matrix4::from_translation(vhat_triforce * dx);
         let model_mat = context.entities.model_matrices[&ids[1]];
         context.entities.model_matrices.insert(ids[1], trans_mat * model_mat);
         let model_mat = context.entities.model_matrices[&ids[2]];
