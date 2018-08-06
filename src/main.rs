@@ -349,7 +349,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
 
-    let normals_loc = 2; //unsafe { gl::GetAttribLocation(shader, "v_norm".as_ptr() as *const i8) };
+    let normals_loc = unsafe { gl::GetAttribLocation(shader, "v_norm".as_ptr() as *const i8) };
     assert!(normals_loc > -1);
     let normals_loc = normals_loc as u32;
 
