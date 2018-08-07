@@ -34,11 +34,11 @@ void main() {
     float dot_diffuse = max (dot (dir_to_light_eye, norm_eye), 0.0);
     vec3 Id = light.Ld * Kd * dot_diffuse;
 
-	vec3 surface_to_viewer_eye = normalize (-position_eye);
-	vec3 half_vec_eye = normalize (surface_to_viewer_eye + dir_to_light_eye);
-	float dot_specular = max (dot (half_vec_eye, norm_eye), 0.0);
-	float specular_factor = pow (dot_specular, light.specular_exponent);
-	vec3 Is = light.Ls * Ks * specular_factor;
+    vec3 surface_to_viewer_eye = normalize (-position_eye);
+    vec3 half_vec_eye = normalize (surface_to_viewer_eye + dir_to_light_eye);
+    float dot_specular = max (dot (half_vec_eye, norm_eye), 0.0);
+    float specular_factor = pow (dot_specular, light.specular_exponent);
+    vec3 Is = light.Ls * Ks * specular_factor;
 
     frag_color = vec4(Ia + Id + Is, 1.0);
 }
