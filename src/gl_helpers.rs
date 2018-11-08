@@ -5,7 +5,7 @@ use gl::types::{
 use glfw;
 use glfw::{Context};
 
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::fs::File;
 use std::io::{Read, BufReader};
 use std::sync::mpsc::Receiver;
@@ -28,6 +28,11 @@ pub fn glubyte_ptr_to_string(cstr: *const GLubyte) -> String {
     unsafe {
         CStr::from_ptr(cstr as *const i8).to_string_lossy().into_owned()
     }
+}
+
+#[inline]
+pub fn gl_str(st: &str) -> CString {
+    CString::new(st).unwrap()
 }
 
 ///
