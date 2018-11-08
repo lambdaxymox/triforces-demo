@@ -9,10 +9,8 @@ cargo run
 to run it.
 
 ### Dependencies
-The demo may require an older version of Rust to run. If the program crashes from a uniform shader variable not being found, try running it with Rust 1.25.0. You can acquire it by running rustup:
-```
-rustup toolchain install 1.25.0
-```
+This program requires a recent version of Rust (>= 1.30.0) and OpenGL 4.60 to run.
+
 
 ### Controls
 The demo has the following control scheme.
