@@ -185,7 +185,7 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
 
     let shader = context.gl.shaders[&id].handle.into();
 
-    let ubo_index = unsafe { gl::GetUniformBlockIndex(shader, "PointLight".as_ptr() as *const i8) };
+    let ubo_index = unsafe { gl::GetUniformBlockIndex(shader, glh::gl_str("PointLight").as_ptr()) };
     assert!(ubo_index != gl::INVALID_INDEX);
 
     let mut ubo_size = 0;
@@ -240,11 +240,11 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
     let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
-    let points_loc = unsafe { gl::GetAttribLocation(shader, "v_pos".as_ptr() as *const i8) };
+    let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
     assert!(points_loc > -1);
     let points_loc = points_loc as u32;
 
-    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, "v_tex".as_ptr() as *const i8) };
+    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, glh::gl_str("v_tex").as_ptr()) };
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
 
@@ -312,12 +312,12 @@ fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     assert!(sp_model_mat_loc > -1);
 
     let sp_view_mat_loc = unsafe {
-        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8)
+        gl::GetUniformLocation(sp, glh::gl_str("view_mat").as_ptr())
     };
     assert!(sp_view_mat_loc > -1);
 
     let sp_proj_mat_loc = unsafe {
-        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8)
+        gl::GetUniformLocation(sp, glh::gl_str("proj_mat").as_ptr())
     };
     assert!(sp_proj_mat_loc > -1);
 
@@ -346,15 +346,15 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
-    let points_loc = unsafe { gl::GetAttribLocation(shader, "v_pos".as_ptr() as *const i8) };
+    let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
     assert!(points_loc > -1);
     let points_loc = points_loc as u32;
 
-    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, "v_tex".as_ptr() as *const i8) };
+    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, glh::gl_str("v_tex").as_ptr()) };
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
 
-    let normals_loc = unsafe { gl::GetAttribLocation(shader, "v_norm".as_ptr() as *const i8) };
+    let normals_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_norm").as_ptr()) };
     assert!(normals_loc > -1);
     let normals_loc = normals_loc as u32;
 
@@ -426,17 +426,17 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     assert!(sp > 0);
 
     let sp_model_mat_loc = unsafe {
-        gl::GetUniformLocation(sp, "model_mat".as_ptr() as *const i8)
+        gl::GetUniformLocation(sp, glh::gl_str("model_mat").as_ptr())
     };
     assert!(sp_model_mat_loc > -1);
 
     let sp_view_mat_loc = unsafe {
-        gl::GetUniformLocation(sp, "view_mat".as_ptr() as *const i8)
+        gl::GetUniformLocation(sp, glh::gl_str("view_mat").as_ptr())
     };
     assert!(sp_view_mat_loc > -1);
 
     let sp_proj_mat_loc = unsafe {
-        gl::GetUniformLocation(sp, "proj_mat".as_ptr() as *const i8)
+        gl::GetUniformLocation(sp, glh::gl_str("proj_mat").as_ptr())
     };
     assert!(sp_proj_mat_loc > -1);
 
