@@ -1,11 +1,14 @@
 extern crate chrono;
-extern crate gl;
 extern crate glfw;
 extern crate stb_image;
 extern crate simple_cgmath;
 
 #[macro_use]
 extern crate scan_fmt;
+
+mod gl {
+    include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
+}
 
 #[macro_use]
 mod logger;
