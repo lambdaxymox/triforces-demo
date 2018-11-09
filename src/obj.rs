@@ -134,11 +134,6 @@ mod loader_tests {
     struct Test {
         obj_file: String,
         obj_mesh: ObjMesh,
-        vp_count: usize,
-        vt_count: usize,
-        vn_count: usize,
-        face_count: usize,
-
     }
 
     fn test() -> Test {
@@ -227,10 +222,6 @@ mod loader_tests {
         Test {
             obj_file: obj_file,
             obj_mesh: obj_mesh,
-            vp_count: 8,
-            vt_count: 0,
-            vn_count: 6,
-            face_count: 12,
         }
     }
 
