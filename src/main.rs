@@ -33,7 +33,7 @@ use component::{
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource,
     TextureHandle
 };
-use math::{Matrix4, Vector4, Quaternion, AsArray};
+use math::{Matrix4, Quaternion, AsArray};
 use lights::PointLight;
 use texture::{TexImage2D};
 
@@ -179,8 +179,6 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
 }
 
 fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
-    use std::ffi::CString;
-
     let shader = context.gl.shaders[&id].handle.into();
 
     let ubo_index = unsafe { gl::GetUniformBlockIndex(shader, glh::gl_str("PointLight").as_ptr()) };
@@ -194,7 +192,7 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
 
     let light = &context.light;
     let names = ["La", "Ls", "Ld", "specular_exponent", "pos_wor"];
-    let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
+    //let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
 
     let mut indices = [0; 5];
     let mut sizes = [0; 5];
