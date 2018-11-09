@@ -406,7 +406,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "wavefront_obj"
 version = "0.2.2"
-source = "git+https://github.com/stallmanifold/wavefront-obj#dbdf2b5924200d25797a74c0a0aa66a900fbb0da"
+source = "git+https://github.com/stallmanifold/wavefront-obj#29b00b840fb5c81e449f8ff8e5b54a8df9c30074"
 dependencies = [
  "quickcheck 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
