@@ -17,7 +17,7 @@ mod logger;
 mod camera;
 mod gl_helpers;
 mod component;
-mod obj_parser;
+mod obj;
 mod lights;
 mod texture;
 
@@ -27,7 +27,6 @@ use gl::types::{
 };
 
 use gl_helpers as glh;
-use obj_parser as obj;
 use simple_cgmath as math;
 
 use camera::Camera;
