@@ -58,6 +58,9 @@ impl ObjMesh {
         &self.normals
     }
 
+    ///
+    /// Get the number of vertices in the mesh.
+    ///
     #[inline]
     pub fn len(&self) -> usize {
         self.points.len()
