@@ -251,7 +251,7 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
         gl::GenBuffers(1, &mut points_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
             mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -262,7 +262,7 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
         gl::GenBuffers(1, &mut tex_coords_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER, (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
             mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         )
     }
@@ -361,7 +361,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut points_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
             mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -372,7 +372,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut tex_coords_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER, (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
             mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -383,7 +383,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut normals_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, normals_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (mem::size_of::<GLfloat>() * mesh.normals.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.normals.len()) as GLsizeiptr,
             mesh.normals.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
