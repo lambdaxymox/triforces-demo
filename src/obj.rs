@@ -1,7 +1,7 @@
 use std::fs::File;
-use std::io::{Seek, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 use wavefront::obj;
-use wavefront::obj::{Element, VTNIndex, VTNTriple};
+use wavefront::obj::{Element, VTNTriple};
 
 
 ///
