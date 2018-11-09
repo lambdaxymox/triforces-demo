@@ -12,7 +12,7 @@ use wavefront::obj::{Element, VTNIndex, VTNTriple};
 #[derive(Clone, Debug, PartialEq)]
 pub struct ObjMesh {
     pub points: Vec<[f32; 3]>,
-    pub tex_coords: Vec<[f32; 3]>,
+    pub tex_coords: Vec<[f32; 2]>,
     pub normals: Vec<[f32; 3]>,
 }
 
@@ -20,7 +20,7 @@ impl ObjMesh {
     ///
     /// Generate a new mesh object.
     ///
-    fn new(points: Vec<[f32; 3]>, tex_coords: Vec<[f32; 3]>, normals: Vec<[f32; 3]>) -> ObjMesh {
+    fn new(points: Vec<[f32; 3]>, tex_coords: Vec<[f32; 2]>, normals: Vec<[f32; 3]>) -> ObjMesh {
         ObjMesh {
             points: points,
             tex_coords: tex_coords,
@@ -44,7 +44,7 @@ impl ObjMesh {
     /// system for rendering.
     ///
     #[inline]
-    fn tex_coords(&self) -> &[[f32; 3]] {
+    fn tex_coords(&self) -> &[[f32; 2]] {
         &self.tex_coords
     }
 
@@ -87,22 +87,22 @@ pub fn load<R: BufRead>(reader: &mut R) -> Result<ObjMesh, String> {
                     match triple {
                         VTNTriple::V(vp) => {
                             vertices.push([vp.x, vp.y, vp.z]);
-                            tex_coords.push([0.0, 0.0, 0.0]);
+                            tex_coords.push([0.0, 0.0]);
                             normals.push([0.0, 0.0, 0.0]);
                         }
                         VTNTriple::VT(vp, vt) => {
                             vertices.push([vp.x, vp.y, vp.z]);
-                            tex_coords.push([vt.u, vt.v, vt.w]);
+                            tex_coords.push([vt.u, vt.v]);
                             normals.push([0.0, 0.0, 0.0]);
                         }
                         VTNTriple::VN(vp, vn) => {
                             vertices.push([vp.x, vp.y, vp.z]);
-                            tex_coords.push([0.0, 0.0, 0.0]);
+                            tex_coords.push([0.0, 0.0]);
                             normals.push([vn.i, vn.j, vn.k]);
                         }
                         VTNTriple::VTN(vp, vt, vn) => {
                             vertices.push([vp.x, vp.y, vp.z]);
-                            tex_coords.push([vt.u, vt.v, vt.w]);
+                            tex_coords.push([vt.u, vt.v]);
                             normals.push([vn.i, vn.j, vn.k]);
                         }
                     }
@@ -190,18 +190,18 @@ mod loader_tests {
             [0.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0],
         ];
         let tex_coords = vec![
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+            [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
         ];
         let normals = vec![
             [ 0.0,  0.0, -1.0], [ 0.0,  0.0, -1.0], [ 0.0,  0.0, -1.0],
