@@ -4,8 +4,6 @@ extern crate stb_image;
 extern crate simple_cgmath;
 extern crate wavefront;
 
-#[macro_use]
-extern crate scan_fmt;
 
 mod gl {
     include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
