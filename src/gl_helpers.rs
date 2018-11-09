@@ -1,6 +1,6 @@
 use gl;
 use gl::types::{
-    GLboolean, GLchar, GLenum, GLfloat, GLint, GLsizeiptr, GLubyte, GLuint, GLvoid
+    GLboolean, GLchar, GLenum, GLfloat, GLint, GLubyte, GLuint
 };
 use glfw;
 use glfw::{Context};
@@ -10,7 +10,6 @@ use std::fs::File;
 use std::io::{Read, BufReader};
 use std::sync::mpsc::Receiver;
 use std::ptr;
-use std::error;
 use std::fmt;
 use std::mem;
 use std::collections::HashMap;

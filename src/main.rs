@@ -21,7 +21,7 @@ mod texture;
 
 use glfw::{Action, Context, Key};
 use gl::types::{
-    GLboolean, GLenum, GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
+    GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
 };
 
 use gl_helpers as glh;
@@ -191,7 +191,6 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
     assert!(ubo_size > 0);
 
     let light = &context.light;
-    let names = ["La", "Ls", "Ld", "specular_exponent", "pos_wor"];
 
     let mut indices = [0; 5];
     let mut sizes = [0; 5];
