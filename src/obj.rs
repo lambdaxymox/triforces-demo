@@ -115,7 +115,7 @@ pub fn load<R: BufRead>(reader: &mut R) -> Result<ObjMesh, String> {
     Ok(ObjMesh::new(vertices, tex_coords, normals))
 }
 
-pub fn load_obj_file(file_name: &str) -> Result<ObjMesh, String> {
+pub fn load_file(file_name: &str) -> Result<ObjMesh, String> {
     let file = match File::open(file_name) {
         Ok(handle) => handle,
         Err(_) => {

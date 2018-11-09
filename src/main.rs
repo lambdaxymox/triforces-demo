@@ -231,7 +231,7 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    let mesh = obj::load_obj_file("assets/ground_plane.obj").unwrap();
+    let mesh = obj::load_file("assets/ground_plane.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
@@ -337,7 +337,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 /// Load the geometry for the triforce.
 ///
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
-    let mesh = obj::load_obj_file("assets/triangle.obj").unwrap();
+    let mesh = obj::load_file("assets/triangle.obj").unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
