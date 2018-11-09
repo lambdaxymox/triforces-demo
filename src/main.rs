@@ -192,7 +192,6 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
 
     let light = &context.light;
     let names = ["La", "Ls", "Ld", "specular_exponent", "pos_wor"];
-    //let ptrs = names.iter().map(|s| s.as_ptr() as *const i8).collect::<Vec<*const i8>>();
 
     let mut indices = [0; 5];
     let mut sizes = [0; 5];
