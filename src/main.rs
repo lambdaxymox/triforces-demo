@@ -2,6 +2,7 @@ extern crate chrono;
 extern crate glfw;
 extern crate stb_image;
 extern crate simple_cgmath;
+extern crate wavefront;
 
 #[macro_use]
 extern crate scan_fmt;
@@ -813,26 +814,26 @@ fn main() {
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[0]].into());
             gl::BindVertexArray(context.gl.buffers[&ids[0]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].point_count as i32);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].len() as i32);
 
             // Render the triforce.
             gl::UseProgram(context.gl.shaders[&ids[1]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[1]].into());
             gl::BindVertexArray(context.gl.buffers[&ids[1]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[1]].point_count as i32);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[1]].len() as i32);
 
             gl::UseProgram(context.gl.shaders[&ids[2]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[2]].into());
             gl::BindVertexArray(context.gl.buffers[&ids[2]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[2]].point_count as i32);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[2]].len() as i32);
 
             gl::UseProgram(context.gl.shaders[&ids[3]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.gl.textures[&ids[3]].into());
             gl::BindVertexArray(context.gl.buffers[&ids[3]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[3]].point_count as i32);
+            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[3]].len() as i32);
         }
         
         // Send the results to the output.
