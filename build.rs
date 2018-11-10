@@ -6,6 +6,13 @@ use std::fs::File;
 use std::path::Path;
 
 
+#[cfg(target_os = "macos")]
+fn register_gl_api(file: &mut File) {
+    Registry::new(Api::Gl, (3, 3), Profile::Core, Fallbacks::All, [])
+        .write_bindings(GlobalGenerator, file)
+        .unwrap();
+}
+
 #[cfg(target_os = "windows")]
 fn register_gl_api(file: &mut File) {
     Registry::new(Api::Gl, (3, 3), Profile::Core, Fallbacks::All, [])
