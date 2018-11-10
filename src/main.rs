@@ -63,6 +63,8 @@ const SHADER_PATH: &str = "shaders/330";
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 const SHADER_PATH: &str = "shaders/420";
 
+const ASSET_PATH: &str = "assets";
+
 
 struct EntityDatabase {
     meshes: HashMap<EntityID, obj::ObjMesh>,
@@ -87,6 +89,10 @@ struct GameContext {
     camera: Camera,
     light: PointLight,
     entities: EntityDatabase,
+}
+
+fn asset_file(file: &str) -> String {
+    format!("{}/{}", ASSET_PATH, file)
 }
 
 fn shader_file(file: &str) -> String {
@@ -245,7 +251,7 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    let mesh = obj::load_file("assets/ground_plane.obj").unwrap();
+    let mesh = obj::load_file(&asset_file("ground_plane.obj")).unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
@@ -301,7 +307,7 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
 }
 
 fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
-    let tex_image = load_image("assets/ground_plane.png").unwrap();
+    let tex_image = load_image(&asset_file("ground_plane.png")).unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
@@ -351,7 +357,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 /// Load the geometry for the triforce.
 ///
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
-    let mesh = obj::load_file("assets/triangle.obj").unwrap();
+    let mesh = obj::load_file(&asset_file("triangle.obj")).unwrap();
     let shader = context.gl.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
@@ -460,7 +466,7 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
 /// Load the triforce texture.
 ///
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
-    let tex_image = load_image("assets/triangle.png").unwrap();
+    let tex_image = load_image(&asset_file("triangle.png")).unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex_image);
