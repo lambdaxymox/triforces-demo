@@ -3,7 +3,7 @@ use gl::types::{
     GLboolean, GLchar, GLenum, GLfloat, GLint, GLubyte, GLuint
 };
 use glfw;
-use glfw::{Context};
+use glfw::{Context, Glfw};
 
 use std::ffi::{CStr, CString};
 use std::fs::File;
@@ -166,6 +166,47 @@ pub struct GLState {
     pub buffers: HashMap<EntityID, Vec<BufferHandle>>,
 }
 
+#[cfg(target_os = "macos")]
+fn __init_glfw() -> Glfw {
+    // Start a GL context and OS window using the GLFW helper library.
+    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+
+    glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
+
+    glfw.window_hint(glfw::WindowHint::ContextVersionMajor(3));
+    glfw.window_hint(glfw::WindowHint::ContextVersionMinor(3));
+    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
+    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
+
+    glfw
+}
+
+#[cfg(target_os = "windows")]
+fn __init_glfw() -> Glfw {
+    // Start a GL context and OS window using the GLFW helper library.
+    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+
+    glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
+
+    glfw.window_hint(glfw::WindowHint::ContextVersionMajor(3));
+    glfw.window_hint(glfw::WindowHint::ContextVersionMinor(3));
+    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
+    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
+
+    glfw
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+fn __init_glfw() -> Glfw {
+    // Start a GL context and OS window using the GLFW helper library.
+    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+
+    glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
+
+    glfw
+}
+
+
 ///
 /// Initialize a new OpenGL context and start a new GLFW window.
 ///
@@ -180,16 +221,7 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
     log!(logger, "Using GLFW version {}", glfw::get_version_string());
 
     // Start a GL context and OS window using the GLFW helper library.
-    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
-
-    glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
-
-    /* -------------------------------- APPLE --------------------------- */
-    glfw.window_hint(glfw::WindowHint::ContextVersionMajor(3));
-    glfw.window_hint(glfw::WindowHint::ContextVersionMinor(2));
-    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
-    glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
-    /* -------------------------------------------------------------------*/
+    let glfw = __init_glfw();
 
     log!(logger, "Started GLFW successfully");
     let maybe_glfw_window = glfw.create_window(
@@ -253,13 +285,11 @@ pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, Stri
     log!(logger, "Using GLFW version {}", glfw::get_version_string());
 
     // Start a GL context and OS window using the GLFW helper library.
-    let mut glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
-
-    glfw.window_hint(glfw::WindowHint::Samples(Some(4)));
+    let glfw = __init_glfw();
 
     log!(logger, "Started GLFW successfully");
     let maybe_glfw_window = glfw.create_window(
-        width, height, &format!("Metroid DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
+        width, height, &format!("Triforces DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
     );
     let (mut window, events) = match maybe_glfw_window {
         Some(tuple) => tuple,
@@ -545,7 +575,7 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
         gl::AttachShader(program, vertex_shader);
         gl::AttachShader(program, fragment_shader);
 
-        // Link the shader program. If binding input attributes do that before linking.
+        // Link the shader program. If binding input attributes, do that before linking.
         gl::LinkProgram(program);
     }
 
