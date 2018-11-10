@@ -1,22 +1,22 @@
 ![Title Screen](readme.png)
 # Triforces OpenGL Demo
 
-### Installation
+## Installation
 Fork the demo and enter
 ```
 cargo run
 ```
 to run it.
 
-### Dependencies
-#### Linux
+## Dependencies
+### Linux
 This program requires a recent version of Rust (>= 1.30.0) and OpenGL 4.60 to run.
-#### Microsoft Windows
+### Microsoft Windows
 This program requires a recent version of Rust (= 1.30.0) and OpenGL 3.30 to run.
-#### Apple MacOS
+### Apple MacOS
 Coming soon.
 
-### Controls
+## Controls
 The demo has the following control scheme.
 * A -- Move camera left
 * D -- Move camera right
