@@ -206,75 +206,9 @@ fn __init_glfw() -> Glfw {
     glfw
 }
 
-
-///
-/// Initialize a new OpenGL context and start a new GLFW window.
-///
-#[cfg(target_os = "macos")]
-pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, String> {
-    // Initiate a logger.
-    let logger = Logger::from(log_file);
-    logger.restart();
-
-    // Start GL context and O/S window using the GLFW helper library.
-    log!(logger, "Starting GLFW");
-    log!(logger, "Using GLFW version {}", glfw::get_version_string());
-
-    // Start a GL context and OS window using the GLFW helper library.
-    let glfw = __init_glfw();
-
-    log!(logger, "Started GLFW successfully");
-    let maybe_glfw_window = glfw.create_window(
-        width, height, &format!("Triforces DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
-    );
-    let (mut window, events) = match maybe_glfw_window {
-        Some(tuple) => tuple,
-        None => {
-            log!(logger, "Failed to create GLFW window");
-            return Err(String::new());
-        }
-    };
-
-    window.make_current();
-    window.set_key_polling(true);
-    window.set_size_polling(true);
-    window.set_refresh_polling(true);
-    window.set_size_polling(true);
-
-    // Load the OpenGl function pointers.
-    gl::load_with(|symbol| { window.get_proc_address(symbol) as *const _ });
-
-    // Get renderer and version information.
-    let renderer = glubyte_ptr_to_string(unsafe { gl::GetString(gl::RENDERER) });
-    println!("Renderer: {}", renderer);
-    log!(logger, "Renderer: {}", renderer);
-
-    let version = glubyte_ptr_to_string(unsafe { gl::GetString(gl::VERSION) });
-    println!("OpenGL version supported: {}", version);
-    log!(logger, "OpenGL version supported: {}", version);
-    log!(logger, "{}", gl_params());
-
-    Ok(GLState {
-        glfw: glfw,
-        window: window,
-        events: events,
-        logger: logger,
-        width: width,
-        height: height,
-        channel_depth: 3,
-        running_time_seconds: 0.0,
-        framerate_time_seconds: 0.0,
-        frame_count: 0,
-        shaders: HashMap::new(),
-        textures: HashMap::new(),
-        buffers: HashMap::new(),
-    })
-}
-
 ///
 /// Initialize a new OpenGL context and start a new GLFW window. 
 ///
-#[cfg(not(target_os = "macos"))]
 pub fn start_gl(width: u32, height: u32, log_file: &str) -> Result<GLState, String> {
     // Initiate a logger.
     let logger = Logger::from(log_file);
