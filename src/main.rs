@@ -517,7 +517,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
 /// Initialize the demo.
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
-    let mut gl_state = match glh::start_gl(800, 480, GL_LOG_FILE) {
+    let mut gl_state = match glh::start_gl(720, 480, GL_LOG_FILE) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");
