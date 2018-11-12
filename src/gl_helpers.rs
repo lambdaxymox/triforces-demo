@@ -331,7 +331,9 @@ impl fmt::Display for ShaderCompilationError {
     }
 }
 
-pub fn parse_shader(file_name: &str, shader_str: &mut [u8]) -> Result<usize, ShaderCompilationError> {
+pub fn parse_shader(
+    file_name: &str, shader_str: &mut [u8]) -> Result<usize, ShaderCompilationError> {
+
     shader_str[0] = 0;
     let file = match File::open(file_name) {
         Ok(val) => val,
@@ -393,7 +395,10 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
 }
 
 
-pub fn create_shader(context: &GLState, file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
+pub fn create_shader(
+    context: &GLState,
+    file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
+
     log!(context.logger, "Creating shader from {}...\n", file_name);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
@@ -500,7 +505,10 @@ pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
 ///
 /// Compile and link a shader program.
 ///
-pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
+pub fn create_program(
+    context: &GLState,
+    vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
+
     let program = unsafe { gl::CreateProgram() };
     log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n",
         program, vertex_shader, fragment_shader
@@ -539,7 +547,10 @@ pub fn create_program(context: &GLState, vertex_shader: GLuint, fragment_shader:
 ///
 /// Compile and link a shader program directly from the files.
 ///
-pub fn create_program_from_files(context: &GLState, vert_file_name: &str, frag_file_name: &str) -> Result<GLuint, ShaderCompilationError> {
+pub fn create_program_from_files(
+    context: &GLState,
+    vert_file_name: &str, frag_file_name: &str) -> Result<GLuint, ShaderCompilationError> {
+
     let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER)?;
     let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER)?;
     let program = create_program(context, vertex_shader, fragment_shader)?;
