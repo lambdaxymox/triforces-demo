@@ -177,6 +177,7 @@ fn __init_glfw() -> Glfw {
     glfw.window_hint(glfw::WindowHint::ContextVersionMinor(3));
     glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
     glfw.window_hint(glfw::WindowHint::OpenGlProfile(glfw::OpenGlProfileHint::Core));
+    glfw.window_hint(glfw::WindowHint::OpenGlForwardCompat(true));
 
     glfw
 }
