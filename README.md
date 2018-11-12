@@ -12,7 +12,7 @@ to run it.
 ### Linux
 This program requires a recent version of Rust (>= 1.30.0) and OpenGL 4.60 to run.
 ### Microsoft Windows
-This program requires a recent version of Rust (= 1.30.0) and OpenGL 3.30 to run.
+This program requires a recent version of Rust (>= 1.30.0) and OpenGL 3.30 to run.
 ### Apple MacOS
 Coming soon.
 
