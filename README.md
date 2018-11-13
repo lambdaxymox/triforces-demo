@@ -3,7 +3,11 @@
 
 ## Installation
 Fork the demo and enter
+```bash
+cargo build
 ```
+to build it, and then
+```bash
 cargo run
 ```
 to run it.
