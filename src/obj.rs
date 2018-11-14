@@ -20,7 +20,7 @@ impl ObjMesh {
     ///
     /// Generate a new mesh object.
     ///
-    fn new(points: Vec<[f32; 3]>, tex_coords: Vec<[f32; 2]>, normals: Vec<[f32; 3]>) -> ObjMesh {
+    pub fn new(points: Vec<[f32; 3]>, tex_coords: Vec<[f32; 2]>, normals: Vec<[f32; 3]>) -> ObjMesh {
         ObjMesh {
             points: points,
             tex_coords: tex_coords,
@@ -34,7 +34,7 @@ impl ObjMesh {
     /// system for rendering.
     ///
     #[inline]
-    fn points(&self) -> &[[f32; 3]] {
+    pub fn points(&self) -> &[[f32; 3]] {
         &self.points
     }
 
@@ -44,7 +44,7 @@ impl ObjMesh {
     /// system for rendering.
     ///
     #[inline]
-    fn tex_coords(&self) -> &[[f32; 2]] {
+    pub fn tex_coords(&self) -> &[[f32; 2]] {
         &self.tex_coords
     }
 
@@ -54,7 +54,7 @@ impl ObjMesh {
     /// system for rendering.
     ///
     #[inline]
-    fn normals(&self) -> &[[f32; 3]] {
+    pub fn normals(&self) -> &[[f32; 3]] {
         &self.normals
     }
 
