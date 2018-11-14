@@ -1,7 +1,7 @@
 extern crate chrono;
 extern crate glfw;
 extern crate stb_image;
-extern crate simple_cgmath;
+extern crate cgmath;
 extern crate wavefront;
 
 
@@ -25,7 +25,7 @@ use gl::types::{
 };
 
 use gl_helpers as glh;
-use simple_cgmath as math;
+use cgmath as math;
 
 use camera::Camera;
 use component::{
@@ -258,7 +258,7 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
     assert!(points_loc > -1);
     let points_loc = points_loc as u32;
 
-    let tex_coords_loc = unsafe { gl:: GetAttribLocation(shader, glh::gl_str("v_tex").as_ptr()) };
+    let tex_coords_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_tex").as_ptr()) };
     assert!(tex_coords_loc > -1);
     let tex_coords_loc = tex_coords_loc as u32;
 
