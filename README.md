@@ -1,5 +1,6 @@
 ![Title Screen](readme.png)
 # Triforces OpenGL Demo
+A 3D demo demonstrating some animation and Blinn-Phong shading.
 
 ## Installation
 Fork the demo and enter
@@ -14,11 +15,11 @@ to run it.
 
 ## Dependencies
 ### Linux
-This program requires a recent version of Rust (>= 1.30.0) and OpenGL 4.60 to run.
+This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 4.60` to run.
 ### Microsoft Windows
-This program requires a recent version of Rust (>= 1.30.0) and OpenGL 3.30 to run.
+This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 3.30` to run.
 ### Apple MacOS
-Coming soon.
+This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 3.30` to run.
 
 ## Controls
 The demo has the following control scheme.
