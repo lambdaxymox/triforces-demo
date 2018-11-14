@@ -127,6 +127,7 @@ pub fn load_file(file_name: &str) -> Result<ObjMesh, String> {
     load(&mut reader)
 }
 
+#[cfg(test)]
 mod loader_tests {
     use super::ObjMesh;
     use std::io::{BufReader, Cursor};
