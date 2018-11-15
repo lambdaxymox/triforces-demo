@@ -38,6 +38,7 @@ use lights::PointLight;
 use texture::{TexImage2D};
 
 use std::mem;
+use std::path::Path;
 use std::process;
 use std::ptr;
 use std::collections::HashMap;
@@ -91,12 +92,12 @@ struct GameContext {
     entities: EntityDatabase,
 }
 
-fn asset_file(file: &str) -> String {
-    format!("{}/{}", ASSET_PATH, file)
+fn shader_file<P: AsRef<Path>>(path: P) -> String {
+    String::from(Path::new(SHADER_PATH).join(path).to_str().unwrap())
 }
 
-fn shader_file(file: &str) -> String {
-    format!("{}/{}", SHADER_PATH, file)
+fn asset_file<P: AsRef<Path>>(path: P) -> String {
+    String::from(Path::new(ASSET_PATH).join(path).to_str().unwrap())
 }
 
 fn create_light() -> PointLight {
