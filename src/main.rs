@@ -60,17 +60,6 @@ const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 const CONFIG_FILE: &str = "config/config.toml";
 
 
-// Shader paths.
-#[cfg(target_os = "macos")]
-const SHADER_PATH: &str = "shaders/330";
-
-#[cfg(target_os = "windows")]
-const SHADER_PATH: &str = "shaders/330";
-
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
-const SHADER_PATH: &str = "shaders/420";
-
-
 struct EntityDatabase {
     meshes: HashMap<EntityID, obj::ObjMesh>,
     shader_sources: HashMap<EntityID, ShaderSource>,
@@ -103,7 +92,10 @@ impl GameContext {
     }
 
     fn shader_file<P: AsRef<Path>>(&self, path: P) -> String {
-        format!("{}", Path::new(SHADER_PATH).join(path).display())
+        let shader_path = Path::new(&self.config.shader_path);
+        let shader_version = Path::new(&self.config.shader_version);
+        let file_path = shader_path.join(shader_version).join(path);
+        format!("{}", file_path.display())
     }
 
 }
