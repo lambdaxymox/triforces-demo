@@ -69,8 +69,6 @@ const SHADER_PATH: &str = "shaders/330";
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 const SHADER_PATH: &str = "shaders/420";
 
-//const ASSET_PATH: &str = "assets";
-
 
 struct EntityDatabase {
     meshes: HashMap<EntityID, obj::ObjMesh>,
