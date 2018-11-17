@@ -132,15 +132,19 @@ fn create_camera(width: f32, height: f32) -> Camera {
 ///
 /// Load texture image.
 ///
-fn load_image(file_name: &str) -> Result<TexImage2D, String> {
+fn load_image<P: AsRef<Path>>(file_name: P) -> Result<TexImage2D, String> {
     let force_channels = 4;
-    let mut image_data = match image::load_with_depth(file_name, force_channels, false) {
+    let mut image_data = match image::load_with_depth(&file_name, force_channels, false) {
         LoadResult::ImageU8(image_data) => image_data,
         LoadResult::Error(_) => {
-            return Err(format!("ERROR: could not load {}", file_name));
+            let disp = file_name.as_ref().display();
+            return Err(format!("ERROR: could not load {}", disp));
         }
         LoadResult::ImageF32(_) => {
-            return Err(format!("ERROR: Tried to load an image as byte vectors, got f32: {}", file_name));
+            let disp = file_name.as_ref().display();
+            return Err(
+                format!("ERROR: Tried to load an image as byte vectors, got f32: {}", disp)
+            );
         }
     };
 
@@ -149,7 +153,8 @@ fn load_image(file_name: &str) -> Result<TexImage2D, String> {
 
     // Check that the image size is a power of two.
     if (width & (width - 1)) != 0 || (height & (height - 1)) != 0 {
-        eprintln!("WARNING: texture {} is not power-of-2 dimensions", file_name);
+        let disp = file_name.as_ref().display();
+        eprintln!("WARNING: texture {} is not power-of-2 dimensions", disp);
     }
 
     let width_in_bytes = 4 *width;
