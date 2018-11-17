@@ -44,7 +44,7 @@ use lights::PointLight;
 use texture::TexImage2D;
 
 use std::mem;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process;
 use std::ptr;
 use std::collections::HashMap;
@@ -87,15 +87,16 @@ struct GameContext {
 }
 
 impl GameContext {
-    fn asset_file<P: AsRef<Path>>(&self, path: P) -> String {
-        format!("{}", Path::new(&self.config.asset_path).join(path).display())
+    fn asset_file<P: AsRef<Path>>(&self, path: P) -> PathBuf {
+        Path::new(&self.config.asset_path).join(path)
     }
 
-    fn shader_file<P: AsRef<Path>>(&self, path: P) -> String {
+    fn shader_file<P: AsRef<Path>>(&self, path: P) -> PathBuf {
         let shader_path = Path::new(&self.config.shader_path);
         let shader_version = Path::new(&self.config.shader_version);
         let file_path = shader_path.join(shader_version).join(path);
-        format!("{}", file_path.display())
+
+        file_path
     }
 
 }
