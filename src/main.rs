@@ -33,6 +33,7 @@ use gl_helpers as glh;
 use cgmath as math;
 
 use camera::Camera;
+use config::Config;
 use component::{
     BufferHandle, EntityID,
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource,
@@ -40,7 +41,7 @@ use component::{
 };
 use math::{Matrix4, Quaternion, AsArray};
 use lights::PointLight;
-use texture::{TexImage2D};
+use texture::TexImage2D;
 
 use std::mem;
 use std::path::Path;
@@ -56,8 +57,7 @@ use stb_image::image::LoadResult;
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
-// Log file.
-const GL_LOG_FILE: &str = "gl.log";
+const CONFIG_FILE: &str = "config/config.toml";
 
 // Shader paths.
 #[cfg(target_os = "macos")]
@@ -522,8 +522,8 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
 ///
 /// Initialize the demo.
 ///
-fn init_game_state(ids: &[EntityID]) -> GameContext {
-    let mut gl_state = match glh::start_gl(720, 480, GL_LOG_FILE) {
+fn init_game_state(config: &Config, ids: &[EntityID]) -> GameContext {
+    let mut gl_state = match glh::start_gl(720, 480, &config.gl_log_file) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");
@@ -571,8 +571,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
 }
 
 fn main() {
+    let config = config::load(CONFIG_FILE).unwrap();
     let ids = [EntityID::new(0), EntityID::new(1), EntityID::new(2), EntityID::new(3)];
-    let mut context = init_game_state(&ids);
+    let mut context = init_game_state(&config, &ids);
 
     // Triforce animation parameters.
     let v_triforce: f32 = 5.0; // Meters per second.
