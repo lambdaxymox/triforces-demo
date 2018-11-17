@@ -1,0 +1,24 @@
+gl_log_file = "gl.log"
+
+ground_plane_obj = "ground_plane.obj"
+ground_plane_tex = "ground_plane.png"
+triangle_obj = "triangle.obj"
+triangle_tex = "triangle.png"
+
+# Asset paths
+shader_path = "shaders"
+shader_version = "420"
+asset_path = "assets"
+
+
+[platform]
+# Platform specific parameters.
+
+[platform.macos]
+shader_version = "330"
+
+[platform.windows]
+shader_version = "330"
+
+[platform.linux]
+shader_version = "420"
