@@ -59,6 +59,7 @@ const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
 const CONFIG_FILE: &str = "config/config.toml";
 
+
 // Shader paths.
 #[cfg(target_os = "macos")]
 const SHADER_PATH: &str = "shaders/330";
@@ -100,10 +101,11 @@ impl GameContext {
     fn asset_file<P: AsRef<Path>>(&self, path: P) -> String {
         format!("{}", Path::new(&self.config.asset_path).join(path).display())
     }
-}
 
-fn shader_file<P: AsRef<Path>>(path: P) -> String {
-    format!("{}", Path::new(SHADER_PATH).join(path).display())
+    fn shader_file<P: AsRef<Path>>(&self, path: P) -> String {
+        format!("{}", Path::new(SHADER_PATH).join(path).display())
+    }
+
 }
 
 fn create_light() -> PointLight {
@@ -323,7 +325,9 @@ fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
 
 fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     let sp = glh::create_program_from_files(
-        &context.gl, &shader_file("ground_plane.vert.glsl"), &shader_file("ground_plane.frag.glsl")
+        &context.gl,
+        &context.shader_file("ground_plane.vert.glsl"),
+        &context.shader_file("ground_plane.frag.glsl")
     ).unwrap();
     assert!(sp > 0);
 
@@ -442,7 +446,9 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
 ///
 fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     let sp = glh::create_program_from_files(
-        &context.gl, &shader_file("triangle.vert.glsl"), &shader_file("triangle.frag.glsl")
+        &context.gl,
+        &context.shader_file("triangle.vert.glsl"),
+        &context.shader_file("triangle.frag.glsl")
     ).unwrap();
     assert!(sp > 0);
 
