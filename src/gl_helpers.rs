@@ -12,6 +12,7 @@ use std::sync::mpsc::Receiver;
 use std::ptr;
 use std::fmt;
 use std::mem;
+use std::path::Path;
 use std::collections::HashMap;
 
 use logger::Logger;
@@ -331,14 +332,15 @@ impl fmt::Display for ShaderCompilationError {
     }
 }
 
-pub fn parse_shader(
-    file_name: &str, shader_str: &mut [u8]) -> Result<usize, ShaderCompilationError> {
+pub fn parse_shader<P: AsRef<Path>>(
+    file_name: P, shader_str: &mut [u8]) -> Result<usize, ShaderCompilationError> {
 
     shader_str[0] = 0;
-    let file = match File::open(file_name) {
+    let file = match File::open(&file_name) {
         Ok(val) => val,
         Err(_) => {
-            return Err(ShaderCompilationError::ShaderNotFound(file_name.to_string()));
+            let disp = file_name.as_ref().display().to_string();
+            return Err(ShaderCompilationError::ShaderNotFound(disp));
         }
     };
 
@@ -346,7 +348,8 @@ pub fn parse_shader(
     let bytes_read = match reader.read(shader_str) {
         Ok(val) => val,
         Err(_) => {
-            return Err(ShaderCompilationError::CouldNotParseShader(file_name.to_string()));
+            let disp = file_name.as_ref().display().to_string();
+            return Err(ShaderCompilationError::CouldNotParseShader(disp));
         }
     };
 
@@ -395,14 +398,15 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
 }
 
 
-pub fn create_shader(
+pub fn create_shader<P: AsRef<Path>>(
     context: &GLState,
-    file_name: &str, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
+    file_name: P, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
 
-    log!(context.logger, "Creating shader from {}...\n", file_name);
+    let disp = file_name.as_ref().display();
+    log!(context.logger, "Creating shader from {}...\n", disp);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
-    let bytes_read = match parse_shader(file_name, &mut shader_string) {
+    let bytes_read = match parse_shader(&file_name, &mut shader_string) {
         Ok(val) => val,
         Err(e) => {
             log_err!(context.logger, &format!("{}", e));
@@ -433,7 +437,9 @@ pub fn create_shader(
     if params != gl::TRUE as i32 {
         let log = shader_info_log(shader);
         log_err!(context.logger, "ERROR: GL shader index {} did not compile\n{}", shader, log);
-        return Err(ShaderCompilationError::CouldNotCompileShader(file_name.to_string()));
+        return Err(
+            ShaderCompilationError::CouldNotCompileShader(format!("{}", disp))
+        );
     }
     log!(context.logger, "Shader compiled with index {}\n", shader);
     
@@ -553,9 +559,9 @@ pub fn create_program(
 ///
 /// Compile and link a shader program directly from the files.
 ///
-pub fn create_program_from_files(
+pub fn create_program_from_files<P: AsRef<Path>, Q: AsRef<Path>>(
     context: &GLState,
-    vert_file_name: &str, frag_file_name: &str) -> Result<GLuint, ShaderCompilationError> {
+    vert_file_name: P, frag_file_name: Q) -> Result<GLuint, ShaderCompilationError> {
 
     let vertex_shader = create_shader(context, vert_file_name, gl::VERTEX_SHADER)?;
     let fragment_shader = create_shader(context, frag_file_name, gl::FRAGMENT_SHADER)?;
