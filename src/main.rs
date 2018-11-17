@@ -91,6 +91,7 @@ impl EntityDatabase {
 }
 
 struct GameContext {
+    config: Config,
     gl: glh::GLState,
     camera: Camera,
     light: PointLight,
@@ -522,7 +523,8 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
 ///
 /// Initialize the demo.
 ///
-fn init_game_state(config: &Config, ids: &[EntityID]) -> GameContext {
+fn init_game_state(ids: &[EntityID]) -> GameContext {
+    let config = config::load(CONFIG_FILE).unwrap();
     let mut gl_state = match glh::start_gl(720, 480, &config.gl_log_file) {
         Ok(val) => val,
         Err(e) => {
@@ -535,6 +537,7 @@ fn init_game_state(config: &Config, ids: &[EntityID]) -> GameContext {
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
     let light = create_light();
     let mut context = GameContext {
+        config: config,
         gl: gl_state,
         camera: camera,
         light: light,
@@ -571,9 +574,8 @@ fn init_game_state(config: &Config, ids: &[EntityID]) -> GameContext {
 }
 
 fn main() {
-    let config = config::load(CONFIG_FILE).unwrap();
     let ids = [EntityID::new(0), EntityID::new(1), EntityID::new(2), EntityID::new(3)];
-    let mut context = init_game_state(&config, &ids);
+    let mut context = init_game_state(&ids);
 
     // Triforce animation parameters.
     let v_triforce: f32 = 5.0; // Meters per second.
