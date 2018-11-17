@@ -17,6 +17,7 @@ mod gl {
 mod logger;
 
 mod camera;
+mod config;
 mod gl_helpers;
 mod component;
 mod obj;
