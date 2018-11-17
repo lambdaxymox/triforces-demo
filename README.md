@@ -15,11 +15,12 @@ to run it.
 
 ## Dependencies
 ### Linux
-This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 4.60` to run.
+This program requires `Rust 2018 Edition (>= 1.30.0)` and `OpenGL (>= 4.60)` to run.
 ### Microsoft Windows
-This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 3.30` to run.
+This program requires `Rust 2018 Edition (>= 1.30.0)` and `OpenGL (>= 3.30)` to run.
 ### Apple MacOS
-This program requires a recent version of `Rust (>= 1.30.0)` and `OpenGL 3.30` to run.
+This program requires a recent version of `Rust (>= 1.30.0)` and `(OpenGL >= 3.30)` to run. 
+It runs on `macOS` 10.9 through 10.13. As of `macOS` 10.14, OpenGL is deprecated.
 
 ## Controls
 The demo has the following control scheme.
