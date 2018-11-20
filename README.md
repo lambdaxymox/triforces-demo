@@ -5,7 +5,7 @@ A 3D demo demonstrating some animation and Blinn-Phong shading.
 ## Installation
 Fork the demo and enter
 ```bash
-cargo build
+cargo build --release
 ```
 to build it, and then
 ```bash
