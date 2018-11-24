@@ -1,4 +1,4 @@
-log_file = "triforces-demo.log"
+log_file = "triforces-demo.toml"
 
 ground_plane_obj = "ground_plane.obj"
 ground_plane_tex = "ground_plane.png"
