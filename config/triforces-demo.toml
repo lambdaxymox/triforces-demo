@@ -1,9 +1,5 @@
 log_file = "triforces-demo.toml"
 
-
-triangle_obj = "triangle.obj"
-triangle_tex = "triangle.png"
-
 # Asset paths
 shader_path = "shaders"
 shader_version = "420"
