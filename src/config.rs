@@ -6,7 +6,7 @@ use toml;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Config {
-    pub gl_log_file: String,
+    pub log_file: String,
     pub ground_plane_obj: PathBuf,
     pub ground_plane_tex: PathBuf,
     pub triangle_obj: PathBuf,

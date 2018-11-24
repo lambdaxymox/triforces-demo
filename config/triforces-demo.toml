@@ -1,4 +1,4 @@
-gl_log_file = "gl.log"
+log_file = "triforces-demo.log"
 
 ground_plane_obj = "ground_plane.obj"
 ground_plane_tex = "ground_plane.png"
