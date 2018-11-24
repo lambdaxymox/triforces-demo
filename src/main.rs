@@ -54,7 +54,7 @@ use std::collections::HashMap;
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
-const CONFIG_FILE: &str = "config/config.toml";
+const CONFIG_FILE: &str = "config/triforces-demo.toml";
 
 
 struct EntityDatabase {
