@@ -1,4 +1,4 @@
-log_file = "triforces-demo.toml"
+log_file = "triforces-demo.log"
 
 # Asset paths
 shader_path = "shaders"
