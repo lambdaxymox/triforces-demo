@@ -1,6 +1,5 @@
 log_file = "triforces-demo.toml"
 
-ground_plane_obj = "ground_plane.obj"
 ground_plane_tex = "ground_plane.png"
 triangle_obj = "triangle.obj"
 triangle_tex = "triangle.png"
