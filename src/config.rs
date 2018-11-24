@@ -4,7 +4,7 @@ use std::io::Read;
 use toml;
 
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     pub log_file: String,
     pub shader_path: PathBuf,
@@ -13,24 +13,24 @@ pub struct Config {
     platform: Platform,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct Platform {
     macos: MacOS,
     windows: Windows,
     linux: Linux,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct MacOS {
     shader_version: PathBuf
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct Windows {
     shader_version: PathBuf,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct Linux {
     shader_version: PathBuf,
 }
