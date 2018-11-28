@@ -41,23 +41,6 @@ impl Logger {
 
         true
     }
-
-    ///
-    /// Write a message to the log file, and also write it to stderr.
-    ///
-    pub fn log_err(&self, message: &str) -> bool {
-        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
-        if file.is_err() {
-            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
-            return false;
-        }
-
-        let mut file = file.unwrap();
-        writeln!(file, "{}", message).unwrap();
-        eprintln!("{}", message);
-
-        true
-    }
 }
 
 impl<'a> From<&'a str> for Logger {
