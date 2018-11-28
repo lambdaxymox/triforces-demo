@@ -2,7 +2,6 @@ use chrono::prelude::Utc;
 use log;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
-use std::fmt;
 
 
 pub struct Logger {

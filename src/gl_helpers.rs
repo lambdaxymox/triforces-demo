@@ -16,8 +16,7 @@ use std::mem;
 use std::path::Path;
 
 use logger::Logger;
-use log::{log, info, error};
-use log::{Level};
+use log::{info, error};
 
 
 // 256 Kilobytes.
@@ -490,7 +489,7 @@ pub fn program_info_log(index: GLuint) -> ProgramLog {
 /// Use this for information purposes in application development. Return `true` if the program and
 /// OpenGL state contain no errors.
 ///
-pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
+pub fn validate_shader_program(sp: GLuint) -> bool {
     let mut params = -1;
     unsafe {
         gl::ValidateProgram(sp);
