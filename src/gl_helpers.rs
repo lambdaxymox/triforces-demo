@@ -16,6 +16,8 @@ use std::mem;
 use std::path::Path;
 
 use logger::Logger;
+use log::{log, info, error};
+use log::{Level};
 
 
 // 256 Kilobytes.
@@ -213,20 +215,20 @@ pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<
     logger.restart();
 
     // Start GL context and O/S window using the GLFW helper library.
-    log!(logger, "Starting GLFW");
-    log!(logger, "Using GLFW version {}", glfw::get_version_string());
+    info!("Starting GLFW");
+    info!("Using GLFW version {}", glfw::get_version_string());
 
     // Start a GL context and OS window using the GLFW helper library.
     let glfw = __init_glfw();
 
-    log!(logger, "Started GLFW successfully");
+    info!("Started GLFW successfully");
     let maybe_glfw_window = glfw.create_window(
         width, height, &format!("Triforces DEMO @ {:.2} FPS", 0.0), glfw::WindowMode::Windowed
     );
     let (mut window, events) = match maybe_glfw_window {
         Some(tuple) => tuple,
         None => {
-            log!(logger, "Failed to create GLFW window");
+            error!("Failed to create GLFW window");
             return Err(String::new());
         }
     };
@@ -243,12 +245,12 @@ pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<
     // Get renderer and version information.
     let renderer = glubyte_ptr_to_string(unsafe { gl::GetString(gl::RENDERER) });
     println!("Renderer: {}", renderer);
-    log!(logger, "Renderer: {}", renderer);
+    info!("Renderer: {}", renderer);
 
     let version = glubyte_ptr_to_string(unsafe { gl::GetString(gl::VERSION) });
     println!("OpenGL version supported: {}", version);
-    log!(logger, "OpenGL version supported: {}", version);
-    log!(logger, "{}", gl_params());
+    info!("OpenGL version supported: {}", version);
+    info!("{}", gl_params());
 
     Ok(GLState {
         glfw: glfw, 
@@ -401,19 +403,19 @@ pub fn create_shader<P: AsRef<Path>>(
     file_name: P, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
 
     let disp = file_name.as_ref().display();
-    log!(context.logger, "Creating shader from {}...\n", disp);
+    info!("Creating shader from {}...\n", disp);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
     let bytes_read = match parse_shader(&file_name, &mut shader_string) {
         Ok(val) => val,
         Err(e) => {
-            log_err!(context.logger, &format!("{}", e));
+            error!("{}", e);
             return Err(e);
         }
     };
 
     if bytes_read >= (MAX_SHADER_LENGTH - 1) {
-        log!(context.logger,
+        info!(
             "WARNING: The shader was truncated because the shader code 
             was longer than MAX_SHADER_LENGTH {} bytes.", MAX_SHADER_LENGTH
         );
@@ -434,12 +436,12 @@ pub fn create_shader<P: AsRef<Path>>(
 
     if params != gl::TRUE as i32 {
         let log = shader_info_log(shader);
-        log_err!(context.logger, "ERROR: GL shader index {} did not compile\n{}", shader, log);
+        error!("ERROR: GL shader index {} did not compile\n{}", shader, log);
         return Err(
             ShaderCompilationError::CouldNotCompileShader(format!("{}", disp))
         );
     }
-    log!(context.logger, "Shader compiled with index {}\n", shader);
+    info!("Shader compiled with index {}\n", shader);
     
     Ok(shader)
 }
@@ -496,13 +498,13 @@ pub fn validate_shader_program(logger: &Logger, sp: GLuint) -> bool {
     }
 
     if params != gl::TRUE as i32 {
-        log_err!(logger, "Program {} GL_VALIDATE_STATUS = GL_FALSE\n", sp);
-        log_err!(logger, "{}", program_info_log(sp));
+        error!("Program {} GL_VALIDATE_STATUS = GL_FALSE\n", sp);
+        error!("{}", program_info_log(sp));
         
         return false;
     }
 
-    log!(logger, "Program {} GL_VALIDATE_STATUS = {}\n", sp, params);
+    info!("Program {} GL_VALIDATE_STATUS = {}\n", sp, params);
     
     true
 }
@@ -515,7 +517,7 @@ pub fn create_program(
     vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
 
     let program = unsafe { gl::CreateProgram() };
-    log!(context.logger, "Created programme {}. attaching shaders {} and {}...\n",
+    info!("Created programme {}. attaching shaders {} and {}...\n",
         program, vertex_shader, fragment_shader
     );
 
@@ -532,8 +534,8 @@ pub fn create_program(
         gl::GetProgramiv(program, gl::LINK_STATUS, &mut params);
     }
     if params != gl::TRUE as i32 {
-        log_err!(context.logger, "ERROR: could not link shader programme GL index {}\n", program);
-        log_err!(context.logger, "{}", program_info_log(program));
+        error!("ERROR: could not link shader programme GL index {}\n", program);
+        error!("{}", program_info_log(program));
         return Err(ShaderCompilationError::CouldNotLinkShader);
     }
 

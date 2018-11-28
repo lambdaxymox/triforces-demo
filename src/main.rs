@@ -5,6 +5,7 @@ extern crate cgmath;
 extern crate wavefront;
 extern crate serde;
 extern crate toml;
+extern crate log;
 
 #[macro_use]
 extern crate serde_derive;

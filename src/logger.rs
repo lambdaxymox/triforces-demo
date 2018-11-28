@@ -3,6 +3,8 @@ use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::fmt;
 
+use log;
+
 
 pub struct Logger {
     log_file: String,
@@ -16,25 +18,6 @@ impl Logger {
         Logger {
             log_file: String::from(log_file),
         }
-    }
-
-    ///
-    /// Finish writing to a log. This function is used to place any final
-    /// information in a log file before the logger goes out of scope.
-    ///
-    fn flush(&self) -> bool {
-        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
-        if file.is_err() {
-            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
-            return false;
-        }
-
-        let mut file = file.unwrap();
-        let date = Utc::now();
-        writeln!(file, "Logging finished at local time {}", date).unwrap();
-        writeln!(file, "END LOG").unwrap();
-
-        true
     }
 
     ///
@@ -55,22 +38,6 @@ impl Logger {
         let date = Utc::now();
         writeln!(file, "OpenGL application log.\nStarted at local time {}", date).unwrap();
         writeln!(file, "build version: ??? ?? ???? ??:??:??\n\n").unwrap();
-
-        true
-    }
-
-    ///
-    /// Write a message to the log file.
-    ///
-    pub fn log(&self, message: &str) -> bool {
-        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
-        if file.is_err() {
-            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
-            return false;
-        }
-
-        let mut file = file.unwrap();
-        writeln!(file, "{}", message).unwrap();
 
         true
     }
@@ -101,35 +68,38 @@ impl<'a> From<&'a str> for Logger {
 
 impl Drop for Logger {
     fn drop(&mut self) {
-        self.flush();
+        <Logger as log::Log>::flush(self);
     }
 }
 
-impl fmt::Write for Logger {
-    fn write_str(&mut self, s: &str) -> Result<(), fmt::Error> {
-        match self.log(s) {
-            true => Ok(()),
-            false => Err(fmt::Error),
+impl log::Log for Logger {
+    fn enabled(&self, metadata: &log::Metadata) -> bool {
+        true
+    }
+
+    /// Write a message to the log file.
+    fn log(&self, record: &log::Record) {
+        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
+        if file.is_err() {
+            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
         }
+
+        let mut file = file.unwrap();
+        writeln!(file, "{}", record.args()).unwrap();
+    }
+
+    /// Finish writing to a log. This function is used to place any final
+    /// information in a log file before the logger goes out of scope.
+    fn flush(&self) {
+        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
+        if file.is_err() {
+            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
+        }
+
+        let mut file = file.unwrap();
+        let date = Utc::now();
+        writeln!(file, "Logging finished at local time {}", date).unwrap();
+        writeln!(file, "END LOG").unwrap();
     }
 }
 
-#[macro_export]
-macro_rules! log {
-    ($logger:expr, $format:expr) => {
-        $logger.log($format);
-    };
-    ($logger:expr, $format:expr, $($arg:expr), *) => {
-        $logger.log(&format!($format, $($arg,)*));
-    };
-}
-
-#[macro_export]
-macro_rules! log_err {
-    ($logger:expr, $format:expr) => {
-        $logger.log_err($format);
-    };
-    ($logger:expr, $format:expr, $($arg:expr), *) => {
-        $logger.log_err(&format!($format, $($arg,)*));
-    };    
-}
