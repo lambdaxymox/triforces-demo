@@ -14,7 +14,6 @@ use std::ptr;
 use std::fmt;
 use std::mem;
 use std::path::Path;
-use std::collections::HashMap;
 
 use logger::Logger;
 

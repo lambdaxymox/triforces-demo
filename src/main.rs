@@ -35,7 +35,7 @@ use cgmath as math;
 use camera::Camera;
 use component::{
     BufferHandle, EntityID,
-    ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource,
+    ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
     TextureHandle
 };
 use math::{Matrix4, Quaternion, AsArray};
