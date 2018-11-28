@@ -523,8 +523,8 @@ fn load_config() -> config::ProgramConfig {
 ///
 /// Initialize the logger.
 ///
-fn init_logger() {
-
+fn init_logger(log_file: &str) {
+    logger::init(log_file).expect("Failed to initialize logger.");
 }
 
 ///
@@ -532,6 +532,7 @@ fn init_logger() {
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
     let config = load_config();
+    init_logger(config.log_file.to_str().unwrap());
     let gl_state = match glh::start_gl(720, 480, &config.log_file) {
         Ok(val) => val,
         Err(e) => {
