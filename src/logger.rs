@@ -35,10 +35,6 @@ impl Logger {
 
         let mut file = file.unwrap();
 
-        let date = Utc::now();
-        writeln!(file, "OpenGL application log.\nStarted at local time {}", date).unwrap();
-        writeln!(file, "build version: ??? ?? ???? ??:??:??\n\n").unwrap();
-
         true
     }
 }
@@ -62,7 +58,8 @@ impl log::Log for Logger {
         }
 
         let mut file = file.unwrap();
-        writeln!(file, "{}", record.args()).unwrap();
+        let date = Utc::now();
+        writeln!(file, "[{}] {}", date, record.args()).unwrap();
     }
 
     /// Finish writing to a log. This function is used to place any final
@@ -75,8 +72,7 @@ impl log::Log for Logger {
 
         let mut file = file.unwrap();
         let date = Utc::now();
-        writeln!(file, "Logging finished at local time {}", date).unwrap();
-        writeln!(file, "END LOG").unwrap();
+        writeln!(file, "{} END LOG", date).unwrap();
     }
 }
 

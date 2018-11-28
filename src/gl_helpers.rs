@@ -395,7 +395,7 @@ pub fn create_shader<P: AsRef<Path>>(
     file_name: P, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
 
     let disp = file_name.as_ref().display();
-    info!("Creating shader from {}...\n", disp);
+    info!("Creating shader from {}.\n", disp);
 
     let mut shader_string = vec![0; MAX_SHADER_LENGTH];
     let bytes_read = match parse_shader(&file_name, &mut shader_string) {

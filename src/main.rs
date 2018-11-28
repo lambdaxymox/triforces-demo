@@ -41,7 +41,9 @@ use component::{
 };
 use math::{Matrix4, Quaternion, AsArray};
 use lights::PointLight;
+use log::{info};
 use texture::TexImage2D;
+
 
 use std::mem;
 use std::path::{Path, PathBuf};
@@ -109,7 +111,6 @@ impl GameContext {
 
         file_path
     }
-
 }
 
 fn create_light() -> PointLight {
@@ -525,6 +526,8 @@ fn load_config() -> config::ProgramConfig {
 ///
 fn init_logger(log_file: &str) {
     logger::init(log_file).expect("Failed to initialize logger.");
+    info!("OpenGL application log.");
+    info!("build version: ??? ?? ???? ??:??:??\n\n");
 }
 
 ///
