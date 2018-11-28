@@ -22,7 +22,7 @@ impl Logger {
     /// Finish writing to a log. This function is used to place any final
     /// information in a log file before the logger goes out of scope.
     ///
-    fn finalize(&self) -> bool {
+    fn flush(&self) -> bool {
         let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
         if file.is_err() {
             eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
@@ -101,7 +101,7 @@ impl<'a> From<&'a str> for Logger {
 
 impl Drop for Logger {
     fn drop(&mut self) {
-        self.finalize();
+        self.flush();
     }
 }
 
