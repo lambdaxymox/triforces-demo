@@ -427,7 +427,7 @@ dependencies = [
 
 [[package]]
 name = "triforces-demo"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "gl_generator 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",

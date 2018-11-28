@@ -17,7 +17,7 @@ use std::path::Path;
 use std::collections::HashMap;
 
 use logger::Logger;
-use component::{ShaderProgram, ShaderProgramHandle, BufferHandle, EntityID, TextureHandle};
+use component::{ShaderProgram, BufferHandle, EntityID, TextureHandle};
 
 
 // 256 Kilobytes.
