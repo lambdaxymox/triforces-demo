@@ -540,15 +540,6 @@ pub fn create_program(
         return Err(ShaderCompilationError::CouldNotLinkShader);
     }
 
-    // TODO: Remove this line. This line should only be called after the vertex buffers
-    // and attribute pointers have been loaded and before rendering during application
-    // development.
-    /*
-    if !validate_shader_program(&context.logger, program) {
-        return Err(ShaderCompilationError::ShaderValidationFailed);
-    }
-    */
-
     unsafe {
         // Delete shaders here to free memory.
         gl::DeleteShader(vertex_shader);
