@@ -210,7 +210,7 @@ fn __init_glfw() -> Glfw {
 ///
 pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<GLState, String> {
     // Initiate a logger.
-    let logger = Logger::from(log_file.as_ref().to_str().unwrap());
+    let logger = Logger::new(log_file.as_ref().to_str().unwrap(), log::Level::Trace);
     logger.restart();
 
     // Start GL context and O/S window using the GLFW helper library.

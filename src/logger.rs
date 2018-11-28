@@ -6,15 +6,17 @@ use std::io::Write;
 
 pub struct Logger {
     log_file: String,
+    level: log::Level,
 }
 
 impl Logger {
     ///
     /// Start a new log file with the time and date at the top.
     ///
-    fn new(log_file: &str) -> Logger {
+    pub fn new(log_file: &str, level: log::Level) -> Logger {
         Logger {
             log_file: String::from(log_file),
+            level: level,
         }
     }
 
@@ -41,12 +43,6 @@ impl Logger {
     }
 }
 
-impl<'a> From<&'a str> for Logger {
-    fn from(log_file: &'a str) -> Logger {
-        Logger::new(log_file)
-    }
-}
-
 impl Drop for Logger {
     fn drop(&mut self) {
         <Logger as log::Log>::flush(self);
@@ -55,7 +51,7 @@ impl Drop for Logger {
 
 impl log::Log for Logger {
     fn enabled(&self, metadata: &log::Metadata) -> bool {
-        true
+        metadata.level() <= self.level
     }
 
     /// Write a message to the log file.
@@ -85,7 +81,7 @@ impl log::Log for Logger {
 }
 
 pub fn init_with_level(log_file: &str, level: log::Level) -> Result<(), log::SetLoggerError> {
-    let logger = Logger::new(log_file);
+    let logger = Logger::new(log_file, level);
     log::set_boxed_logger(Box::new(logger))?;
     log::set_max_level(level.to_level_filter());
     Ok(())
