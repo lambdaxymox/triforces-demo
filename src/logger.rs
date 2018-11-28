@@ -2,10 +2,11 @@ use chrono::prelude::Utc;
 use log;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
+use std::path::{Path, PathBuf};
 
 
 pub struct Logger {
-    log_file: String,
+    log_file: PathBuf,
     level: log::Level,
 }
 
@@ -13,29 +14,11 @@ impl Logger {
     ///
     /// Start a new log file with the time and date at the top.
     ///
-    pub fn new(log_file: &str, level: log::Level) -> Logger {
+    pub fn new<P: AsRef<Path>>(log_file: P, level: log::Level) -> Logger {
         Logger {
-            log_file: String::from(log_file),
+            log_file: log_file.as_ref().to_path_buf(),
             level: level,
         }
-    }
-
-    ///
-    /// Start a new log file with the time and date at the top.
-    ///
-    pub fn restart(&self) -> bool {
-        let file = File::create(&self.log_file);
-        if file.is_err() {
-            eprintln!(
-                "ERROR: The OpenGL log file \"{}\" could not be opened for writing.", self.log_file
-            );
-
-            return false;
-        }
-
-        let mut file = file.unwrap();
-
-        true
     }
 }
 
@@ -54,7 +37,10 @@ impl log::Log for Logger {
     fn log(&self, record: &log::Record) {
         let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
         if file.is_err() {
-            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
+            eprintln!(
+                "ERROR: Could not open GL_LOG_FILE {} file for appending.",
+                self.log_file.display()
+            );
         }
 
         let mut file = file.unwrap();
@@ -67,7 +53,10 @@ impl log::Log for Logger {
     fn flush(&self) {
         let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
         if file.is_err() {
-            eprintln!("ERROR: Could not open GL_LOG_FILE {} file for appending.", &self.log_file);
+            eprintln!(
+                "ERROR: Could not open GL_LOG_FILE {} file for appending.",
+                self.log_file.display()
+            );
         }
 
         let mut file = file.unwrap();
