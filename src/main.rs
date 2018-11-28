@@ -539,7 +539,7 @@ fn main() {
     let v_triforce: f32 = 5.0; // Meters per second.
     let mut vhat_triforce = math::vec3((1.0, 0.0, 0.0));
     let mut position_triforce = 0.0;
-    let mut direction = 1.0;
+    let mut direction = aaw1.0;
 
     unsafe {
         // Enable depth testing.
@@ -669,12 +669,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 reset_camera_to_default(&mut context);
                 cam_moved = true;
-            }
-            _ => {}
-        }
-        match context.gl.window.get_key(Key::Space) {
-            Action::Press | Action::Repeat => {
-                println!("axis = {}; norm = {}", context.camera.axis, context.camera.axis.norm());
             }
             _ => {}
         }
