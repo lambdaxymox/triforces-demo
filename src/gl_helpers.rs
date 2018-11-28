@@ -17,7 +17,6 @@ use std::path::Path;
 use std::collections::HashMap;
 
 use logger::Logger;
-use component::{ShaderProgram, BufferHandle, EntityID, TextureHandle};
 
 
 // 256 Kilobytes.
@@ -163,9 +162,6 @@ pub struct GLState {
     pub running_time_seconds: f64,
     pub framerate_time_seconds: f64,
     pub frame_count: u32,
-    pub shaders: HashMap<EntityID, ShaderProgram>,
-    pub textures: HashMap<EntityID, TextureHandle>,
-    pub buffers: HashMap<EntityID, Vec<BufferHandle>>,
 }
 
 #[cfg(target_os = "macos")]
@@ -266,9 +262,6 @@ pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<
         running_time_seconds: 0.0,
         framerate_time_seconds: 0.0,
         frame_count: 0,
-        shaders: HashMap::new(),
-        textures: HashMap::new(),
-        buffers: HashMap::new(),
     })
 }
 
