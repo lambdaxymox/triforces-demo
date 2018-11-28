@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use stb_image::image;
 use stb_image::image::LoadResult;
 use std::path::Path;
