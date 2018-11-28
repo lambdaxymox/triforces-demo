@@ -524,7 +524,7 @@ fn load_config() -> config::ProgramConfig {
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
     let config = load_config();
-    let mut gl_state = match glh::start_gl(720, 480, &config.log_file) {
+    let gl_state = match glh::start_gl(720, 480, &config.log_file) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");
