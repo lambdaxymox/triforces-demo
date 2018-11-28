@@ -521,6 +521,13 @@ fn load_config() -> config::ProgramConfig {
 }
 
 ///
+/// Initialize the logger.
+///
+fn init_logger() {
+
+}
+
+///
 /// Initialize the demo.
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {

@@ -1,9 +1,8 @@
 use chrono::prelude::Utc;
+use log;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::fmt;
-
-use log;
 
 
 pub struct Logger {
@@ -86,3 +85,13 @@ impl log::Log for Logger {
     }
 }
 
+pub fn init_with_level(log_file: &str, level: log::Level) -> Result<(), log::SetLoggerError> {
+    let logger = Logger::new(log_file);
+    log::set_boxed_logger(Box::new(logger))?;
+    log::set_max_level(level.to_level_filter());
+    Ok(())
+}
+
+pub fn init(log_file: &str) -> Result<(), log::SetLoggerError> {
+    init_with_level(log_file, log::Level::Trace)
+}
