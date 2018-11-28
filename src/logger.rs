@@ -1,6 +1,6 @@
 use chrono::prelude::Utc;
 use log;
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -43,7 +43,7 @@ impl log::Log for Logger {
 
         if file.is_err() {
             eprintln!(
-                "ERROR: Could not open the file {} for appending.",
+                "ERROR: Could not open the file {} for writing.",
                 self.log_file.display()
             );
 
@@ -66,7 +66,7 @@ impl log::Log for Logger {
 
         if file.is_err() {
             eprintln!(
-                "ERROR: Could not open the file {} for appending.",
+                "ERROR: Could not open the file {} for writing.",
                 self.log_file.display()
             );
 
