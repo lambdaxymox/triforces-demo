@@ -35,12 +35,19 @@ impl log::Log for Logger {
 
     /// Write a message to the log file.
     fn log(&self, record: &log::Record) {
-        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
+        let file = OpenOptions::new()
+                    .write(true)
+                    .append(true)
+                    .create(true)
+                    .open(&self.log_file);
+
         if file.is_err() {
             eprintln!(
-                "ERROR: Could not open GL_LOG_FILE {} file for appending.",
+                "ERROR: Could not open the file {} for appending.",
                 self.log_file.display()
             );
+
+            return;
         }
 
         let mut file = file.unwrap();
@@ -51,17 +58,24 @@ impl log::Log for Logger {
     /// Finish writing to a log. This function is used to place any final
     /// information in a log file before the logger goes out of scope.
     fn flush(&self) {
-        let file = OpenOptions::new().write(true).append(true).open(&self.log_file);
+        let file = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .create(true)
+            .open(&self.log_file);
+
         if file.is_err() {
             eprintln!(
-                "ERROR: Could not open GL_LOG_FILE {} file for appending.",
+                "ERROR: Could not open the file {} for appending.",
                 self.log_file.display()
             );
+
+            return;
         }
 
         let mut file = file.unwrap();
         let date = Utc::now();
-        writeln!(file, "{} END LOG", date).unwrap();
+        writeln!(file, "[{}] END LOG", date).unwrap();
     }
 }
 
