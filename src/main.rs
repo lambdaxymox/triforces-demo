@@ -33,7 +33,6 @@ use gl_helpers as glh;
 use cgmath as math;
 
 use camera::Camera;
-use config::Config;
 use component::{
     BufferHandle, EntityID,
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle, ShaderSource,
@@ -54,7 +53,19 @@ use std::collections::HashMap;
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
-const CONFIG_FILE: &str = "config/triforces-demo.toml";
+#[cfg(not(feature = "build_for_install"))]
+const CONFIG_HOME: &str = "config";
+
+#[cfg(feature = "build_for_install")]
+const CONFIG_HOME: &str = ".config";
+
+#[cfg(feature = "build_for_install")]
+const DATA_DIR: &str = ".local/share/triforces-demo";
+
+#[cfg(feature = "build_for_install")]
+const BIN_DIR: &str = ".local/bin";
+
+const CONFIG_FILE: &str = "triforces-demo.toml";
 
 
 struct EntityDatabase {
@@ -76,7 +87,7 @@ impl EntityDatabase {
 }
 
 struct GameContext {
-    config: Config,
+    config: config::ProgramConfig,
     gl: glh::GLState,
     camera: Camera,
     light: PointLight,
@@ -478,11 +489,41 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
     ));
 }
 
+
+#[cfg(feature = "build_for_install")]
+#[inline]
+fn __path_config() -> config::PathConfig {
+    let st = env::var("HOME").unwrap();
+    let home = Path::new(&st);
+    let config_home = Path::new(CONFIG_HOME);
+    let bin_dir = Path::new(BIN_DIR);
+    let data_dir = Path::new(DATA_DIR);
+
+    config::PathConfig::new(
+        home.join(config_home), home.join(bin_dir), home.join(data_dir)
+    )
+}
+
+#[cfg(not(feature = "build_for_install"))]
+#[inline]
+fn __path_config() -> config::PathConfig {
+    config::PathConfig::new(
+        PathBuf::from(CONFIG_HOME), PathBuf::from("."), PathBuf::from(".")
+    )
+}
+
+fn load_config() -> config::ProgramConfig {
+    let path_config = __path_config();
+    let file_config = config::load(path_config.config_home.join(CONFIG_FILE)).unwrap();
+
+    config::ProgramConfig::new(path_config, file_config)
+}
+
 ///
 /// Initialize the demo.
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
-    let config = config::load(CONFIG_FILE).unwrap();
+    let config = load_config();
     let mut gl_state = match glh::start_gl(720, 480, &config.log_file) {
         Ok(val) => val,
         Err(e) => {

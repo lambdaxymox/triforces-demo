@@ -19,3 +19,6 @@ gl_generator = "0.10.0"
 
 [profile.dev]
 debug = true
+
+[features]
+build_for_install = []
