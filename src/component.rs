@@ -1,11 +1,6 @@
 use std::collections::HashMap;
 
 
-pub struct ShaderSource {
-    src : String,
-    uniforms: Vec<String>,
-}
-
 #[derive(Copy, Clone, Hash, PartialEq, Eq, Debug)]
 pub struct ShaderUniformHandle {
     inner: i32,
