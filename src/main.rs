@@ -533,7 +533,7 @@ fn init_logger(log_file: &str) {
 fn init_game_state(ids: &[EntityID]) -> GameContext {
     let config = load_config();
     init_logger(config.log_file.to_str().unwrap());
-    let gl_state = match glh::start_gl(720, 480, &config.log_file) {
+    let gl_state = match glh::start_gl(720, 480) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Failed to Initialize OpenGL context. Got error:");

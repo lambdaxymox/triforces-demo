@@ -15,7 +15,6 @@ use std::fmt;
 use std::mem;
 use std::path::Path;
 
-use logger::Logger;
 use log::{info, error};
 
 
@@ -155,7 +154,6 @@ pub struct GLState {
     pub glfw: glfw::Glfw,
     pub window: glfw::Window,
     pub events: Receiver<(f64, glfw::WindowEvent)>,
-    pub logger: Logger,
     pub width: u32,
     pub height: u32,
     pub channel_depth: u32,
@@ -208,11 +206,7 @@ fn __init_glfw() -> Glfw {
 ///
 /// Initialize a new OpenGL context and start a new GLFW window. 
 ///
-pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<GLState, String> {
-    // Initiate a logger.
-    let logger = Logger::new(log_file.as_ref().to_str().unwrap(), log::Level::Trace);
-    logger.restart();
-
+pub fn start_gl(width: u32, height: u32) -> Result<GLState, String> {
     // Start GL context and O/S window using the GLFW helper library.
     info!("Starting GLFW");
     info!("Using GLFW version {}", glfw::get_version_string());
@@ -255,7 +249,6 @@ pub fn start_gl<P: AsRef<Path>>(width: u32, height: u32, log_file: P) -> Result<
         glfw: glfw, 
         window: window, 
         events: events,
-        logger: logger,
         width: width,
         height: height,
         channel_depth: 3,
