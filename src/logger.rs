@@ -5,24 +5,24 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 
-pub struct Logger {
+pub struct FileLogger {
     log_file: PathBuf,
     level: log::Level,
 }
 
-impl Logger {
+impl FileLogger {
     ///
     /// Start a new log file with the time and date at the top.
     ///
-    pub fn new<P: AsRef<Path>>(log_file: P, level: log::Level) -> Logger {
-        Logger {
+    pub fn new<P: AsRef<Path>>(log_file: P, level: log::Level) -> FileLogger {
+        FileLogger {
             log_file: log_file.as_ref().to_path_buf(),
             level: level,
         }
     }
 }
 
-impl log::Log for Logger {
+impl log::Log for FileLogger {
     fn enabled(&self, metadata: &log::Metadata) -> bool {
         metadata.level() <= self.level
     }
@@ -56,7 +56,7 @@ impl log::Log for Logger {
 }
 
 pub fn init_with_level(log_file: &str, level: log::Level) -> Result<(), log::SetLoggerError> {
-    let logger = Logger::new(log_file, level);
+    let logger = FileLogger::new(log_file, level);
     log::set_boxed_logger(Box::new(logger))?;
     log::set_max_level(level.to_level_filter());
     Ok(())
