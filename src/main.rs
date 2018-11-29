@@ -34,6 +34,7 @@ use gl_helpers as glh;
 use cgmath as math;
 
 use camera::Camera;
+use chrono::prelude::Utc;
 use component::{
     BufferHandle, EntityID,
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
@@ -43,7 +44,6 @@ use math::{Matrix4, Quaternion, AsArray};
 use lights::PointLight;
 use log::{info};
 use texture::TexImage2D;
-
 
 use std::mem;
 use std::path::{Path, PathBuf};
@@ -866,4 +866,6 @@ fn main() {
         // Send the results to the output.
         context.gl.window.swap_buffers();
     }
+
+    info!("END LOG");
 }

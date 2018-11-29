@@ -433,7 +433,7 @@ pub fn create_shader<P: AsRef<Path>>(
             ShaderCompilationError::CouldNotCompileShader(format!("{}", disp))
         );
     }
-    info!("Shader compiled with index {}\n", shader);
+    info!("Shader compiled with index {}.\n", shader);
     
     Ok(shader)
 }
@@ -509,7 +509,7 @@ pub fn create_program(
     vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
 
     let program = unsafe { gl::CreateProgram() };
-    info!("Created programme {}. attaching shaders {} and {}...\n",
+    info!("Created program {}. Attaching shaders {} and {}.\n",
         program, vertex_shader, fragment_shader
     );
 

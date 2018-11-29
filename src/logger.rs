@@ -75,7 +75,6 @@ impl log::Log for Logger {
 
         let mut file = file.unwrap();
         let date = Utc::now();
-        writeln!(file, "[{}] END LOG", date).unwrap();
     }
 }
 
