@@ -6,6 +6,7 @@ extern crate wavefront;
 extern crate serde;
 extern crate toml;
 extern crate log;
+extern crate file_logger;
 
 #[macro_use]
 extern crate serde_derive;
@@ -575,7 +576,7 @@ fn load_config() -> config::ProgramConfig {
 /// Initialize the logger.
 ///
 fn init_logger(log_file: &str) {
-    logger::init(log_file).expect("Failed to initialize logger.");
+    file_logger::init(log_file).expect("Failed to initialize logger.");
     info!("OpenGL application log.");
     info!("build version: ??? ?? ???? ??:??:??\n\n");
 }
