@@ -15,9 +15,6 @@ mod gl {
     include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
 }
 
-#[macro_use]
-mod logger;
-
 mod camera;
 mod config;
 mod gl_helpers;
