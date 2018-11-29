@@ -29,24 +29,26 @@ impl log::Log for FileLogger {
 
     /// Write a message to the log file.
     fn log(&self, record: &log::Record) {
-        let file = OpenOptions::new()
-                    .write(true)
-                    .append(true)
-                    .create(true)
-                    .open(&self.log_file);
+        if self.enabled(record.metadata()) {
+            let file = OpenOptions::new()
+                        .write(true)
+                        .append(true)
+                        .create(true)
+                        .open(&self.log_file);
 
-        if file.is_err() {
-            eprintln!(
-                "ERROR: Could not open the file {} for writing.",
-                self.log_file.display()
-            );
+            if file.is_err() {
+                eprintln!(
+                    "ERROR: Could not open the file {} for writing.",
+                    self.log_file.display()
+                );
 
-            return;
+                return;
+            }
+
+            let mut file = file.unwrap();
+            let date = Utc::now();
+            writeln!(file, "[{}] {}", date, record.args()).unwrap();
         }
-
-        let mut file = file.unwrap();
-        let date = Utc::now();
-        writeln!(file, "[{}] {}", date, record.args()).unwrap();
     }
 
     /// Finish writing to a log. This function is used to place any final
