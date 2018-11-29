@@ -22,12 +22,6 @@ impl Logger {
     }
 }
 
-impl Drop for Logger {
-    fn drop(&mut self) {
-        <Logger as log::Log>::flush(self);
-    }
-}
-
 impl log::Log for Logger {
     fn enabled(&self, metadata: &log::Metadata) -> bool {
         metadata.level() <= self.level
