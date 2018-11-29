@@ -391,7 +391,7 @@ pub fn shader_info_log(shader_index: GLuint) -> ShaderLog {
 /// Create a shader from source files.
 ///
 pub fn create_shader<P: AsRef<Path>>(
-    context: &GLState,
+    _context: &GLState,
     file_name: P, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
 
     let disp = file_name.as_ref().display();
@@ -505,7 +505,7 @@ pub fn validate_shader_program(sp: GLuint) -> bool {
 /// Compile and link a shader program.
 ///
 pub fn create_program(
-    context: &GLState,
+    _context: &GLState,
     vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
 
     let program = unsafe { gl::CreateProgram() };

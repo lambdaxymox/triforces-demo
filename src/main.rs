@@ -34,7 +34,6 @@ use gl_helpers as glh;
 use cgmath as math;
 
 use camera::Camera;
-use chrono::prelude::Utc;
 use component::{
     BufferHandle, EntityID,
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
