@@ -52,23 +52,6 @@ impl log::Log for Logger {
     /// Finish writing to a log. This function is used to place any final
     /// information in a log file before the logger goes out of scope.
     fn flush(&self) {
-        let file = OpenOptions::new()
-            .write(true)
-            .append(true)
-            .create(true)
-            .open(&self.log_file);
-
-        if file.is_err() {
-            eprintln!(
-                "ERROR: Could not open the file {} for writing.",
-                self.log_file.display()
-            );
-
-            return;
-        }
-
-        let mut file = file.unwrap();
-        let date = Utc::now();
     }
 }
 
