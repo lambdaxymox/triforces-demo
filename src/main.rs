@@ -176,12 +176,16 @@ fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureH
 fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
     let shader = context.entities.shaders[&id].handle.into();
 
-    let ubo_index = unsafe { gl::GetUniformBlockIndex(shader, glh::gl_str("PointLight").as_ptr()) };
+    let ubo_index = unsafe {
+        gl::GetUniformBlockIndex(shader, glh::gl_str("PointLight").as_ptr())
+    };
     assert!(ubo_index != gl::INVALID_INDEX);
 
     let mut ubo_size = 0;
     unsafe {
-        gl::GetActiveUniformBlockiv(shader, ubo_index, gl::UNIFORM_BLOCK_DATA_SIZE, &mut ubo_size)
+        gl::GetActiveUniformBlockiv(
+            shader, ubo_index, gl::UNIFORM_BLOCK_DATA_SIZE, &mut ubo_size
+        )
     };
     assert!(ubo_size > 0);
 
@@ -192,10 +196,22 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
     let mut offsets = [0; 5];
     let mut types = [0; 5];
     unsafe {
-        gl::GetActiveUniformBlockiv(shader, ubo_index, gl::UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_OFFSET, offsets.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_SIZE, sizes.as_mut_ptr());
-        gl::GetActiveUniformsiv(shader, 5, indices.as_ptr() as *const u32, gl::UNIFORM_TYPE, types.as_mut_ptr());
+        gl::GetActiveUniformBlockiv(
+            shader, ubo_index,
+            gl::UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, indices.as_mut_ptr()
+        );
+        gl::GetActiveUniformsiv(
+            shader, 5, indices.as_ptr() as *const u32,
+            gl::UNIFORM_OFFSET, offsets.as_mut_ptr()
+        );
+        gl::GetActiveUniformsiv(
+            shader, 5, indices.as_ptr() as *const u32,
+            gl::UNIFORM_SIZE, sizes.as_mut_ptr()
+        );
+        gl::GetActiveUniformsiv(
+            shader, 5, indices.as_ptr() as *const u32,
+            gl::UNIFORM_TYPE, types.as_mut_ptr()
+        );
     }
 
     let mut buffer = vec![0 as u8; ubo_size as usize];
@@ -242,7 +258,8 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
         gl::GenBuffers(1, &mut points_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER,
+            (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
             mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -253,7 +270,8 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
         gl::GenBuffers(1, &mut tex_coords_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER,
+            (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
             mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         )
     }
@@ -312,9 +330,15 @@ fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     assert!(sp_proj_mat_loc > -1);
 
     let mut shader = ShaderProgram::new(ShaderProgramHandle::from(sp));
-    shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
-    shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
-    shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
+    shader.uniforms.insert(
+        String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc)
+    );
+    shader.uniforms.insert(
+        String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc)
+    );
+    shader.uniforms.insert(
+        String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc)
+    );
 
     context.entities.shaders.insert(id, shader);
 }
@@ -323,9 +347,18 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.entities.shaders[&id];
     unsafe {
         gl::UseProgram(shader.handle.into());
-        gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
-        gl::UniformMatrix4fv(shader.uniforms["view_mat"].into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
-        gl::UniformMatrix4fv(shader.uniforms["proj_mat"].into(), 1, gl::FALSE, context.camera.proj_mat.as_ptr());
+        gl::UniformMatrix4fv(
+            shader.uniforms["model_mat"].into(), 1, gl::FALSE,
+            context.entities.model_matrices[&id].as_ptr()
+        );
+        gl::UniformMatrix4fv(
+            shader.uniforms["view_mat"].into(), 1, gl::FALSE,
+            context.camera.view_mat.as_ptr()
+        );
+        gl::UniformMatrix4fv(
+            shader.uniforms["proj_mat"].into(), 1, gl::FALSE,
+            context.camera.proj_mat.as_ptr()
+        );
     }
 }
 
@@ -353,7 +386,8 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut points_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, points_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER,
+            (3 * mem::size_of::<GLfloat>() * mesh.points.len()) as GLsizeiptr,
             mesh.points.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -364,7 +398,8 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut tex_coords_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, tex_coords_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER,
+            (2 * mem::size_of::<GLfloat>() * mesh.tex_coords.len()) as GLsizeiptr,
             mesh.tex_coords.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -375,7 +410,8 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
         gl::GenBuffers(1, &mut normals_vbo);
         gl::BindBuffer(gl::ARRAY_BUFFER, normals_vbo);
         gl::BufferData(
-            gl::ARRAY_BUFFER, (3 * mem::size_of::<GLfloat>() * mesh.normals.len()) as GLsizeiptr,
+            gl::ARRAY_BUFFER,
+            (3 * mem::size_of::<GLfloat>() * mesh.normals.len()) as GLsizeiptr,
             mesh.normals.as_ptr() as *const GLvoid, gl::STATIC_DRAW
         );
     }
@@ -433,9 +469,15 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     assert!(sp_proj_mat_loc > -1);
 
     let mut shader = ShaderProgram::new(ShaderProgramHandle::from(sp));
-    shader.uniforms.insert(String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc));
-    shader.uniforms.insert(String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc));
-    shader.uniforms.insert(String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc));
+    shader.uniforms.insert(
+        String::from("model_mat"), ShaderUniformHandle::from(sp_model_mat_loc)
+    );
+    shader.uniforms.insert(
+        String::from("view_mat"), ShaderUniformHandle::from(sp_view_mat_loc)
+    );
+    shader.uniforms.insert(
+        String::from("proj_mat"), ShaderUniformHandle::from(sp_proj_mat_loc)
+    );
 
     context.entities.shaders.insert(id, shader);
 }
@@ -457,9 +499,18 @@ fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.entities.shaders[&id];
     unsafe {
         gl::UseProgram(shader.handle.into());
-        gl::UniformMatrix4fv(shader.uniforms["model_mat"].into(), 1, gl::FALSE, context.entities.model_matrices[&id].as_ptr());
-        gl::UniformMatrix4fv(shader.uniforms["view_mat"].into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
-        gl::UniformMatrix4fv(shader.uniforms["proj_mat"].into(), 1, gl::FALSE, context.camera.proj_mat.as_ptr());
+        gl::UniformMatrix4fv(
+            shader.uniforms["model_mat"].into(), 1, gl::FALSE,
+            context.entities.model_matrices[&id].as_ptr()
+        );
+        gl::UniformMatrix4fv(
+            shader.uniforms["view_mat"].into(), 1, gl::FALSE,
+            context.camera.view_mat.as_ptr()
+        );
+        gl::UniformMatrix4fv(
+            shader.uniforms["proj_mat"].into(), 1, gl::FALSE,
+            context.camera.proj_mat.as_ptr()
+        );
     }
 }
 
@@ -753,34 +804,48 @@ fn main() {
             let gp_view_mat_loc = gp_sp.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(gp_sp.handle.into());
-                gl::UniformMatrix4fv(gp_view_mat_loc.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+                gl::UniformMatrix4fv(
+                    gp_view_mat_loc.into(), 1, gl::FALSE,
+                    context.camera.view_mat.as_ptr()
+                );
             }
 
             let tri_sp1 = &context.entities.shaders[&ids[1]];
             let tri_sp_view_mat_loc1 = tri_sp1.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(tri_sp1.handle.into());
-                gl::UniformMatrix4fv(tri_sp_view_mat_loc1.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+                gl::UniformMatrix4fv(
+                    tri_sp_view_mat_loc1.into(), 1, gl::FALSE,
+                    context.camera.view_mat.as_ptr()
+                );
             }
 
             let tri_sp2 = &context.entities.shaders[&ids[2]];
             let tri_sp_view_mat_loc2 = tri_sp2.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(tri_sp2.handle.into());
-                gl::UniformMatrix4fv(tri_sp_view_mat_loc2.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+                gl::UniformMatrix4fv(
+                    tri_sp_view_mat_loc2.into(), 1, gl::FALSE,
+                    context.camera.view_mat.as_ptr()
+                );
             }
 
             let tri_sp3 = &context.entities.shaders[&ids[3]];
             let tri_sp_view_mat_loc3 = tri_sp3.uniforms["view_mat"];
             unsafe {
                 gl::UseProgram(tri_sp3.handle.into());
-                gl::UniformMatrix4fv(tri_sp_view_mat_loc3.into(), 1, gl::FALSE, context.camera.view_mat.as_ptr());
+                gl::UniformMatrix4fv(
+                    tri_sp_view_mat_loc3.into(), 1, gl::FALSE,
+                    context.camera.view_mat.as_ptr()
+                );
             }
         }
 
         let (width, height) = context.gl.window.get_framebuffer_size();
         if (width != context.gl.width as i32) && (height != context.gl.height as i32) {
-            glfw_framebuffer_size_callback(&mut context, width as u32, height as u32);
+            glfw_framebuffer_size_callback(
+                &mut context, width as u32, height as u32
+            );
         }
 
         // Update the kinematics of the triforce.
@@ -840,26 +905,34 @@ fn main() {
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.entities.textures[&ids[0]].into());
             gl::BindVertexArray(context.entities.buffers[&ids[0]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].len() as i32);
+            gl::DrawArrays(
+                gl::TRIANGLES, 0, context.entities.meshes[&ids[0]].len() as i32
+            );
 
             // Render the triforce.
             gl::UseProgram(context.entities.shaders[&ids[1]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.entities.textures[&ids[1]].into());
             gl::BindVertexArray(context.entities.buffers[&ids[1]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[1]].len() as i32);
+            gl::DrawArrays(
+                gl::TRIANGLES, 0, context.entities.meshes[&ids[1]].len() as i32
+            );
 
             gl::UseProgram(context.entities.shaders[&ids[2]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.entities.textures[&ids[2]].into());
             gl::BindVertexArray(context.entities.buffers[&ids[2]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[2]].len() as i32);
+            gl::DrawArrays(
+                gl::TRIANGLES, 0, context.entities.meshes[&ids[2]].len() as i32
+            );
 
             gl::UseProgram(context.entities.shaders[&ids[3]].handle.into());
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, context.entities.textures[&ids[3]].into());
             gl::BindVertexArray(context.entities.buffers[&ids[3]][0].vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, context.entities.meshes[&ids[3]].len() as i32);
+            gl::DrawArrays(
+                gl::TRIANGLES, 0, context.entities.meshes[&ids[3]].len() as i32
+            );
         }
         
         // Send the results to the output.
