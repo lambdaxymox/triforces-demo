@@ -68,6 +68,38 @@ const BIN_DIR: &str = ".local/bin";
 const CONFIG_FILE: &str = "triforces-demo.toml";
 
 
+macro_rules! concat_path {
+    ($fragment:expr) => {
+        concat!($fragment, "/")
+    };
+    ($fragment:expr, $($fragments:expr),+) => {
+        concat!($fragment, "/", concat_path!($($fragments),+))
+    }
+}
+
+#[cfg(target_os = "mac_os")]
+macro_rules! shader_path {
+    ($shader:expr) => { concat!(concat_path!("..", "shaders", "330"), $shader) }
+}
+
+#[cfg(target_os = "windows")]
+macro_rules! shader_path {
+    ($shader:expr) => { concat!(concat_path!("..", "shaders", "330"), $shader) }
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+macro_rules! shader_path {
+    ($shader:expr) => { concat!(concat_path!("..", "shaders", "420"), $shader) }
+}
+
+macro_rules! include_shader {
+    ($shader:expr) => {
+        include_str!(shader_path!($shader))
+    }
+}
+
+
+
 struct EntityDatabase {
     meshes: HashMap<EntityID, obj::ObjMesh>,
     shaders: HashMap<EntityID, ShaderProgram>,
@@ -305,10 +337,12 @@ fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
 }
 
 fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
-    let sp = glh::create_program_from_files(
+    let mut vert_reader = io::Cursor::new(include_shader!("ground_plane.vert.glsl"));
+    let mut frag_reader = io::Cursor::new(include_shader!("ground_plane.frag.glsl"));
+    let sp = glh::create_program_from_reader(
         &context.gl,
-        &context.shader_file("ground_plane.vert.glsl"),
-        &context.shader_file("ground_plane.frag.glsl")
+        &mut vert_reader, &context.shader_file("ground_plane.vert.glsl"),
+        &mut frag_reader, &context.shader_file("ground_plane.frag.glsl")
     ).unwrap();
     assert!(sp > 0);
 
