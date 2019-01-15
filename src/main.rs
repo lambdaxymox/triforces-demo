@@ -478,12 +478,13 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
 /// Load the triforce shader program.
 ///
 fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
-    let sp = glh::create_program_from_files(
+    let mut vert_reader = io::Cursor::new(include_shader!("triangle.vert.glsl"));
+    let mut frag_reader = io::Cursor::new(include_shader!("triangle.frag.glsl"));
+    let sp = glh::create_program_from_reader(
         &context.gl,
-        &context.shader_file("triangle.vert.glsl"),
-        &context.shader_file("triangle.frag.glsl")
+        &mut vert_reader, &context.shader_file("triangle.vert.glsl"),
+        &mut frag_reader, &context.shader_file("triangle.frag.glsl")
     ).unwrap();
-    assert!(sp > 0);
 
     let sp_model_mat_loc = unsafe {
         gl::GetUniformLocation(sp, glh::gl_str("model_mat").as_ptr())
