@@ -341,8 +341,8 @@ fn create_ground_plane_shaders(context: &mut GameContext, id: EntityID) {
     let mut frag_reader = io::Cursor::new(include_shader!("ground_plane.frag.glsl"));
     let sp = glh::create_program_from_reader(
         &context.gl,
-        &mut vert_reader, &context.shader_file("ground_plane.vert.glsl"),
-        &mut frag_reader, &context.shader_file("ground_plane.frag.glsl")
+        &mut vert_reader, "ground_plane.vert.glsl",
+        &mut frag_reader, "ground_plane.frag.glsl"
     ).unwrap();
     assert!(sp > 0);
 
@@ -482,8 +482,8 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     let mut frag_reader = io::Cursor::new(include_shader!("triangle.frag.glsl"));
     let sp = glh::create_program_from_reader(
         &context.gl,
-        &mut vert_reader, &context.shader_file("triangle.vert.glsl"),
-        &mut frag_reader, &context.shader_file("triangle.frag.glsl")
+        &mut vert_reader, "triangle.vert.glsl",
+        &mut frag_reader, "triangle.frag.glsl"
     ).unwrap();
 
     let sp_model_mat_loc = unsafe {
