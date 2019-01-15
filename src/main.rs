@@ -16,7 +16,8 @@ mod gl {
 
 mod camera;
 mod config;
-mod gl_helpers;
+//mod gl_helpers;
+mod gl_help;
 mod component;
 mod obj;
 mod lights;
@@ -27,7 +28,8 @@ use gl::types::{
     GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
 };
 
-use gl_helpers as glh;
+//use gl_helpers as glh;
+use gl_help as glh;
 use cgmath as math;
 
 use camera::Camera;
@@ -41,6 +43,7 @@ use lights::PointLight;
 use log::{info};
 use texture::TexImage2D;
 
+use std::io;
 use std::mem;
 use std::path::{Path, PathBuf};
 use std::process;

@@ -35,7 +35,7 @@ impl Camera {
         fwd: Vector4, rgt: Vector4, up: Vector4, axis: Quaternion) -> Camera {
 
         let proj_mat = math::perspective((fov, aspect, near, far));
-        let trans_mat = Matrix4::from_translation(cam_pos);
+        let trans_mat = Matrix4::from_translation(-cam_pos);
         let rot_mat = Matrix4::from(axis);
         let view_mat = rot_mat * trans_mat;
 
