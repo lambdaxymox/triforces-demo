@@ -16,7 +16,6 @@ mod gl {
 
 mod camera;
 mod config;
-//mod gl_helpers;
 mod gl_help;
 mod component;
 mod obj;
@@ -28,7 +27,6 @@ use gl::types::{
     GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
 };
 
-//use gl_helpers as glh;
 use gl_help as glh;
 use cgmath as math;
 
