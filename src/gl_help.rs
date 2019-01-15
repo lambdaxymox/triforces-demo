@@ -281,7 +281,7 @@ pub fn update_fps_counter(context: &mut GLState) {
     if elapsed_seconds > 0.5 {
         context.framerate_time_seconds = current_time_seconds;
         let fps = context.frame_count as f64 / elapsed_seconds;
-        context.window.set_title(&format!("Googly Blocks @ {:.2} FPS", fps));
+        context.window.set_title(&format!("Triforces DEMO @ {:.2} FPS", fps));
         context.frame_count = 0;
     }
 
