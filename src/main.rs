@@ -15,7 +15,7 @@ mod gl {
 }
 
 mod camera;
-mod config;
+//mod config;
 mod gl_help;
 mod component;
 mod obj;
@@ -53,6 +53,7 @@ use std::collections::HashMap;
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
+/*
 #[cfg(not(feature = "build_for_install"))]
 const CONFIG_HOME: &str = "config";
 
@@ -66,6 +67,12 @@ const DATA_DIR: &str = ".local/share/triforces-demo";
 const BIN_DIR: &str = ".local/bin";
 
 const CONFIG_FILE: &str = "triforces-demo.toml";
+*/
+#[cfg(feature = "build_for_install")]
+const LOG_FILE: &str = "/tmp/triforces-demo.log";
+
+#[cfg(not(feature = "build_for_install"))]
+const LOG_FILE: &str = "triforces-demo.log";
 
 
 macro_rules! concat_path {
@@ -138,7 +145,7 @@ impl EntityDatabase {
 }
 
 struct GameContext {
-    config: config::ProgramConfig,
+    //config: config::ProgramConfig,
     gl: glh::GLState,
     camera: Camera,
     light: PointLight,
@@ -598,7 +605,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
     ));
 }
 
-
+/*
 #[cfg(feature = "build_for_install")]
 #[inline]
 fn __path_config() -> config::PathConfig {
@@ -627,11 +634,13 @@ fn load_config() -> config::ProgramConfig {
 
     config::ProgramConfig::new(path_config, file_config)
 }
+*/
 
 ///
 /// Initialize the logger.
 ///
 fn init_logger(log_file: &str) {
+    eprintln!("Logging is stored in file: {}", log_file);
     file_logger::init(log_file).expect("Failed to initialize logger.");
     info!("OpenGL application log.");
     info!("build version: ??? ?? ???? ??:??:??\n\n");
@@ -641,8 +650,8 @@ fn init_logger(log_file: &str) {
 /// Initialize the demo.
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
-    let config = load_config();
-    init_logger(config.log_file.to_str().unwrap());
+    //let config = load_config();
+    init_logger(LOG_FILE);
     let gl_state = match glh::start_gl(720, 480) {
         Ok(val) => val,
         Err(e) => {
@@ -655,7 +664,7 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
     let light = create_light();
     let mut context = GameContext {
-        config: config,
+        //config: config,
         gl: gl_state,
         camera: camera,
         light: light,

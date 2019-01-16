@@ -135,7 +135,7 @@ pub fn load_file<P: AsRef<Path>>(file_path: P) -> Result<TexImage2D, String> {
         eprintln!("WARNING: texture {} is not power-of-2 dimensions", disp);
     }
 
-    let width_in_bytes = 4 *width;
+    let width_in_bytes = 4 * width;
     let half_height = height / 2;
     for row in 0..half_height {
         for col in 0..width_in_bytes {
