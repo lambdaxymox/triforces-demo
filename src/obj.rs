@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use std::fs::File;
 use std::io;
-use std::io::{Read, BufReader};
+use std::io::BufReader;
 use std::path::Path;
 
 use wavefront::obj;
@@ -117,6 +117,11 @@ pub fn load<R: io::Read>(reader: &mut R) -> Result<ObjMesh, String> {
     }
 
     Ok(ObjMesh::new(vertices, tex_coords, normals))
+}
+
+pub fn load_from_memory(buffer: &[u8]) -> Result<ObjMesh, String> {
+    let mut reader = BufReader::new(buffer);
+    load(&mut reader)
 }
 
 pub fn load_file<P: AsRef<Path>>(path: P) -> Result<ObjMesh, String> {
