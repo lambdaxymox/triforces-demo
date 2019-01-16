@@ -37,7 +37,6 @@ use texture::TexImage2D;
 
 use std::io;
 use std::mem;
-use std::path::{Path, PathBuf};
 use std::process;
 use std::ptr;
 use std::collections::HashMap;
