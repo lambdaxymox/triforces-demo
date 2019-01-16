@@ -288,8 +288,21 @@ fn create_triforce_lights(context: &mut GameContext, id: EntityID) {
     context.entities.buffers.insert(id, buffers);
 }
 
+fn arr_to_vec(ptr: *const u8, length: usize) -> Vec<u8> {
+    let mut vec = vec![0 as u8; length];
+    for i in 0..length {
+        vec[i] = unsafe { *((ptr as usize + i) as *const u8) };
+    }
+
+    vec
+}
+
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    let mesh = obj::load_file(&context.asset_file("ground_plane.obj")).unwrap();
+    let arr: &'static [u8; 883] = include_asset!("ground_plane.obj");
+    let vec = arr_to_vec(&arr[0], 883);
+    let mut reader = io::Cursor::new(vec);
+
+    let mesh = obj::load(&mut reader).unwrap();
     let shader = context.entities.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };

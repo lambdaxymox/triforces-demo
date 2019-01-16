@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io;
+use std::io::{Read, BufReader};
 use std::path::Path;
 
 use wavefront::obj;
@@ -70,7 +71,7 @@ impl ObjMesh {
     }
 }
 
-pub fn load<R: BufRead>(reader: &mut R) -> Result<ObjMesh, String> {
+pub fn load<R: io::Read>(reader: &mut R) -> Result<ObjMesh, String> {
     let object_set = obj::parse(reader).expect("File not found.");
     let object = &object_set[0];
 
