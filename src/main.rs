@@ -596,7 +596,6 @@ fn init_logger(log_file: &str) {
 /// Initialize the demo.
 ///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
-    //let config = load_config();
     init_logger(LOG_FILE);
     let gl_state = match glh::start_gl(720, 480) {
         Ok(val) => val,
@@ -610,7 +609,6 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     let camera = create_camera(gl_state.width as f32, gl_state.height as f32);
     let light = create_light();
     let mut context = GameContext {
-        //config: config,
         gl: gl_state,
         camera: camera,
         light: light,
