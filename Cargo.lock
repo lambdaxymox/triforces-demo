@@ -387,7 +387,7 @@ dependencies = [
 
 [[package]]
 name = "triforces-demo"
-version = "1.2.2"
+version = "1.2.3"
 dependencies = [
  "file_logger 0.2.0 (git+https://github.com/stallmanifold/file-logger)",
  "gl_generator 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -1,6 +1,6 @@
 [package]
 name = "triforces-demo"
-version = "1.2.2"
+version = "1.2.3"
 authors = ["Stallmanifold <stallmanifold@gmail.com>"]
 build = "build.rs"
 description = "A 3D tech demo demonstrating some animation and Blinn-Phong shading."
