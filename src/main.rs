@@ -123,7 +123,6 @@ impl EntityDatabase {
 }
 
 struct GameContext {
-    //config: config::ProgramConfig,
     gl: glh::GLState,
     camera: Camera,
     light: PointLight,
