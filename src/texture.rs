@@ -2,7 +2,6 @@
 use stb_image::image;
 use stb_image::image::LoadResult;
 use std::path::Path;
-use std::io;
 
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
