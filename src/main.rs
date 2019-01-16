@@ -145,20 +145,6 @@ struct GameContext {
     entities: EntityDatabase,
 }
 
-impl GameContext {
-    fn asset_file<P: AsRef<Path>>(&self, path: P) -> PathBuf {
-        Path::new(&self.config.asset_path).join(path)
-    }
-
-    fn shader_file<P: AsRef<Path>>(&self, path: P) -> PathBuf {
-        let shader_path = Path::new(&self.config.shader_path);
-        let shader_version = Path::new(&self.config.shader_version);
-        let file_path = shader_path.join(shader_version).join(path);
-
-        file_path
-    }
-}
-
 fn create_light() -> PointLight {
     let ambient = math::vec3((0.3, 0.3, 0.3));
     let diffuse = math::vec3((0.7, 0.7, 0.7));
