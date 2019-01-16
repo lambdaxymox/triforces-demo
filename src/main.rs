@@ -553,7 +553,9 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
 /// Load the triforce texture.
 ///
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
-    let tex_image = texture::load_file(&context.asset_file("triangle.png")).unwrap();
+    let arr: &'static [u8; 213] = include_asset!("triangle.png");
+    let vec = arr_to_vec(&arr[0], 213);
+    let tex_image = texture::load_from_memory(&vec).unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex);
