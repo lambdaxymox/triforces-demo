@@ -2,7 +2,22 @@
 # Triforces OpenGL Demo
 A 3D demo demonstrating some animation and Blinn-Phong shading.
 
+
 ## Installation
+To install the demo, for the source tree and run
+```bash
+cargo build --release
+```
+to build it, and the
+```bash
+cargo install
+```
+to install it. If you want to uninstall it, enter
+```bash
+cargo uninstall triforces-demo
+```
+
+## Running From Source
 Fork the demo and enter
 ```bash
 cargo build --release
@@ -11,7 +26,7 @@ to build it, and then
 ```bash
 cargo run
 ```
-to run it.
+to run it from the source tree.
 
 ## Dependencies
 ### Linux
