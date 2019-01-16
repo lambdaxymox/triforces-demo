@@ -1,6 +1,6 @@
 [package]
 name = "triforces-demo"
-version = "1.2.0"
+version = "1.2.1"
 authors = ["Stallmanifold <stallmanifold@gmail.com>"]
 build = "build.rs"
 
