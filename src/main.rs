@@ -428,7 +428,11 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 /// Load the geometry for the triforce.
 ///
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
-    let mesh = obj::load_file(&context.asset_file("triangle.obj")).unwrap();
+    let arr: &'static [u8; 702] = include_asset!("triangle.obj");
+    let vec = arr_to_vec(&arr[0], 702);
+    let mut reader = io::Cursor::new(vec);
+
+    let mesh = obj::load(&mut reader).unwrap();
     let shader = context.entities.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
