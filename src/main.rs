@@ -15,7 +15,6 @@ mod gl {
 }
 
 mod camera;
-//mod config;
 mod gl_help;
 mod component;
 mod obj;
@@ -53,21 +52,6 @@ use std::collections::HashMap;
 const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
-/*
-#[cfg(not(feature = "build_for_install"))]
-const CONFIG_HOME: &str = "config";
-
-#[cfg(feature = "build_for_install")]
-const CONFIG_HOME: &str = ".config";
-
-#[cfg(feature = "build_for_install")]
-const DATA_DIR: &str = ".local/share/triforces-demo";
-
-#[cfg(feature = "build_for_install")]
-const BIN_DIR: &str = ".local/bin";
-
-const CONFIG_FILE: &str = "triforces-demo.toml";
-*/
 #[cfg(feature = "build_for_install")]
 const LOG_FILE: &str = "/tmp/triforces-demo.log";
 
@@ -604,37 +588,6 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
         context.camera.fov, aspect, context.camera.near, context.camera.far
     ));
 }
-
-/*
-#[cfg(feature = "build_for_install")]
-#[inline]
-fn __path_config() -> config::PathConfig {
-    let st = env::var("HOME").unwrap();
-    let home = Path::new(&st);
-    let config_home = Path::new(CONFIG_HOME);
-    let bin_dir = Path::new(BIN_DIR);
-    let data_dir = Path::new(DATA_DIR);
-
-    config::PathConfig::new(
-        home.join(config_home), home.join(bin_dir), home.join(data_dir)
-    )
-}
-
-#[cfg(not(feature = "build_for_install"))]
-#[inline]
-fn __path_config() -> config::PathConfig {
-    config::PathConfig::new(
-        PathBuf::from(CONFIG_HOME), PathBuf::from("."), PathBuf::from(".")
-    )
-}
-
-fn load_config() -> config::ProgramConfig {
-    let path_config = __path_config();
-    let file_config = config::load(path_config.config_home.join(CONFIG_FILE)).unwrap();
-
-    config::ProgramConfig::new(path_config, file_config)
-}
-*/
 
 ///
 /// Initialize the logger.
