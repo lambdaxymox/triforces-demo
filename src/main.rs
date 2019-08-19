@@ -30,7 +30,7 @@ use component::{
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
     TextureHandle
 };
-use math::{Matrix4, Quaternion, AsArray};
+use math::{Matrix4, One, Quaternion, Array};
 use lights::PointLight;
 use log::{info};
 use texture::TexImage2D;

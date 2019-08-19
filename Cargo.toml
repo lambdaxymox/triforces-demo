@@ -10,7 +10,7 @@ glfw = "0.25.0"
 log = "0.4.6"
 stb_image = "0.2.2"
 file_logger = { git = "https://github.com/stallmanifold/file-logger" }
-simple_cgmath = { git = "https://github.com/stallmanifold/simple-cgmath" }
+lean_cgmath = { git = "https://github.com/stallmanifold/lean-cgmath" }
 wavefront_obj = { git = "https://github.com/stallmanifold/wavefront-obj" }
 
 [build-dependencies]
