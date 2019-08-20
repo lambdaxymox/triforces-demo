@@ -1,7 +1,7 @@
 extern crate glfw;
 extern crate stb_image;
 extern crate cgmath;
-extern crate wavefront;
+extern crate wavefront_obj;
 extern crate log;
 extern crate file_logger;
 

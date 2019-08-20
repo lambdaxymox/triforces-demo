@@ -4,8 +4,8 @@ use std::io;
 use std::io::BufReader;
 use std::path::Path;
 
-use wavefront::obj;
-use wavefront::obj::{Element, VTNTriple};
+use wavefront_obj as obj;
+use wavefront_obj::{Element, VTNTriple};
 
 
 ///
