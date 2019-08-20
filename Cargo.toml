@@ -1,7 +1,7 @@
 [package]
 name = "triforces-demo"
 version = "1.2.6"
-authors = ["Stallmanifold <stallmanifold@gmail.com>"]
+authors = ["LambdaXymox <lambda.xymox@gmail.com>"]
 build = "build.rs"
 description = "A 3D tech demo demonstrating some animation and Blinn-Phong shading."
 
@@ -9,9 +9,9 @@ description = "A 3D tech demo demonstrating some animation and Blinn-Phong shadi
 glfw = "0.25.0"
 log = "0.4.6"
 stb_image = "0.2.2"
-file_logger = { git = "https://github.com/stallmanifold/file-logger" }
-lean_cgmath = { git = "https://github.com/stallmanifold/lean-cgmath" }
-wavefront_obj = { git = "https://github.com/stallmanifold/wavefront-obj" }
+file_logger = { git = "https://github.com/lambdaxymox/file-logger" }
+lean_cgmath = { git = "https://github.com/lambdaxymox/lean-cgmath" }
+wavefront_obj = { git = "https://github.com/lambdaxymox/wavefront-obj" }
 
 [build-dependencies]
 gl_generator = "0.10.0"
