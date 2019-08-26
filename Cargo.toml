@@ -10,7 +10,7 @@ glfw = "0.25.0"
 log = "0.4.6"
 stb_image = "0.2.2"
 file_logger = { git = "https://github.com/lambdaxymox/file-logger" }
-lean_cgmath = { git = "https://github.com/lambdaxymox/lean-cgmath" }
+lean_cgmath = { version = "0.6.0", git = "https://github.com/lambdaxymox/lean-cgmath" }
 wavefront_obj = { git = "https://github.com/lambdaxymox/wavefront-obj" }
 
 [build-dependencies]
@@ -21,3 +21,6 @@ debug = true
 
 [features]
 build_for_install = []
+
+[lean_cgmath]
+version = "0.6.0"

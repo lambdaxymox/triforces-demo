@@ -184,8 +184,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "lean_cgmath"
-version = "0.5.4"
-source = "git+https://github.com/lambdaxymox/lean-cgmath#8c2b47992d5ddb67b3cba2645f502df53b10b7f7"
+version = "0.6.0"
+source = "git+https://github.com/lambdaxymox/lean-cgmath#47bbeab782f41b042300f54d0536913cd22b3ca4"
 
 [[package]]
 name = "libc"
@@ -461,7 +461,7 @@ dependencies = [
  "file_logger 0.4.3 (git+https://github.com/lambdaxymox/file-logger)",
  "gl_generator 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glfw 0.25.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "lean_cgmath 0.5.4 (git+https://github.com/lambdaxymox/lean-cgmath)",
+ "lean_cgmath 0.6.0 (git+https://github.com/lambdaxymox/lean-cgmath)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "stb_image 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "wavefront_obj 0.5.3 (git+https://github.com/lambdaxymox/wavefront-obj)",
@@ -556,7 +556,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum humantime 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0484fda3e7007f2a4a0d9c3a703ca38c71c54c55602ce4660c419fd32e188c9e"
 "checksum khronos_api 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "62237e6d326bd5871cd21469323bf096de81f1618cd82cbaf5d87825335aeb49"
 "checksum lazy_static 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a374c89b9db55895453a74c1e38861d9deec0b01b405a82516e9d5de4820dea1"
-"checksum lean_cgmath 0.5.4 (git+https://github.com/lambdaxymox/lean-cgmath)" = "<none>"
+"checksum lean_cgmath 0.6.0 (git+https://github.com/lambdaxymox/lean-cgmath)" = "<none>"
 "checksum libc 0.2.43 (registry+https://github.com/rust-lang/crates.io-index)" = "76e3a3ef172f1a0b9a9ff0dd1491ae5e6c948b94479a3021819ba7d860c8645d"
 "checksum log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c84ec4b527950aa83a329754b01dbe3f58361d1c5efacd1f6d68c494d08a17c6"
 "checksum memchr 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0a3eb002f0535929f1199681417029ebea04aadc0c7a4224b46be99c7f5d6a16"

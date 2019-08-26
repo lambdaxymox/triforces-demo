@@ -806,8 +806,8 @@ fn main() {
 
             let trans_mat_inv = Matrix4::from_translation(context.camera.pos);
 
-            context.camera.rot_mat = rot_mat_inv.inverse();
-            context.camera.trans_mat = trans_mat_inv.inverse();
+            context.camera.rot_mat = rot_mat_inv.inverse().unwrap();
+            context.camera.trans_mat = trans_mat_inv.inverse().unwrap();
             context.camera.view_mat = context.camera.rot_mat * context.camera.trans_mat;
 
             let gp_sp = &context.entities.shaders[&ids[0]];
