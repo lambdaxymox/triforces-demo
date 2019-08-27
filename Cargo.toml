@@ -1,6 +1,6 @@
 [package]
 name = "triforces-demo"
-version = "1.2.8"
+version = "1.2.9"
 authors = ["LambdaXymox <lambda.xymox@gmail.com>"]
 build = "build.rs"
 description = "A 3D tech demo demonstrating some animation and Blinn-Phong shading."
@@ -21,6 +21,3 @@ debug = true
 
 [features]
 build_for_install = []
-
-[lean_cgmath]
-version = "0.6.0"
