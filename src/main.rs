@@ -1,7 +1,7 @@
 extern crate glfw;
 extern crate stb_image;
 extern crate cgmath;
-extern crate wavefront_obj;
+extern crate mini_obj;
 extern crate log;
 extern crate file_logger;
 
@@ -9,10 +9,12 @@ mod gl {
     include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
 }
 
+#[macro_use]
+mod macros;
+
 mod camera;
 mod gl_help;
 mod component;
-mod obj;
 mod lights;
 mod texture;
 
@@ -23,6 +25,7 @@ use gl::types::{
 
 use gl_help as glh;
 use cgmath as math;
+use mini_obj as obj;
 
 use camera::Camera;
 use component::{
@@ -51,55 +54,6 @@ const LOG_FILE: &str = "/tmp/triforces-demo.log";
 
 #[cfg(not(feature = "build_for_install"))]
 const LOG_FILE: &str = "triforces-demo.log";
-
-
-macro_rules! concat_path {
-    ($fragment:expr) => {
-        concat!($fragment, "/")
-    };
-    ($fragment:expr, $($fragments:expr),+) => {
-        concat!($fragment, "/", concat_path!($($fragments),+))
-    }
-}
-
-macro_rules! asset_file {
-    ($asset:expr) => {
-        concat!(concat_path!("..", "assets"), $asset)
-    }
-}
-
-macro_rules! include_asset {
-    ($asset:expr) => {
-        include_bytes!(asset_file!($asset))
-    }
-}
-
-#[cfg(target_os = "mac_os")]
-macro_rules! shader_file {
-    ($asset:expr) => {
-        concat!(concat_path!("..", "shaders", "330"), $asset)
-    }
-}
-
-#[cfg(target_os = "windows")]
-macro_rules! shader_file {
-    ($asset:expr) => {
-        concat!(concat_path!("..", "assets"), $asset)
-    }
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
-macro_rules! shader_file {
-    ($shader:expr) => {
-        concat!(concat_path!("..", "shaders", "420"), $shader)
-    }
-}
-
-macro_rules! include_shader {
-    ($shader:expr) => {
-        include_str!(shader_file!($shader))
-    }
-}
 
 
 struct EntityDatabase {

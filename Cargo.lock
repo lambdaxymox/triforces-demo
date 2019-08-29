@@ -211,6 +211,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mini_obj"
+version = "0.1.5"
+source = "git+https://github.com/lambdaxymox/mini-obj#6c6f5b1f3ed7ffb6cc1e3da67f5835da6848bef0"
+dependencies = [
+ "obj 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)",
+ "obj_gen 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)",
+ "wavefront_obj 0.5.3 (git+https://github.com/lambdaxymox/wavefront-obj)",
+]
+
+[[package]]
 name = "nom"
 version = "1.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -284,6 +294,22 @@ dependencies = [
 name = "num-traits"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "obj"
+version = "0.1.5"
+source = "git+https://github.com/lambdaxymox/mini-obj#6c6f5b1f3ed7ffb6cc1e3da67f5835da6848bef0"
+dependencies = [
+ "wavefront_obj 0.5.3 (git+https://github.com/lambdaxymox/wavefront-obj)",
+]
+
+[[package]]
+name = "obj_gen"
+version = "0.1.5"
+source = "git+https://github.com/lambdaxymox/mini-obj#6c6f5b1f3ed7ffb6cc1e3da67f5835da6848bef0"
+dependencies = [
+ "obj 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)",
+]
 
 [[package]]
 name = "ppv-lite86"
@@ -456,15 +482,15 @@ dependencies = [
 
 [[package]]
 name = "triforces-demo"
-version = "1.2.9"
+version = "1.2.10"
 dependencies = [
  "file_logger 0.4.3 (git+https://github.com/lambdaxymox/file-logger)",
  "gl_generator 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "glfw 0.25.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lean_cgmath 0.6.0 (git+https://github.com/lambdaxymox/lean-cgmath)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "mini_obj 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)",
  "stb_image 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "wavefront_obj 0.5.3 (git+https://github.com/lambdaxymox/wavefront-obj)",
 ]
 
 [[package]]
@@ -560,6 +586,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum libc 0.2.43 (registry+https://github.com/rust-lang/crates.io-index)" = "76e3a3ef172f1a0b9a9ff0dd1491ae5e6c948b94479a3021819ba7d860c8645d"
 "checksum log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c84ec4b527950aa83a329754b01dbe3f58361d1c5efacd1f6d68c494d08a17c6"
 "checksum memchr 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "0a3eb002f0535929f1199681417029ebea04aadc0c7a4224b46be99c7f5d6a16"
+"checksum mini_obj 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)" = "<none>"
 "checksum nom 1.2.4 (registry+https://github.com/rust-lang/crates.io-index)" = "a5b8c256fd9471521bcb84c3cdba98921497f1a331cbc15b8030fc63b82050ce"
 "checksum num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cf4825417e1e1406b3782a8ce92f4d53f26ec055e3622e1881ca8e9f5f9e08db"
 "checksum num-bigint 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "10b8423ea72ec64751198856a853e07b37087cfc9b53a87ecb19bff67b6d1320"
@@ -569,6 +596,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum num-rational 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4e96f040177bb3da242b5b1ecf3f54b5d5af3efbbfb18608977a5d2767b22f10"
 "checksum num-traits 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)" = "92e5113e9fd4cc14ded8e499429f396a20f98c772a47cc8622a736e1ec843c31"
 "checksum num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)" = "0b3a5d7cc97d6d30d8b9bc8fa19bf45349ffe46241e8816f50f62f6d6aaabee1"
+"checksum obj 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)" = "<none>"
+"checksum obj_gen 0.1.5 (git+https://github.com/lambdaxymox/mini-obj)" = "<none>"
 "checksum ppv-lite86 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "e3cbf9f658cdb5000fcf6f362b8ea2ba154b9f146a61c7a20d647034c6b6561b"
 "checksum quick-error 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
 "checksum quickcheck 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d4537d3e4edf73a15dd059b75bed1c292d17d3ea7517f583cebe716794fcf816"
