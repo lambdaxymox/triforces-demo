@@ -11,9 +11,11 @@ use std::fs;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
+const CODE_FRAGMENTS: &str = ".code_fragments";
 
-fn create_code_fragment_directory<P: AsRef<Path>>(path: P) -> PathBuf {
-    let code_path = path.as_ref().join(".code_fragments");
+
+fn create_code_fragment_directory() -> PathBuf {
+    let code_path = Path::new(".").join(CODE_FRAGMENTS);
     if !code_path.exists() {
         fs::create_dir(&code_path).unwrap();
     }
@@ -58,7 +60,7 @@ fn register_gl_api(file: &mut File) {
 }
 
 fn main() {
-    let code_path = create_code_fragment_directory(".");
+    let code_path = create_code_fragment_directory();
     let triangle = generate_code_fragment("assets/triangle.obj");
     write_code_fragment(&code_path, "triangle.obj.in", &triangle).unwrap();
 
