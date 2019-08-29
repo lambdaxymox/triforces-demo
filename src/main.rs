@@ -220,13 +220,6 @@ fn arr_to_vec(ptr: *const u8, length: usize) -> Vec<u8> {
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    /*
-    let arr: &'static [u8; 883] = include_asset!("ground_plane.obj");
-    let vec = arr_to_vec(&arr[0], 883);
-    let mut reader = io::Cursor::new(vec);
-
-    let mesh = obj::load(&mut reader).unwrap();
-    */
     let mesh = include!("../ground_plane.obj.in");
     let shader = context.entities.shaders[&id].handle.into();
 
@@ -353,13 +346,6 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 
 /// Load the geometry for the triforce.
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
-    /*
-    let arr: &'static [u8; 702] = include_asset!("triangle.obj");
-    let vec = arr_to_vec(&arr[0], 702);
-    let mut reader = io::Cursor::new(vec);
-
-    let mesh = obj::load(&mut reader).unwrap();
-    */
     let mesh = include!("../triangle.obj.in");
     let shader = context.entities.shaders[&id].handle.into();
 
