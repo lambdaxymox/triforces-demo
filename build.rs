@@ -7,9 +7,19 @@ use mini_obj as obj;
 use std::env;
 use std::io;
 use std::io::Write;
+use std::fs;
 use std::fs::File;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
+
+fn create_code_fragment_directory<P: AsRef<Path>>(path: P) -> PathBuf {
+    let code_path = path.as_ref().join(".code_fragments");
+    if !code_path.exists() {
+        fs::create_dir(&code_path).unwrap();
+    }
+
+    code_path
+}
 
 fn generate_code_fragment<P: AsRef<Path>>(path: P) -> String {
     let model = obj::load_file(path).unwrap();
@@ -18,8 +28,8 @@ fn generate_code_fragment<P: AsRef<Path>>(path: P) -> String {
     fragment
 }
 
-fn write_code_fragment(fragment: &str, fragment_name: &str) -> io::Result<()> {
-    let path = Path::new(".").join(fragment_name);
+fn write_code_fragment<P: AsRef<Path>>(code_path: P, fragment_name: &str, fragment: &str) -> io::Result<()> {
+    let path = code_path.as_ref().join(fragment_name);
     let mut file = File::create(&path)?;
     file.write_all(fragment.as_bytes())?;
     file.sync_all()
@@ -48,11 +58,12 @@ fn register_gl_api(file: &mut File) {
 }
 
 fn main() {
+    let code_path = create_code_fragment_directory(".");
     let triangle = generate_code_fragment("assets/triangle.obj");
-    write_code_fragment(&triangle, "triangle.obj.in").unwrap();
+    write_code_fragment(&code_path, "triangle.obj.in", &triangle).unwrap();
 
     let ground_plane = generate_code_fragment("assets/ground_plane.obj");
-    write_code_fragment(&ground_plane, "ground_plane.obj.in").unwrap();
+    write_code_fragment(&code_path, "ground_plane.obj.in", &ground_plane).unwrap();
 
     let dest = env::var("OUT_DIR").unwrap();
     let mut file = File::create(&Path::new(&dest).join("gl_bindings.rs")).unwrap();

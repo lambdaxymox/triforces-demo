@@ -220,7 +220,7 @@ fn arr_to_vec(ptr: *const u8, length: usize) -> Vec<u8> {
 }
 
 fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
-    let mesh = include!("../ground_plane.obj.in");
+    let mesh = include_code!("ground_plane.obj.in");
     let shader = context.entities.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
@@ -346,7 +346,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 
 /// Load the geometry for the triforce.
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
-    let mesh = include!("../triangle.obj.in");
+    let mesh = include_code!("triangle.obj.in");
     let shader = context.entities.shaders[&id].handle.into();
 
     let points_loc = unsafe { gl::GetAttribLocation(shader, glh::gl_str("v_pos").as_ptr()) };
