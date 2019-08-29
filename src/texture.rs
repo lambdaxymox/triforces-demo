@@ -66,9 +66,7 @@ impl<'a> From<&'a image::Image<u8>> for TexImage2D {
 }
 
 
-///
 /// Load a PNG texture image from a reader or buffer.
-///
 pub fn load_from_memory(buffer: &[u8]) -> Result<TexImage2D, String> {
     let force_channels = 4;
     let mut image_data = match image::load_from_memory_with_depth(buffer, force_channels, false) {
@@ -107,9 +105,7 @@ pub fn load_from_memory(buffer: &[u8]) -> Result<TexImage2D, String> {
 }
 
 
-///
 /// Load a PNG texture image from a file name.
-///
 pub fn load_file<P: AsRef<Path>>(file_path: P) -> Result<TexImage2D, String> {
     let force_channels = 4;
     let mut image_data = match image::load_with_depth(&file_path, force_channels, false) {

@@ -112,9 +112,7 @@ fn create_camera(width: f32, height: f32) -> Camera {
     Camera::new(near, far, fov, aspect, cam_speed, cam_yaw_speed, cam_pos, fwd, rgt, up, axis)
 }
 
-///
 /// Load texture image into the GPU.
-///
 fn load_texture(tex_data: &TexImage2D, wrapping_mode: GLuint) -> Result<TextureHandle, String> {
     let mut tex = 0;
     unsafe {
@@ -350,9 +348,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
-///
 /// Load the geometry for the triforce.
-///
 fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
     let arr: &'static [u8; 702] = include_asset!("triangle.obj");
     let vec = arr_to_vec(&arr[0], 702);
@@ -434,9 +430,7 @@ fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: 
     context.entities.meshes.insert(id, mesh);
 }
 
-///
 /// Load the triforce shader program.
-///
 fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     let mut vert_reader = io::Cursor::new(include_shader!("triangle.vert.glsl"));
     let mut frag_reader = io::Cursor::new(include_shader!("triangle.frag.glsl"));
@@ -475,9 +469,7 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
     context.entities.shaders.insert(id, shader);
 }
 
-///
 /// Load the triforce texture.
-///
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     let arr: &'static [u8; 213] = include_asset!("triangle.png");
     let vec = arr_to_vec(&arr[0], 213);
@@ -487,9 +479,7 @@ fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     context.entities.textures.insert(id, tex);
 }
 
-///
 /// Send the uniform variables for a triforce to the GPU.
-///
 fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     let shader = &context.entities.shaders[&id];
     unsafe {
@@ -509,21 +499,17 @@ fn create_triforce_uniforms(context: &GameContext, id: EntityID) {
     }
 }
 
-///
 /// Reset the position of the camera to the default position and orientation.
-///
 fn reset_camera_to_default(context: &mut GameContext) {
     let width = context.gl.width as f32;
     let height = context.gl.height as f32;
     context.camera = create_camera(width, height);
 }
 
-///
 /// The GLFW frame buffer size callback function. This is normally set using 
 /// the GLFW `glfwSetFramebufferSizeCallback` function, but instead we explicitly
 /// handle window resizing in our state updates on the application side. Run this function 
 /// whenever the size of the viewport changes.
-///
 #[inline]
 fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height: u32) {
     context.gl.width = width;
@@ -536,9 +522,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
     ));
 }
 
-///
 /// Initialize the logger.
-///
 fn init_logger(log_file: &str) {
     eprintln!("Logging is stored in file: {}", log_file);
     file_logger::init(log_file).expect("Failed to initialize logger.");
@@ -546,9 +530,7 @@ fn init_logger(log_file: &str) {
     info!("build version: ??? ?? ???? ??:??:??\n\n");
 }
 
-///
 /// Initialize the demo.
-///
 fn init_game_state(ids: &[EntityID]) -> GameContext {
     init_logger(LOG_FILE);
     let gl_state = match glh::start_gl(720, 480) {
