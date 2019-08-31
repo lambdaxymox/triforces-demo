@@ -1,5 +1,5 @@
 extern crate glfw;
-extern crate stb_image;
+extern crate teximage2d;
 extern crate cgmath;
 extern crate mini_obj;
 extern crate log;
@@ -16,7 +16,6 @@ mod camera;
 mod gl_help;
 mod component;
 mod lights;
-mod texture;
 
 use glfw::{Action, Context, Key};
 use gl::types::{
@@ -36,7 +35,7 @@ use component::{
 use math::{Matrix4, One, Quaternion, Array};
 use lights::PointLight;
 use log::{info};
-use texture::TexImage2D;
+use teximage2d::TexImage2D;
 
 use std::io;
 use std::mem;
@@ -280,7 +279,7 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
 fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
     let arr: &'static [u8; 1789] = include_asset!("ground_plane.png");
     let vec = arr_to_vec(&arr[0], 1789);
-    let tex_image = texture::load_from_memory(&vec).unwrap();
+    let tex_image = teximage2d::load_from_memory(&vec).unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex);
@@ -465,7 +464,7 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     let arr: &'static [u8; 213] = include_asset!("triangle.png");
     let vec = arr_to_vec(&arr[0], 213);
-    let tex_image = texture::load_from_memory(&vec).unwrap();
+    let tex_image = teximage2d::load_from_memory(&vec).unwrap();
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex);
