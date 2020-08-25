@@ -655,8 +655,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_yaw += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
-                context.camera.axis = q_yaw * &context.camera.axis;
             }
             _ => {}
         }
@@ -664,8 +662,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_yaw -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
-                context.camera.axis = q_yaw * &context.camera.axis;
             }
             _ => {}
         }
@@ -673,8 +669,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_pitch += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
-                context.camera.axis = q_pitch * &context.camera.axis;
             }
             _ => {}
         }
@@ -682,8 +676,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_pitch -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
-                context.camera.axis = q_pitch * &context.camera.axis;
             }
             _ => {}
         }
@@ -691,8 +683,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_roll -= context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
-                context.camera.axis = q_roll * &context.camera.axis;
             }
             _ => {}
         }
@@ -700,8 +690,6 @@ fn main() {
             Action::Press | Action::Repeat => {
                 cam_roll += context.camera.yaw_speed * (elapsed_seconds as GLfloat);
                 cam_moved = true;
-                let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
-                context.camera.axis = q_roll * &context.camera.axis;
             }
             _ => {}
         }
@@ -721,6 +709,14 @@ fn main() {
 
         // Update view matrix.
         if cam_moved {
+            // Update the axis of rotation of the camera.
+            let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
+            context.camera.axis = q_yaw * &context.camera.axis;
+            let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
+            context.camera.axis = q_pitch * &context.camera.axis;
+            let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
+            context.camera.axis = q_roll * &context.camera.axis;
+
             // Recalculate local axes so we can move fwd in the direction the camera is pointing.
             let rot_mat_inv = Matrix4::from(context.camera.axis);
             context.camera.fwd = rot_mat_inv * math::vec4((0.0, 0.0, -1.0, 0.0));
