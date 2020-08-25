@@ -545,9 +545,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let model_mats = [
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
     ];
 
     create_ground_plane_shaders(&mut context, ids[0]);
