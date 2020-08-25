@@ -2,18 +2,18 @@ use math::Vector3;
 
 
 pub struct PointLight {
-    pub ambient: Vector3,
-    pub diffuse: Vector3,
-    pub specular: Vector3,
+    pub ambient: Vector3<f32>,
+    pub diffuse: Vector3<f32>,
+    pub specular: Vector3<f32>,
     pub specular_exponent: f32,
-    pub position: Vector3,
+    pub position: Vector3<f32>,
 }
 
 impl PointLight {
     pub fn new(
-        ambient: Vector3, diffuse: Vector3, specular: Vector3,
+        ambient: Vector3<f32>, diffuse: Vector3<f32>, specular: Vector3<f32>,
         specular_exponent: f32,
-        position: Vector3) -> PointLight {
+        position: Vector3<f32>) -> PointLight {
 
         PointLight {
             ambient: ambient,

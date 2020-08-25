@@ -1,5 +1,5 @@
 use math;
-use math::{Vector3, Vector4, Matrix4, Quaternion};
+use math::{Degrees, Vector3, Vector4, Matrix4, Quaternion};
 
 use std::fmt;
 
@@ -9,32 +9,32 @@ pub struct Camera {
     // Camera parameters.
     pub near: f32,
     pub far: f32,
-    pub fov: f32,
+    pub fov: Degrees<f32>,
     pub aspect: f32,
 
     // Camera kinematics.
     pub speed: f32,
     pub yaw_speed: f32,
-    pub pos: Vector3,
-    pub fwd: Vector4,
-    pub rgt: Vector4,
-    pub up: Vector4,
-    pub axis: Quaternion,
+    pub pos: Vector3<f32>,
+    pub fwd: Vector4<f32>,
+    pub rgt: Vector4<f32>,
+    pub up: Vector4<f32>,
+    pub axis: Quaternion<f32>,
 
     // Camera matrices.
-    pub proj_mat: Matrix4,
-    pub trans_mat: Matrix4,
-    pub rot_mat: Matrix4,
-    pub view_mat: Matrix4,
+    pub proj_mat: Matrix4<f32>,
+    pub trans_mat: Matrix4<f32>,
+    pub rot_mat: Matrix4<f32>,
+    pub view_mat: Matrix4<f32>,
 }
 
 impl Camera {
     pub fn new(
-        near: f32, far: f32, fov: f32, aspect: f32,
-        cam_speed: f32, cam_yaw_speed: f32, cam_pos: Vector3,
-        fwd: Vector4, rgt: Vector4, up: Vector4, axis: Quaternion) -> Camera {
+        near: f32, far: f32, fov: Degrees<f32>, aspect: f32,
+        cam_speed: f32, cam_yaw_speed: f32, cam_pos: Vector3<f32>,
+        fwd: Vector4<f32>, rgt: Vector4<f32>, up: Vector4<f32>, axis: Quaternion<f32>) -> Camera {
 
-        let proj_mat = math::perspective((fov, aspect, near, far));
+        let proj_mat = gdmath::perspective((fov, aspect, near, far));
         let trans_mat = Matrix4::from_translation(-cam_pos);
         let rot_mat = Matrix4::from(axis);
         let view_mat = rot_mat * trans_mat;

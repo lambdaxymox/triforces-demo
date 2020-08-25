@@ -1,6 +1,6 @@
 extern crate glfw;
 extern crate teximage2d;
-extern crate cgmath;
+extern crate gdmath;
 extern crate mini_obj;
 extern crate log;
 extern crate file_logger;
@@ -23,7 +23,7 @@ use gl::types::{
 };
 
 use gl_help as glh;
-use cgmath as math;
+use gdmath as math;
 use mini_obj as obj;
 
 use camera::Camera;
@@ -32,7 +32,7 @@ use component::{
     ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
     TextureHandle
 };
-use math::{Matrix4, One, Quaternion, Array};
+use math::{Degrees, Matrix4, One, Quaternion, Storage};
 use lights::PointLight;
 use log::{info};
 use teximage2d::TexImage2D;
@@ -60,7 +60,7 @@ struct EntityDatabase {
     shaders: HashMap<EntityID, ShaderProgram>,
     textures: HashMap<EntityID, TextureHandle>,
     buffers: HashMap<EntityID, Vec<BufferHandle>>,
-    model_matrices: HashMap<EntityID, Matrix4>,
+    model_matrices: HashMap<EntityID, Matrix4<f32>>,
 }
 
 impl EntityDatabase {
@@ -95,7 +95,7 @@ fn create_light() -> PointLight {
 fn create_camera(width: f32, height: f32) -> Camera {
     let near = 0.1;
     let far = 100.0;
-    let fov = 67.0;
+    let fov = Degrees(67.0);
     let aspect = width / height;
 
     let cam_speed: GLfloat = 5.0;
@@ -279,7 +279,8 @@ fn create_ground_plane_geometry(context: &mut GameContext, id: EntityID) {
 fn create_ground_plane_texture(context: &mut GameContext, id: EntityID) {
     let arr: &'static [u8; 1789] = include_asset!("ground_plane.png");
     let vec = arr_to_vec(&arr[0], 1789);
-    let tex_image = teximage2d::load_from_memory(&vec).unwrap();
+    let result = teximage2d::load_from_memory(&vec).unwrap();
+    let tex_image = result.image;
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex);
@@ -344,7 +345,7 @@ fn create_ground_plane_uniforms(context: &GameContext, id: EntityID) {
 }
 
 /// Load the geometry for the triforce.
-fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4) {
+fn create_triforce_geometry(context: &mut GameContext, id: EntityID, model_mat: Matrix4<f32>) {
     let mesh = include_code!("triangle.obj.in");
     let shader = context.entities.shaders[&id].handle.into();
 
@@ -464,7 +465,8 @@ fn create_triforce_shaders(context: &mut GameContext, id: EntityID) {
 fn create_triforce_texture(context: &mut GameContext, id: EntityID) {
     let arr: &'static [u8; 213] = include_asset!("triangle.png");
     let vec = arr_to_vec(&arr[0], 213);
-    let tex_image = teximage2d::load_from_memory(&vec).unwrap();
+    let result = teximage2d::load_from_memory(&vec).unwrap();
+    let tex_image = result.image;
     let tex = load_texture(&tex_image, gl::CLAMP_TO_EDGE).unwrap();
 
     context.entities.textures.insert(id, tex);
@@ -543,9 +545,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let model_mats = [
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(180.0) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
     ];
 
     create_ground_plane_shaders(&mut context, ids[0]);
@@ -710,11 +712,11 @@ fn main() {
         // Update view matrix.
         if cam_moved {
             // Update the axis of rotation of the camera.
-            let q_yaw = Quaternion::from_axis_deg(cam_yaw, math::vec3(context.camera.up));
+            let q_yaw = Quaternion::from_axis_deg(Degrees(cam_yaw), math::vec3(context.camera.up));
             context.camera.axis = q_yaw * &context.camera.axis;
-            let q_pitch = Quaternion::from_axis_deg(cam_pitch, math::vec3(context.camera.rgt));
+            let q_pitch = Quaternion::from_axis_deg(Degrees(cam_pitch), math::vec3(context.camera.rgt));
             context.camera.axis = q_pitch * &context.camera.axis;
-            let q_roll = Quaternion::from_axis_deg(cam_roll, math::vec3(context.camera.fwd));
+            let q_roll = Quaternion::from_axis_deg(Degrees(cam_roll), math::vec3(context.camera.fwd));
             context.camera.axis = q_roll * &context.camera.axis;
 
             // Recalculate local axes so we can move fwd in the direction the camera is pointing.
