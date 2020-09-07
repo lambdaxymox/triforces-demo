@@ -98,8 +98,8 @@ checksum = "8f5f3913fa0bfe7ee1fd8248b6b9f42a5af4b9d65ec2dd2c3c26132b950ecfc2"
 
 [[package]]
 name = "gdmath"
-version = "0.7.78"
-source = "git+https://github.com/lambdaxymox/gdmath#a49080cc0b5e1aabc45bbad5e7133f3db15d9f12"
+version = "0.7.80"
+source = "git+https://github.com/lambdaxymox/gdmath#d33eae38561f14267540f6b780d97b3987029795"
 dependencies = [
  "approx",
  "num-traits 0.2.12",
@@ -444,7 +444,7 @@ dependencies = [
 
 [[package]]
 name = "triforces-demo"
-version = "1.2.22"
+version = "1.2.23"
 dependencies = [
  "file_logger",
  "gdmath",

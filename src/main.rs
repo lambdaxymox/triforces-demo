@@ -725,11 +725,11 @@ fn main() {
         // Update view matrix.
         if cam_moved {
             // Update the axis of rotation of the camera.
-            let q_yaw = Quaternion::from_axis_deg(Degrees(cam_yaw), gdmath::vec3(context.camera.up));
+            let q_yaw = Quaternion::from_axis_angle(gdmath::vec3(context.camera.up), Degrees(cam_yaw));
             context.camera.axis = q_yaw * &context.camera.axis;
-            let q_pitch = Quaternion::from_axis_deg(Degrees(cam_pitch), gdmath::vec3(context.camera.rgt));
+            let q_pitch = Quaternion::from_axis_angle(gdmath::vec3(context.camera.rgt), Degrees(cam_pitch));
             context.camera.axis = q_pitch * &context.camera.axis;
-            let q_roll = Quaternion::from_axis_deg(Degrees(cam_roll), gdmath::vec3(context.camera.fwd));
+            let q_roll = Quaternion::from_axis_angle(gdmath::vec3(context.camera.fwd), Degrees(cam_roll));
             context.camera.axis = q_roll * &context.camera.axis;
 
             // Recalculate local axes so we can move fwd in the direction the camera is pointing.
