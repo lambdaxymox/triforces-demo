@@ -1,6 +1,11 @@
-use math;
-use math::{Degrees, Vector3, Vector4, Matrix4, Quaternion};
-
+use gdmath;
+use gdmath::{
+    Degrees, 
+    Vector3, 
+    Vector4, 
+    Matrix4, 
+    Quaternion
+};
 use std::fmt;
 
 

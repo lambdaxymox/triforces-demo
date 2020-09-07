@@ -19,20 +19,33 @@ mod lights;
 
 use glfw::{Action, Context, Key};
 use gl::types::{
-    GLfloat, GLint, GLsizeiptr, GLuint, GLvoid
+    GLfloat, 
+    GLint, 
+    GLsizeiptr, 
+    GLuint, 
+    GLvoid
 };
 
 use gl_help as glh;
-use gdmath as math;
 use mini_obj as obj;
 
 use camera::Camera;
 use component::{
-    BufferHandle, EntityID,
-    ShaderUniformHandle, ShaderProgram, ShaderProgramHandle,
+    BufferHandle, 
+    EntityID,
+    ShaderUniformHandle, 
+    ShaderProgram, 
+    ShaderProgramHandle,
     TextureHandle
 };
-use math::{Degrees, Matrix4, One, Quaternion, Storage};
+use gdmath::{
+    Degrees, 
+    Matrix4,
+    InvertibleSquareMatrix, 
+    One, 
+    Quaternion, 
+    Storage
+};
 use lights::PointLight;
 use log::{info};
 use teximage2d::TexImage2D;
@@ -83,11 +96,11 @@ struct GameContext {
 }
 
 fn create_light() -> PointLight {
-    let ambient = math::vec3((0.3, 0.3, 0.3));
-    let diffuse = math::vec3((0.7, 0.7, 0.7));
-    let specular = math::vec3((1.0, 1.0, 1.0));
+    let ambient = gdmath::vec3((0.3, 0.3, 0.3));
+    let diffuse = gdmath::vec3((0.7, 0.7, 0.7));
+    let specular = gdmath::vec3((1.0, 1.0, 1.0));
     let specular_exponent = 100.0;
-    let light_pos = math::vec3((5.0, -5.0, 25.0));
+    let light_pos = gdmath::vec3((5.0, -5.0, 25.0));
 
     PointLight::new(ambient, diffuse, specular, specular_exponent, light_pos)
 }
@@ -101,10 +114,10 @@ fn create_camera(width: f32, height: f32) -> Camera {
     let cam_speed: GLfloat = 5.0;
     let cam_yaw_speed: GLfloat = 50.0;
 
-    let fwd = math::vec4((0.0, 0.0, 1.0, 0.0));
-    let rgt = math::vec4((1.0, 0.0, 0.0, 0.0));
-    let up  = math::vec4((0.0, 1.0, 0.0, 0.0));
-    let cam_pos = math::vec3((0.0, 0.0, 10.0));
+    let fwd = gdmath::vec4((0.0, 0.0, 1.0, 0.0));
+    let rgt = gdmath::vec4((1.0, 0.0, 0.0, 0.0));
+    let up  = gdmath::vec4((0.0, 1.0, 0.0, 0.0));
+    let cam_pos = gdmath::vec3((0.0, 0.0, 10.0));
 
     let axis = Quaternion::new(0.0, 0.0, 0.0, -1.0);
 
@@ -510,7 +523,7 @@ fn glfw_framebuffer_size_callback(context: &mut GameContext, width: u32, height:
 
     let aspect = context.gl.width as f32 / context.gl.height as f32;
     context.camera.aspect = aspect;
-    context.camera.proj_mat = math::perspective((
+    context.camera.proj_mat = gdmath::perspective((
         context.camera.fov, aspect, context.camera.near, context.camera.far
     ));
 }
@@ -545,9 +558,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let model_mats = [
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.0,       0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3((-0.577350, -0.5, 2.0))),
-        Matrix4::from_scale(2.0) * Matrix4::from_rotation_z(gdmath::Degrees(180.0)) * Matrix4::from_translation(math::vec3(( 0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_angle_z(Degrees(180.0)) * Matrix4::from_translation(gdmath::vec3(( 0.0,       0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_angle_z(Degrees(180.0)) * Matrix4::from_translation(gdmath::vec3((-0.577350, -0.5, 2.0))),
+        Matrix4::from_scale(2.0) * Matrix4::from_angle_z(Degrees(180.0)) * Matrix4::from_translation(gdmath::vec3(( 0.577350, -0.5, 2.0))),
     ];
 
     create_ground_plane_shaders(&mut context, ids[0]);
@@ -579,7 +592,7 @@ fn main() {
 
     // Triforce animation parameters.
     let v_triforce: f32 = 5.0; // Meters per second.
-    let mut vhat_triforce = math::vec3((1.0, 0.0, 0.0));
+    let mut vhat_triforce = gdmath::vec3((1.0, 0.0, 0.0));
     let mut position_triforce = 0.0;
     let mut direction = 1.0;
 
@@ -607,7 +620,7 @@ fn main() {
 
         // Camera control keys.
         let mut cam_moved = false;
-        let mut move_to = math::vec3((0.0, 0.0, 0.0));
+        let mut move_to = gdmath::vec3((0.0, 0.0, 0.0));
         let mut cam_yaw = 0.0;
         let mut cam_pitch = 0.0;
         let mut cam_roll = 0.0;
@@ -712,22 +725,22 @@ fn main() {
         // Update view matrix.
         if cam_moved {
             // Update the axis of rotation of the camera.
-            let q_yaw = Quaternion::from_axis_deg(Degrees(cam_yaw), math::vec3(context.camera.up));
+            let q_yaw = Quaternion::from_axis_deg(Degrees(cam_yaw), gdmath::vec3(context.camera.up));
             context.camera.axis = q_yaw * &context.camera.axis;
-            let q_pitch = Quaternion::from_axis_deg(Degrees(cam_pitch), math::vec3(context.camera.rgt));
+            let q_pitch = Quaternion::from_axis_deg(Degrees(cam_pitch), gdmath::vec3(context.camera.rgt));
             context.camera.axis = q_pitch * &context.camera.axis;
-            let q_roll = Quaternion::from_axis_deg(Degrees(cam_roll), math::vec3(context.camera.fwd));
+            let q_roll = Quaternion::from_axis_deg(Degrees(cam_roll), gdmath::vec3(context.camera.fwd));
             context.camera.axis = q_roll * &context.camera.axis;
 
             // Recalculate local axes so we can move fwd in the direction the camera is pointing.
             let rot_mat_inv = Matrix4::from(context.camera.axis);
-            context.camera.fwd = rot_mat_inv * math::vec4((0.0, 0.0, -1.0, 0.0));
-            context.camera.rgt = rot_mat_inv * math::vec4((1.0, 0.0,  0.0, 0.0));
-            context.camera.up  = rot_mat_inv * math::vec4((0.0, 1.0,  0.0, 0.0));
+            context.camera.fwd = rot_mat_inv * gdmath::vec4((0.0, 0.0, -1.0, 0.0));
+            context.camera.rgt = rot_mat_inv * gdmath::vec4((1.0, 0.0,  0.0, 0.0));
+            context.camera.up  = rot_mat_inv * gdmath::vec4((0.0, 1.0,  0.0, 0.0));
 
-            context.camera.pos += math::vec3(context.camera.fwd) * -move_to.z;
-            context.camera.pos += math::vec3(context.camera.up)  *  move_to.y;
-            context.camera.pos += math::vec3(context.camera.rgt) *  move_to.x;
+            context.camera.pos += gdmath::vec3(context.camera.fwd) * -move_to.z;
+            context.camera.pos += gdmath::vec3(context.camera.up)  *  move_to.y;
+            context.camera.pos += gdmath::vec3(context.camera.rgt) *  move_to.x;
 
             let trans_mat_inv = Matrix4::from_translation(context.camera.pos);
 
