@@ -4,6 +4,7 @@ version = "1.2.24"
 authors = ["LambdaXymox <lambda.xymox@gmail.com>"]
 build = "build.rs"
 description = "A 3D tech demo demonstrating some animation and Blinn-Phong shading."
+edition = "2018"
 
 [dependencies]
 glfw = "0.25.0"
@@ -14,7 +15,7 @@ mini_obj = { git = "https://github.com/lambdaxymox/mini-obj" }
 teximage2d = { git = "https://github.com/lambdaxymox/teximage2d" }
 
 [build-dependencies]
-gl_generator = "0.10.0"
+gl_generator = "0.14.0"
 mini_obj = { git = "https://github.com/lambdaxymox/mini-obj" }
 
 [profile.dev]
