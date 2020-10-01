@@ -1,4 +1,6 @@
-use gdmath::Vector3;
+use cglinalg::{
+    Vector3
+};
 
 
 pub struct PointLight {

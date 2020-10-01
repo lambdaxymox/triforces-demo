@@ -1,6 +1,6 @@
 [package]
 name = "triforces-demo"
-version = "1.2.23"
+version = "1.2.24"
 authors = ["LambdaXymox <lambda.xymox@gmail.com>"]
 build = "build.rs"
 description = "A 3D tech demo demonstrating some animation and Blinn-Phong shading."
@@ -9,7 +9,7 @@ description = "A 3D tech demo demonstrating some animation and Blinn-Phong shadi
 glfw = "0.25.0"
 log = "0.4.6"
 file_logger = { git = "https://github.com/lambdaxymox/file-logger" }
-gdmath = { git = "https://github.com/lambdaxymox/gdmath" }
+cglinalg = { git = "https://github.com/lambdaxymox/cglinalg" }
 mini_obj = { git = "https://github.com/lambdaxymox/mini-obj" }
 teximage2d = { git = "https://github.com/lambdaxymox/teximage2d" }
 
