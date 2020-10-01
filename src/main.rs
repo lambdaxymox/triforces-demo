@@ -565,9 +565,9 @@ fn init_game_state(ids: &[EntityID]) -> GameContext {
     };
 
     let model_mats = [
-        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(Vector3::new( 0.0,       0.5, 2.0)),
-        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(Vector3::new(-0.577350, -0.5, 2.0)),
-        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(Vector3::new( 0.577350, -0.5, 2.0)),
+        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(&Vector3::new( 0.0,       0.5, 2.0)),
+        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(&Vector3::new(-0.577350, -0.5, 2.0)),
+        Matrix4::from_affine_scale(2.0) * Matrix4::from_affine_angle_z(Degrees(180.0)) * Matrix4::from_affine_translation(&Vector3::new( 0.577350, -0.5, 2.0)),
     ];
 
     create_ground_plane_shaders(&mut context, ids[0]);
@@ -752,7 +752,7 @@ fn main() {
             context.camera.pos += context.camera.up.contract()  *  move_to.y;
             context.camera.pos += context.camera.rgt.contract() *  move_to.x;
 
-            let trans_mat_inv = Matrix4::from_affine_translation(context.camera.pos);
+            let trans_mat_inv = Matrix4::from_affine_translation(&context.camera.pos);
 
             context.camera.rot_mat = rot_mat_inv.inverse().unwrap();
             context.camera.trans_mat = trans_mat_inv.inverse().unwrap();
@@ -813,7 +813,7 @@ fn main() {
             vhat_triforce = -vhat_triforce;
             direction = -direction;
         }
-        let trans_mat = Matrix4::from_affine_translation(vhat_triforce * dx);
+        let trans_mat = Matrix4::from_affine_translation(&(vhat_triforce * dx));
         let model_mat = context.entities.model_matrices[&ids[1]];
         context.entities.model_matrices.insert(ids[1], trans_mat * model_mat);
         let model_mat = context.entities.model_matrices[&ids[2]];

@@ -39,7 +39,7 @@ impl Camera {
         fwd: Vector4<f32>, rgt: Vector4<f32>, up: Vector4<f32>, axis: Quaternion<f32>) -> Camera {
 
         let proj_mat = Matrix4::from_perspective_fov(fov, aspect, near, far);
-        let trans_mat = Matrix4::from_affine_translation(-cam_pos);
+        let trans_mat = Matrix4::from_affine_translation(&(-cam_pos));
         let rot_mat = Matrix4::from(axis);
         let view_mat = rot_mat * trans_mat;
 
