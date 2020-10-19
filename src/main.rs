@@ -45,10 +45,7 @@ use component::{
 use cglinalg::{
     Degrees, 
     Matrix4,
-    InvertibleSquareMatrix, 
-    Identity, 
     Quaternion, 
-    Array,
     Vector3,
     Vector4,
     Unit,
