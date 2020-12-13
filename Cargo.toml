@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 glfw = "0.25.0"
-log = "0.4.6"
+log = "0.4.11"
 file_logger = { git = "https://github.com/lambdaxymox/file-logger" }
 cglinalg = { git = "https://github.com/lambdaxymox/cglinalg" }
 mini_obj = { git = "https://github.com/lambdaxymox/mini-obj" }

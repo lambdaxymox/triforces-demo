@@ -44,8 +44,8 @@ dependencies = [
 
 [[package]]
 name = "cgwavefront_obj"
-version = "1.0.0"
-source = "git+https://github.com/lambdaxymox/cgwavefront_obj#140071cd38c591f77e77a983af254fb8ca29f2fd"
+version = "1.0.3"
+source = "git+https://github.com/lambdaxymox/cgwavefront_obj#64e492f384e4ba0dc522af1c9afd0354b20c3a3c"
 
 [[package]]
 name = "chrono"
@@ -157,8 +157,8 @@ dependencies = [
 
 [[package]]
 name = "mini_obj"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini-obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini-obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "obj",
  "obj_gen",
@@ -259,16 +259,16 @@ dependencies = [
 
 [[package]]
 name = "obj"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini-obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini-obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "cgwavefront_obj",
 ]
 
 [[package]]
 name = "obj_gen"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini-obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini-obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "obj",
 ]
